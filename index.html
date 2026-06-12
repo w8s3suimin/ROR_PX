@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RO 終極主控台</title>
+    <title>RO 終極主控台 - 互動式說明書</title>
     <style>
-        /* 基礎設定 */
         :root {
-            --bg-main: #1e1e1e;
-            --bg-content: #181818;
-            --bg-bar: #2c2c2c;
+            --bg-main: rgba(30, 30, 30, 0.95);
+            --bg-content: rgba(24, 24, 24, 0.95);
+            --bg-bar: rgba(44, 44, 44, 0.95);
             --color-accent: #ffcc00;
             --text-primary: #ffffff;
             --text-secondary: #dddddd;
@@ -21,705 +20,955 @@
             --border-radius: 4px;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            user-select: none;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
 
         body {
-            background-color: #000;
+            background-color: #0d0d0d;
+            color: var(--text-primary);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* 左側模擬區 - 滿版置中 */
+        .preview-area {
+            flex: 6;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            color: var(--text-primary);
+            background-color: #1a1a1a;
+            position: relative;
         }
 
-        /* 主視窗容器 */
-        .window {
-            width: 800px;
-            height: 500px;
-            background-color: var(--bg-main);
+        /* 手機外框 (9:16 比例) */
+        .phone-frame {
+            width: 400px;
+            height: 711px; /* 9:16 */
+            background-color: #000;
+            border-radius: 40px;
+            padding: 12px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8), inset 0 0 0 2px #444;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 瀏海 / 鏡頭 */
+        .phone-notch {
+            position: absolute;
+            top: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 25px;
+            background-color: #000;
+            border-bottom-left-radius: 15px;
+            border-bottom-right-radius: 15px;
+            z-index: 20;
+        }
+
+        /* 手機螢幕內部 */
+        .phone-screen {
+            flex: 1;
+            background-image: url('ROR_MainScreen.png');
+            background-size: cover;
+            background-position: center;
+            border-radius: 30px;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 縮小後的懸浮球 (Auto.js 風格) */
+        .floating-orb {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 45px;
+            height: 45px;
+            background-color: rgba(255, 255, 255, 0.9);
             border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            z-index: 50;
+            transition: transform 0.2s;
+        }
+        .floating-orb-inner {
+            width: 38px;
+            height: 38px;
+            background-color: #000;
+            border-radius: 6px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .floating-orb-core {
+            width: 32px;
+            height: 32px;
+            background-color: rgba(0, 0, 0, 0.8);
+            border-radius: 4px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--color-accent);
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .floating-orb:hover { transform: scale(1.05); }
+
+        /* 視窗與動畫 */
+        .window {
+            width: 90%;
+            height: 85%;
+            background-color: var(--bg-main);
+            border-radius: 6px;
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
-            border: 1px solid #333;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255,255,255,0.1);
+            position: relative;
+            z-index: 10;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            transform-origin: top right;
+        }
+        .window.minimized {
+            opacity: 0;
+            transform: scale(0.1);
+            pointer-events: none;
         }
 
         /* 頂部標題列 */
-        .title-bar {
-            height: 40px;
-            background-color: var(--bg-bar);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 15px;
-            border-bottom: 1px solid #111;
-        }
-
-        .title-bar .title {
-            color: var(--color-accent);
-            font-weight: bold;
-            font-size: 16px;
-            letter-spacing: 1px;
-        }
-
-        .title-bar .controls {
-            display: flex;
-            gap: 10px;
-        }
-
-        .control-btn {
-            cursor: pointer;
-            width: 20px;
-            height: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-radius: 50%;
-            font-size: 12px;
-            transition: background-color 0.2s;
-        }
-
-        .control-btn:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .control-btn.close {
-            color: var(--color-error);
-        }
-        .control-btn.close:hover {
-            background-color: var(--color-error);
-            color: #fff;
-        }
+        .title-bar { height: 40px; background-color: transparent; display: flex; justify-content: space-between; align-items: center; padding: 0 15px; }
+        .title-bar .title { color: var(--color-accent); font-weight: bold; font-size: 16px; }
+        .title-bar .close-btn { color: var(--color-error); font-weight: bold; font-size: 18px; cursor: pointer; }
 
         /* 中間區域：側邊欄 + 內容 */
-        .main-area {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-        }
-
+        .main-area { display: flex; flex: 1; overflow: hidden; border-top: 1px solid rgba(255,255,255,0.1); border-bottom: 1px solid rgba(255,255,255,0.1); }
+        
         /* 側邊導航欄 */
-        .sidebar {
-            width: 65px;
-            background-color: var(--bg-bar);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding-top: 10px;
-            border-right: 1px solid #111;
+        .sidebar { width: 45px; display: flex; flex-direction: column; align-items: center; padding-top: 10px; border-right: 2px solid var(--color-accent); }
+        .nav-btn { 
+            width: 100%; padding: 15px 0; color: var(--text-muted); text-align: center; cursor: pointer; font-size: 14px; 
+            writing-mode: vertical-lr; text-orientation: upright; letter-spacing: 2px;
+            display: flex; align-items: center; justify-content: center; transition: background 0.2s;
         }
-
-        .nav-btn {
-            width: 100%;
-            padding: 15px 0;
-            color: var(--text-muted);
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 14px;
-            position: relative;
-        }
-
-        .nav-btn:hover {
-            background-color: rgba(255, 255, 255, 0.05);
-            color: var(--text-secondary);
-        }
-
-        .nav-btn.active {
-            color: var(--color-accent);
-            font-weight: bold;
-            background-color: rgba(255, 204, 0, 0.1);
-        }
-
-        .nav-btn.active::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 3px;
-            background-color: var(--color-accent);
-        }
+        .nav-btn:hover { background-color: rgba(255,255,255,0.05); }
+        .nav-btn.active { color: var(--color-accent); font-weight: bold; }
 
         /* 內容區 */
-        .content-area {
-            flex: 1;
-            background-color: var(--bg-content);
-            padding: 20px;
-            overflow-y: auto;
-            position: relative;
-        }
+        .content-area { flex: 1; position: relative; }
+        .tab-pane { display: none; width: 100%; height: 100%; padding: 12px; overflow-y: auto; }
+        .tab-pane.active { display: block; animation: fadeIn 0.3s ease; }
 
-        .tab-pane {
-            display: none;
-            animation: fadeIn 0.3s;
-        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .tab-pane.active {
-            display: block;
-        }
+        .top-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .section-title { color: var(--color-accent); font-size: 13px; margin-bottom: 10px; font-weight: bold; }
+        
+        /* 任務手風琴 (Accordion) */
+        .accordion { margin-bottom: 2px; }
+        .accordion-header { background-color: rgba(255,255,255,0.05); padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border-radius: 2px; border-bottom: 1px solid rgba(0,0,0,0.5); }
+        .accordion-header:hover { background-color: rgba(255,255,255,0.1); }
+        .accordion-title-wrap { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+        .accordion-content { background-color: rgba(0,0,0,0.2); padding: 0 15px; max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+        .accordion.open .accordion-content { padding: 12px 15px; max-height: 400px; }
+        
+        /* 互動高亮區域 */
+        .interactive-target { cursor: pointer; border: 1px solid transparent; transition: all 0.2s; }
+        .interactive-target:hover { border: 1px dashed var(--color-accent); background-color: rgba(255, 204, 0, 0.05); }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(5px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        .custom-checkbox { color: var(--color-accent); font-weight: bold; font-size: 18px; cursor: pointer; }
+        
+        .setting-row { display: flex; align-items: center; margin-bottom: 8px; font-size: 12px; color: var(--text-secondary); }
+        .setting-label { width: 80px; }
+        .setting-box { background: rgba(0,0,0,0.3); padding: 6px 10px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; flex: 1; border: 1px solid rgba(255,255,255,0.1); cursor: pointer;}
+        .setting-btn { background: #333; border: none; color: #fff; padding: 8px 12px; border-radius: 4px; font-size: 12px; cursor: pointer; margin-bottom: 8px; width: 100%; text-align: left; }
+        .setting-btn:hover { background: #444; }
 
-        /* 底部控制列 */
-        .bottom-bar {
-            height: 45px;
-            background-color: var(--bg-main);
-            display: flex;
-            border-top: 1px solid #111;
-        }
+        .stepper { background:rgba(0,0,0,0.3); display:flex; align-items:center; border-radius:4px; padding:2px 5px; border: 1px solid rgba(255,255,255,0.1); }
+        .stepper span.btn { padding:0 8px; cursor:pointer; }
+        .stepper span.val { color:var(--color-accent); font-weight:bold; width:30px; text-align:center; }
 
-        .bottom-btn {
-            flex: 1;
-            border: none;
-            outline: none;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 15px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
-            transition: opacity 0.2s, background-color 0.2s;
-            position: relative;
-            overflow: hidden;
-        }
+        /* 登入分頁的次選單 */
+        .sub-menu { display: flex; background: #2c2c2c; height: 35px; }
+        .sub-btn { flex: 1; display: flex; justify-content: center; align-items: center; font-size: 12px; cursor: pointer; color: #aaa; }
+        .sub-btn.active { color: var(--color-accent); font-weight: bold; background: rgba(255,204,0,0.1); }
 
-        .bottom-btn:hover {
-            opacity: 0.9;
-        }
+        /* 底部按鈕列 */
+        .bottom-bar { height: 45px; display: flex; }
+        .bottom-btn { flex: 1; border: none; outline: none; cursor: pointer; font-weight: bold; font-size: 15px; display: flex; justify-content: center; align-items: center; gap: 5px; }
+        .btn-recover { background-color: #d6eaf8; color: #1e88e5; }
+        .btn-execute { background-color: var(--color-accent); color: #000; flex: 2; font-size: 16px; }
+        .btn-stop { background-color: var(--color-danger-dark); color: #fff; }
 
-        .bottom-btn:active::after {
-            content: "";
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 100px;
-            height: 100px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
-            transform: translate(-50%, -50%) scale(0);
-            animation: ripple 0.4s ease-out;
-        }
+        /* 右側說明面板 */
+        .instruction-panel { flex: 4; background-color: #121212; padding: 30px; display: flex; flex-direction: column; overflow-y: auto; border-left: 1px solid #333; }
+        .panel-header { font-size: 24px; color: var(--color-accent); margin-bottom: 10px; border-bottom: 2px solid #333; padding-bottom: 10px; }
+        .panel-desc { font-size: 15px; line-height: 1.6; color: var(--text-secondary); margin-bottom: 20px; }
+        .panel-alert { background-color: rgba(255, 204, 0, 0.1); border-left: 4px solid var(--color-accent); padding: 15px; border-radius: 0 4px 4px 0; font-size: 14px; color: #ffd700; margin-top: 15px; }
 
-        @keyframes ripple {
-            to {
-                transform: translate(-50%, -50%) scale(3);
-                opacity: 0;
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 204, 0, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(255, 204, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 204, 0, 0); } }
+        .guide-pulse { animation: pulse 2s infinite; border: 1px solid var(--color-accent) !important; }
+
+        /* ================= 手機版響應式設計 ================= */
+        @media (max-width: 768px) {
+            body { flex-direction: column; }
+            .preview-area { flex: none; height: 100vh; width: 100vw; padding: 10px; box-sizing: border-box; }
+            
+            /* 在手機上自動縮放外框 */
+            .phone-frame { width: 100%; height: 100%; max-width: 400px; border-radius: 20px; box-shadow: none; padding: 5px; }
+            .phone-notch { display: none; } /* 隱藏假瀏海 */
+            .phone-screen { border-radius: 15px; }
+
+            /* 右側面板改為從底部彈出的 Bottom Sheet */
+            .instruction-panel {
+                position: fixed;
+                bottom: -100%;
+                left: 0;
+                width: 100vw;
+                height: 60vh;
+                border-left: none;
+                border-top: 2px solid var(--color-accent);
+                border-radius: 25px 25px 0 0;
+                z-index: 9999;
+                transition: bottom 0.3s cubic-bezier(0.1, 0.8, 0.2, 1);
+                box-shadow: 0 -10px 40px rgba(0,0,0,0.9);
+                padding: 40px 25px 25px 25px; /* 上方預留給關閉按鈕 */
+                flex: none;
             }
-        }
-
-        .btn-recover {
-            background-color: transparent;
-            color: var(--color-action);
-            border-right: 1px solid #333;
-        }
-        .btn-recover:hover { background-color: rgba(0, 191, 255, 0.1); }
-
-        .btn-execute {
-            background-color: var(--color-accent);
-            color: #000;
-        }
-
-        .btn-stop {
-            background-color: transparent;
-            color: var(--color-danger-dark);
-            border-left: 1px solid #333;
-        }
-        .btn-stop:hover { background-color: rgba(204, 34, 0, 0.1); }
-
-
-        /* 共通 UI 元件 */
-        /* 次級選單 */
-        .sub-menu {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-            border-bottom: 1px solid #333;
-            padding-bottom: 10px;
-        }
-        
-        .sub-btn {
-            color: var(--text-muted);
-            cursor: pointer;
-            padding: 5px 10px;
-            border-radius: var(--border-radius);
-            transition: background 0.2s;
-        }
-
-        .sub-btn:hover {
-            background-color: rgba(255,255,255,0.05);
-        }
-
-        .sub-btn.active {
-            color: var(--color-accent);
-            background-color: rgba(255, 204, 0, 0.1);
-        }
-
-        /* 列表區塊 */
-        .list-group {
-            background-color: #222;
-            border-radius: var(--border-radius);
-            overflow: hidden;
-            margin-bottom: 15px;
-        }
-
-        .list-item {
-            padding: 12px 15px;
-            border-bottom: 1px solid #333;
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .list-item:last-child {
-            border-bottom: none;
-        }
-
-        .list-item:hover {
-            background-color: #2a2a2a;
-        }
-
-        /* 自定義 Checkbox */
-        .custom-checkbox {
-            margin-right: 10px;
-            font-size: 18px;
-            color: var(--text-muted);
-            cursor: pointer;
-            transition: color 0.2s;
-        }
-
-        .custom-checkbox.checked {
-            color: var(--color-accent);
-        }
-
-        /* 收合面板 Accordion */
-        .accordion-header {
-            background-color: #252525;
-            padding: 12px 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            border-radius: var(--border-radius);
-            margin-bottom: 5px;
-            transition: background 0.2s;
-        }
-
-        .accordion-header:hover {
-            background-color: #2a2a2a;
-        }
-
-        .accordion-icon {
-            font-size: 12px;
-            transition: transform 0.3s;
-            color: var(--color-accent);
-        }
-
-        .accordion-content {
-            background-color: #1a1a1a;
-            padding: 0 15px;
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease-out, padding 0.3s ease;
-            border-radius: 0 0 var(--border-radius) var(--border-radius);
-            margin-bottom: 10px;
-            margin-top: -5px;
-        }
-
-        .accordion.open .accordion-content {
-            padding: 15px;
-            max-height: 500px;
-        }
-
-        .accordion.open .accordion-icon {
-            transform: rotate(180deg);
-        }
-
-        /* 數值調整器 */
-        .number-adjuster {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .adj-btn {
-            background-color: #333;
-            color: var(--text-primary);
-            border: none;
-            width: 28px;
-            height: 28px;
-            border-radius: var(--border-radius);
-            cursor: pointer;
-            font-size: 16px;
-            transition: background 0.2s;
-        }
-
-        .adj-btn:hover { background-color: #444; }
-        .adj-btn:active { background-color: var(--color-action); color: #fff;}
-
-        .adj-input {
-            width: 50px;
-            background-color: #111;
-            border: 1px solid #444;
-            color: var(--color-accent);
-            text-align: center;
-            padding: 5px;
-            border-radius: var(--border-radius);
-            font-weight: bold;
-        }
-
-        /* 日誌區塊 */
-        .log-status-bar {
-            background-color: #222;
-            padding: 10px 15px;
-            border-radius: var(--border-radius);
-            margin-bottom: 15px;
-            font-size: 13px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-        .log-status-item span { color: var(--color-accent); font-weight: bold; }
-
-        .log-console {
-            background-color: #000;
-            border: 1px solid #333;
-            border-radius: var(--border-radius);
-            padding: 15px;
-            height: 280px;
-            overflow-y: auto;
-            font-family: 'Consolas', 'Courier New', monospace;
-            font-size: 13px;
-            line-height: 1.5;
-        }
-
-        .log-entry {
-            color: var(--color-success);
-            margin-bottom: 5px;
-        }
-        .log-entry.warn { color: var(--color-accent); }
-        .log-entry.error { color: var(--color-error); }
-        .log-entry.info { color: var(--text-secondary); }
-
-        /* 標題與說明文字 */
-        .section-title {
-            color: var(--text-primary);
-            font-size: 16px;
-            margin-bottom: 10px;
-            border-left: 3px solid var(--color-action);
-            padding-left: 10px;
-        }
-        
-        .setting-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid #2a2a2a;
+            .instruction-panel.show-modal { bottom: 0; }
+            
+            /* 顯示手機版專用關閉按鈕 */
+            #mobile-close-btn { display: block !important; }
+            
+            /* 隱藏預設提示文字 */
+            #doc-desc { margin-bottom: 5px; }
         }
 
     </style>
 </head>
 <body>
 
-    <div class="window">
-        <!-- 頂部標題列 -->
-        <div class="title-bar">
-            <div class="title">RO 終極主控台</div>
-            <div class="controls">
-                <div class="control-btn minimize">➖</div>
-                <div class="control-btn close">✖</div>
-            </div>
-        </div>
-
-        <!-- 中間區域 -->
-        <div class="main-area">
-            <!-- 左側導航欄 -->
-            <div class="sidebar">
-                <div class="nav-btn active" data-target="tab-login">登入</div>
-                <div class="nav-btn" data-target="tab-main">主程序</div>
-                <div class="nav-btn" data-target="tab-system">系統</div>
-                <div class="nav-btn" data-target="tab-env">環境</div>
-                <div class="nav-btn" data-target="tab-log">日誌</div>
-            </div>
-
-            <!-- 內容區 -->
-            <div class="content-area">
+    <div class="preview-area interactive-target" data-doc="welcome">
+        <div class="phone-frame">
+            <div class="phone-notch"></div>
+            <div class="phone-screen interactive-target" data-doc="welcome">
                 
-                <!-- 【登入】分頁 -->
-                <div id="tab-login" class="tab-pane active">
-                    <div class="sub-menu">
-                        <div class="sub-btn active">帳號</div>
-                        <div class="sub-btn">角色</div>
-                    </div>
-                    
-                    <div class="section-title">帳號清單</div>
-                    <div class="list-group">
-                        <div class="list-item" onclick="toggleCheckbox(this)">
-                            <span class="custom-checkbox checked">☑</span>
-                            <span>Account_001 (主帳號)</span>
-                        </div>
-                        <div class="list-item" onclick="toggleCheckbox(this)">
-                            <span class="custom-checkbox">☐</span>
-                            <span>Account_002 (分身 A)</span>
-                        </div>
-                        <div class="list-item" onclick="toggleCheckbox(this)">
-                            <span class="custom-checkbox">☐</span>
-                            <span>Account_003 (分身 B)</span>
-                        </div>
-                    </div>
-                    
-                    <div class="section-title">目前選擇伺服器</div>
-                    <div class="list-group">
-                        <div class="list-item" style="color: var(--color-accent); justify-content: space-between;">
-                            <span>愛麗絲伺服器 (Alice)</span>
-                            <span>▼</span>
-                        </div>
+                <div id="floating-orb" class="floating-orb interactive-target guide-pulse" data-doc="floating_orb" style="display: none;" title="點擊展開">
+                    <div class="floating-orb-inner">
+                        <div class="floating-orb-core">RO</div>
                     </div>
                 </div>
 
-                <!-- 【主程序】分頁 -->
-                <div id="tab-main" class="tab-pane">
-                    <div class="section-title">主程序模式選擇</div>
-                    <div class="list-group" style="margin-bottom: 25px;">
-                        <div class="list-item" style="color: var(--color-accent); justify-content: space-between;">
-                            <span>模式：每日任務模式</span>
-                            <span>▼</span>
+                <div class="window" id="main-window">
+                    <div class="title-bar">
+                        <div class="title">ROR無人雞</div>
+                        <div style="display: flex; gap: 15px;">
+                            <div class="close-btn interactive-target guide-pulse" id="btn-minimize" data-doc="btn_minimize" style="color: #fff;" title="縮小">➖</div>
+                            <div class="close-btn" style="color: var(--color-error);" title="關閉">✖</div>
                         </div>
                     </div>
 
-                    <div class="accordion">
-                        <div class="accordion-header" onclick="toggleAccordion(this)">
-                            <span>每日挑戰與副本</span>
-                            <span class="accordion-icon">▼</span>
+                    <div class="main-area">
+                        <!-- 左側導航欄 -->
+                        <div class="sidebar">
+                            <div class="nav-btn interactive-target" data-target="tab-login" data-doc="login_subtabs" style="writing-mode: horizontal-tb; text-orientation: mixed; margin-bottom: 10px;">登入</div>
+                            <div class="nav-btn interactive-target active" data-target="tab-main" data-doc="mode">主程序</div>
+                            <div class="nav-btn interactive-target" data-target="tab-system" data-doc="system_restart">系統</div>
+                            <div class="nav-btn interactive-target" data-target="tab-env" data-doc="env_permissions">環境</div>
+                            <div class="nav-btn interactive-target" data-target="tab-log" data-doc="log_status">日誌</div>
                         </div>
-                        <div class="accordion-content">
-                            <div class="list-item" onclick="toggleCheckbox(this)" style="padding-left:0; border:none;">
-                                <span class="custom-checkbox checked">☑</span>
-                                <span>自動委託版任務</span>
+
+                        <!-- 右側內容區 -->
+                        <div class="content-area">
+                            
+                            <!-- =================== 【登入】分頁 =================== -->
+                            <div id="tab-login" class="tab-pane">
+                                <div class="sub-menu interactive-target" data-doc="login_subtabs">
+                                    <div class="sub-btn active" data-sub="sub-acc">帳號</div>
+                                    <div class="sub-btn" data-sub="sub-role">角色</div>
+                                </div>
+                                
+                                <div id="sub-acc" class="sub-pane" style="padding-top: 15px;">
+                                    <div class="section-title">自動導入的帳號清單</div>
+                                    <div class="interactive-target guide-pulse" data-doc="login_accounts" style="background: rgba(0,0,0,0.3); border-radius: 4px; padding: 10px;">
+                                        <div class="setting-row" style="margin: 0; padding: 8px 0; border-bottom: 1px solid #333;">
+                                            <span class="custom-checkbox checked" style="margin-right: 10px;" onclick="toggleChk(this, event)">☑</span>
+                                            <span>user_01@gmail.com</span>
+                                        </div>
+                                        <div class="setting-row" style="margin: 0; padding: 8px 0; border-bottom: 1px solid #333;">
+                                            <span class="custom-checkbox" style="margin-right: 10px;" onclick="toggleChk(this, event)">☐</span>
+                                            <span>user_02@gmail.com</span>
+                                        </div>
+                                        <div style="margin-top: 15px; text-align: center;">
+                                            <button style="background:#1e88e5; color:#fff; border:none; padding:8px 15px; border-radius:6px; font-size:12px; cursor:pointer;">自動導入</button>
+                                            <div style="color:#888; font-size:10px; margin-top:5px;">(導入前請先開啟帳號清單界面)</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="sub-role" class="sub-pane interactive-target" data-doc="login_roles" style="display: none; padding-top: 15px;">
+                                    <div class="section-title">角色執行設定 (點擊伺服器全選)</div>
+                                    <div id="server-list-container" style="background: rgba(0,0,0,0.3); border-radius: 4px; padding: 5px;"></div>
+                                </div>
                             </div>
-                            <div class="list-item" onclick="toggleCheckbox(this)" style="padding-left:0; border:none;">
-                                <span class="custom-checkbox checked">☑</span>
-                                <span>時空夢魘副本</span>
+
+                            <!-- =================== 【主程序】分頁 =================== -->
+                            <div id="tab-main" class="tab-pane active">
+                                <div class="top-controls interactive-target guide-pulse" data-doc="mode">
+                                    <span style="color:var(--color-accent); font-size:12px;">主程序模式：</span>
+                                    <div class="setting-box" style="flex: initial; width: 110px; margin: 0 5px;" onclick="toggleMainMode()">
+                                        <span id="txt_main_mode" style="color:var(--color-accent); font-size:12px;">每日任務模式</span>
+                                        <span style="color:var(--color-accent); font-size:10px;">▼</span>
+                                    </div>
+                                    <button style="background:#1e88e5; color:white; border:none; padding:6px 12px; border-radius:4px; font-size:12px; cursor:pointer;">全部</button>
+                                </div>
+
+                                <!-- 每日任務模式 UI -->
+                                <div id="layout_daily_mode">
+                                    <div class="section-title">每日任務設定 (點擊展開)</div>
+
+                                    <div class="accordion open interactive-target" data-doc="daily_challenge">
+                                        <div class="accordion-header" onclick="toggleAcc(this)">
+                                            <div class="accordion-title-wrap">
+                                                <span class="custom-checkbox checked" onclick="toggleChk(this, event)">☑</span>
+                                                <span>每日挑戰</span>
+                                            </div>
+                                            <span style="color:var(--color-accent); font-size:12px;">▼</span>
+                                        </div>
+                                        <div class="accordion-content">
+                                            <div class="setting-row">
+                                                <span class="custom-checkbox checked" onclick="toggleChk(this, event)" style="margin-right: 8px;">☑</span>
+                                                <span>自動刷新 (優先級由高至低)</span>
+                                            </div>
+                                            <div style="color:var(--color-accent); font-size:11px; margin-bottom: 5px;">每日任務：</div>
+                                            <div style="display:flex; gap:10px; margin-bottom:10px;">
+                                                <div class="setting-box"><span style="font-size:10px;">1: 未選擇</span><span style="color:var(--color-accent); font-size:8px;">▼</span></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="accordion interactive-target" data-doc="board">
+                                        <div class="accordion-header" onclick="toggleAcc(this)">
+                                            <div class="accordion-title-wrap"><span class="custom-checkbox checked" onclick="toggleChk(this, event)">☑</span><span>委託版</span></div>
+                                            <span style="color:var(--color-accent); font-size:12px;">▼</span>
+                                        </div>
+                                        <div class="accordion-content">
+                                            <div class="setting-row">
+                                                <span style="width:70px;">委託種類：</span>
+                                                <div class="setting-box"><span style="font-size:10px; color:var(--color-accent);">全部任務</span><span style="font-size:8px; color:var(--color-accent);">▼</span></div>
+                                            </div>
+                                            <div class="setting-row">
+                                                <span style="width:70px;">戰鬥秒數：</span>
+                                                <div class="stepper"><span class="btn">-</span><span class="val">60</span><span class="btn">+</span></div>
+                                            </div>
+                                            <div style="color:#888; font-size:10px; margin-top:5px;">戰鬥超過上限時，嘗試回面板確認。</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="accordion interactive-target" data-doc="pet">
+                                        <div class="accordion-header" onclick="toggleAcc(this)">
+                                            <div class="accordion-title-wrap"><span class="custom-checkbox checked" onclick="toggleChk(this, event)">☑</span><span>寵物派遣</span></div>
+                                            <span style="color:var(--color-accent); font-size:12px;">▼</span>
+                                        </div>
+                                        <div class="accordion-content">
+                                            <div class="setting-row">
+                                                <span style="width:70px;">活力限制：</span>
+                                                <div class="stepper"><span class="btn">-</span><span class="val" style="width:40px;">7500</span><span class="btn">+</span></div>
+                                            </div>
+                                            <div class="setting-row">
+                                                <span style="width:70px;">委派上限：</span>
+                                                <div class="stepper"><span class="btn">-</span><span class="val">5</span><span class="btn">+</span></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="accordion interactive-target" data-doc="dungeon">
+                                        <div class="accordion-header" onclick="toggleAcc(this)">
+                                            <div class="accordion-title-wrap"><span class="custom-checkbox checked" onclick="toggleChk(this, event)">☑</span><span>地下城</span></div>
+                                            <span style="color:var(--color-accent); font-size:12px;">▼</span>
+                                        </div>
+                                        <div class="accordion-content">
+                                            <div class="setting-row">
+                                                <span style="width:70px;">選擇模式：</span>
+                                                <div class="setting-box"><span style="font-size:10px; color:var(--color-accent);">自動</span><span style="font-size:8px; color:var(--color-accent);">▼</span></div>
+                                            </div>
+                                            <div class="setting-row">
+                                                <span style="width:70px;">等級：</span>
+                                                <div class="setting-box"><span style="font-size:10px; color:var(--color-accent);">Lv.100</span><span style="font-size:8px; color:var(--color-accent);">▼</span></div>
+                                            </div>
+                                            <div class="setting-row">
+                                                <span style="width:70px;">難度：</span>
+                                                <div class="setting-box"><span style="font-size:10px; color:var(--color-accent);">普通難度</span><span style="font-size:8px; color:var(--color-accent);">▼</span></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="accordion interactive-target" data-doc="purchase">
+                                        <div class="accordion-header" onclick="toggleAcc(this)">
+                                            <div class="accordion-title-wrap"><span class="custom-checkbox checked" onclick="toggleChk(this, event)">☑</span><span>商會訂單</span></div>
+                                            <span style="color:var(--color-accent); font-size:12px;">▼</span>
+                                        </div>
+                                        <div class="accordion-content">
+                                            <div class="setting-row">
+                                                <span class="custom-checkbox checked" onclick="toggleChk(this, event)" style="margin-right: 8px;">☑</span><span>至少購買1商品</span>
+                                            </div>
+                                            <div style="color:#aaa; font-size:11px;">自動提交商會物資。若材料不足則會跳過。</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="accordion interactive-target" data-doc="guild">
+                                        <div class="accordion-header" onclick="toggleAcc(this)">
+                                            <div class="accordion-title-wrap"><span class="custom-checkbox checked" onclick="toggleChk(this, event)">☑</span><span>公會訂單</span></div>
+                                            <span style="color:var(--color-accent); font-size:12px;">▼</span>
+                                        </div>
+                                        <div class="accordion-content">
+                                            <div style="color:#aaa; font-size:11px;">自動提交公會物資。若材料不足則會跳過。</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="accordion interactive-target" data-doc="guild_trial">
+                                        <div class="accordion-header" onclick="toggleAcc(this)">
+                                            <div class="accordion-title-wrap"><span class="custom-checkbox" onclick="toggleChk(this, event)">☐</span><span>公會試煉</span></div>
+                                            <span style="color:var(--color-accent); font-size:12px;">▼</span>
+                                        </div>
+                                        <div class="accordion-content">
+                                            <div class="setting-row"><span style="width:70px;">挑戰次數：</span><div class="stepper"><span class="btn">-</span><span class="val">5</span><span class="btn">+</span></div></div>
+                                            <div class="setting-row"><span style="width:70px;">挑戰秒數：</span><div class="stepper"><span class="btn">-</span><span class="val">60</span><span class="btn">+</span></div></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="accordion interactive-target" data-doc="moon">
+                                        <div class="accordion-header" onclick="toggleAcc(this)">
+                                            <div class="accordion-title-wrap"><span class="custom-checkbox checked" onclick="toggleChk(this, event)">☑</span><span>紅月</span></div>
+                                            <span style="color:var(--color-accent); font-size:12px;">▼</span>
+                                        </div>
+                                        <div class="accordion-content">
+                                            <div class="setting-row"><span style="width:70px;">關卡等級：</span><div class="setting-box"><span style="font-size:10px; color:var(--color-accent);">自動</span><span style="font-size:8px; color:var(--color-accent);">▼</span></div></div>
+                                            <div class="setting-row"><span style="width:70px;">領取次數：</span><div class="stepper"><span class="btn">-</span><span class="val">10</span><span class="btn">+</span></div></div>
+                                            <div class="setting-row"><span style="width:70px;">死亡上限：</span><div class="stepper"><span class="btn">-</span><span class="val">3</span><span class="btn">+</span></div></div>
+                                            <div class="setting-row">
+                                                <span class="custom-checkbox" onclick="toggleChk(this, event)" style="margin-right: 4px;">☐</span><span style="margin-right: 15px;">返回主城</span>
+                                                <span class="custom-checkbox checked" onclick="toggleChk(this, event)" style="margin-right: 4px;">☑</span><span>只領取經驗</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="accordion interactive-target" data-doc="warcraft">
+                                        <div class="accordion-header" onclick="toggleAcc(this)">
+                                            <div class="accordion-title-wrap"><span class="custom-checkbox" onclick="toggleChk(this, event)">☐</span><span>獸王爭霸</span></div>
+                                            <span style="color:var(--color-accent); font-size:12px;">▼</span>
+                                        </div>
+                                        <div class="accordion-content">
+                                            <div class="setting-row"><span style="width:70px;">挑戰次數：</span><div class="stepper"><span class="btn">-</span><span class="val">2</span><span class="btn">+</span></div></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="accordion interactive-target" data-doc="rewards">
+                                        <div class="accordion-header" onclick="toggleAcc(this)">
+                                            <div class="accordion-title-wrap"><span class="custom-checkbox checked" onclick="toggleChk(this, event)">☑</span><span>獎勵領取</span></div>
+                                            <span style="color:var(--color-accent); font-size:12px;">▼</span>
+                                        </div>
+                                        <div class="accordion-content">
+                                            <div class="setting-row"><span class="custom-checkbox checked" onclick="toggleChk(this, event)" style="margin-right: 8px;">☑</span><span>信件領取</span></div>
+                                            <div class="setting-row"><span class="custom-checkbox checked" onclick="toggleChk(this, event)" style="margin-right: 8px;">☑</span><span>每日福利</span></div>
+                                            <div class="setting-row"><span class="custom-checkbox checked" onclick="toggleChk(this, event)" style="margin-right: 8px;">☑</span><span>雙人同行</span></div>
+                                            <div class="setting-row"><span class="custom-checkbox checked" onclick="toggleChk(this, event)" style="margin-right: 8px;">☑</span><span>活躍度獎勵</span></div>
+                                            <div class="setting-row"><span class="custom-checkbox checked" onclick="toggleChk(this, event)" style="margin-right: 8px;">☑</span><span>通行證獎勵</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 特殊任務模式 UI -->
+                                <div id="layout_special_mode" style="display: none; padding: 10px; background: #1e1e1e; border-radius: 4px;">
+                                    <div class="section-title">特殊任務設定</div>
+                                    <div class="setting-row interactive-target" data-doc="special_select">
+                                        <span style="width:90px; color:#ddd;">特殊任務種類：</span>
+                                        <div class="setting-box" onclick="toggleSpecialTask()"><span id="txt_special_task" style="font-size:10px; color:var(--color-accent);">主線任務</span><span style="font-size:8px; color:var(--color-accent);">▼</span></div>
+                                    </div>
+
+                                    <div id="layout_main_quest" class="interactive-target" data-doc="main_quest" style="margin-top:10px;">
+                                        <div class="setting-row">
+                                            <span style="width:90px; color:#ddd;">執行時間：</span>
+                                            <div class="stepper"><span class="btn">-</span><span class="val">30</span><span class="btn">+</span></div>
+                                            <span style="color:#aaa; margin-left:6px;">分鐘 (0不限)</span>
+                                        </div>
+                                        <div style="color:#aaa; font-size:11px;">系統將依序執行主線章節。<br><span style="color:#888;">提示：此模式下將自動忽略日常任務。</span></div>
+                                    </div>
+
+                                    <div id="layout_treasure_hunt" class="interactive-target" data-doc="treasure_hunt" style="display: none; margin-top:10px;">
+                                        <div class="setting-row">
+                                            <span style="width:90px; color:#ddd;">任務關卡：</span>
+                                            <div class="setting-box"><span style="font-size:10px; color:var(--color-accent);">Level 9</span><span style="font-size:8px; color:var(--color-accent);">▼</span></div>
+                                        </div>
+                                        <div class="setting-row">
+                                            <span style="width:90px; color:#ddd;">執行上限次數：</span>
+                                            <div class="stepper"><span class="btn">-</span><span class="val">5</span><span class="btn">+</span></div>
+                                            <span style="color:#aaa; margin-left:6px;">次 (0不限)</span>
+                                        </div>
+                                        <div class="setting-row">
+                                            <span style="width:90px; color:#ddd;">重啟設定：</span>
+                                            <div class="stepper"><span class="btn">-</span><span class="val">5</span><span class="btn">+</span></div>
+                                            <span style="color:#aaa; margin-left:6px;">次重啟</span>
+                                        </div>
+                                        <div class="setting-row">
+                                            <span class="custom-checkbox" onclick="toggleChk(this, event)" style="margin-right: 8px;">☐</span><span>結束時返回主城</span>
+                                        </div>
+                                        <div style="color:#aaa; font-size:11px;">支持自動使用羅盤與六分儀進入秘境戰鬥。</div>
+                                    </div>
+                                </div>
+
+                                <!-- 跟隨模式 UI -->
+                                <div id="layout_follow_mode" class="interactive-target" data-doc="follow_mode" style="display: none; padding: 10px; background: #1e1e1e; border-radius: 4px;">
+                                    <div class="section-title">跟隨模式設定 (開發中)</div>
+                                    <div style="color:#aaa; font-size:11px;">即將推出跟隨隊長、自動掛機與協助戰鬥功能...</div>
+                                </div>
                             </div>
-                            <div class="list-item" onclick="toggleCheckbox(this)" style="padding-left:0; border:none;">
-                                <span class="custom-checkbox">☐</span>
-                                <span>無限塔掃蕩</span>
+
+                            <!-- =================== 【系統】分頁 =================== -->
+                            <div id="tab-system" class="tab-pane">
+                                <div class="section-title">系統核心設定</div>
+                                <div class="interactive-target guide-pulse" data-doc="system_restart">
+                                    <div class="setting-row" style="justify-content: space-between;">
+                                        <span style="color: #ddd;">強制重啟遊戲</span>
+                                        <div class="stepper">
+                                            <span class="btn">-</span><span class="val">0</span><span class="btn">+</span>
+                                        </div>
+                                    </div>
+                                    <div style="color:#888; font-size:10px; margin-bottom:15px;">每執行 N 個角色後重啟遊戲一次 (0 表示永不執行)</div>
+                                </div>
+                                
+                                <div style="height: 1px; background: #333; margin-bottom: 15px;"></div>
+                                
+                                <div class="section-title">復原功能細節</div>
+                                <div class="interactive-target" data-doc="system_resume">
+                                    <div class="setting-row">
+                                        <span class="custom-checkbox checked" onclick="toggleChk(this, event)" style="margin-right: 8px;">☑</span>
+                                        <span style="font-size: 11px;">復原時若在主畫面，跳過切換直接執行任務</span>
+                                    </div>
+                                    <div style="color:#888; font-size:10px;">勾選：當執行復原時若偵測到已在主畫面，將不再執行換帳號或自動換角，直接從上次未完成的任務繼續。</div>
+                                </div>
                             </div>
+
+                            <!-- =================== 【環境】分頁 =================== -->
+                            <div id="tab-env" class="tab-pane">
+                                <div class="section-title">環境設置</div>
+                                <div class="interactive-target guide-pulse" data-doc="env_permissions">
+                                    <button class="setting-btn" style="background:#4CAF50;">📸 螢幕截圖權限</button>
+                                    <button class="setting-btn" style="background:#2196F3;">♿ 無障礙服務設定</button>
+                                    <button class="setting-btn" style="background:#FF9800;">🔋 忽略電池優化</button>
+                                    <button class="setting-btn" style="background:#9C27B0;">📁 所有檔案存取權限</button>
+                                    <button class="setting-btn" style="background:#607D8B;">🔔 通知權限設定</button>
+                                </div>
+
+                                <div style="height: 1px; background: #333; margin: 15px 0;"></div>
+                                
+                                <div class="section-title">線上更新 (GitHub)</div>
+                                <div class="setting-row interactive-target" data-doc="env_update" style="justify-content: space-between;">
+                                    <span style="color:#aaa;">目前版本: 2.1.000</span>
+                                    <button style="background:#1e88e5; color:white; border:none; padding:8px 12px; border-radius:6px; font-size:10px; cursor:pointer;">檢查更新</button>
+                                </div>
+                            </div>
+
+                            <!-- =================== 【日誌】分頁 =================== -->
+                            <div id="tab-log" class="tab-pane interactive-target guide-pulse" data-doc="log_status" style="padding: 10px; background: #111;">
+                                <div style="margin-bottom: 10px;">
+                                    <div class="setting-row" style="margin-bottom:4px;">
+                                        <span style="color:var(--color-accent); font-weight:bold; width:70px;">目標帳號：</span>
+                                        <span>user_01@gmail.com</span>
+                                    </div>
+                                    <div class="setting-row" style="margin-bottom:4px;">
+                                        <span style="color:var(--color-accent); font-weight:bold; width:70px;">目標角色：</span>
+                                        <span>金玉滿堂 - 角1</span>
+                                    </div>
+                                    <div class="setting-row" style="margin-bottom:0;">
+                                        <span style="color:var(--color-accent); font-weight:bold; width:70px;">目前任務：</span>
+                                        <span style="color:#00bfff;">每日挑戰準備中...</span>
+                                    </div>
+                                </div>
+                                <div style="height: 1px; background: #333; margin-bottom: 8px;"></div>
+                                <div style="color:#00FF00; font-size:11px; font-family: monospace; line-height: 1.5; height: 180px; overflow-y: auto;">
+                                    [日誌] UI 面板初始化完成。<br>
+                                    [日誌] 螢幕真實尺寸: 1920x1080<br>
+                                    [日誌] 目前版本已是最新版本 (2.1.000)<br>
+                                    [日誌] 等待使用者操作...<br>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
-
-                    <div class="accordion">
-                        <div class="accordion-header" onclick="toggleAccordion(this)">
-                            <span>掛機設定</span>
-                            <span class="accordion-icon">▼</span>
-                        </div>
-                        <div class="accordion-content">
-                            <div class="list-item" onclick="toggleCheckbox(this)" style="padding-left:0; border:none;">
-                                <span class="custom-checkbox checked">☑</span>
-                                <span>定點自動鎖敵</span>
-                            </div>
-                            <div class="list-item" onclick="toggleCheckbox(this)" style="padding-left:0; border:none;">
-                                <span class="custom-checkbox">☐</span>
-                                <span>死亡自動回城重跑</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 【系統】分頁 -->
-                <div id="tab-system" class="tab-pane">
-                    <div class="section-title">系統延遲與效能設定</div>
                     
-                    <div class="setting-row">
-                        <div>
-                            <div style="color: var(--text-primary); margin-bottom: 4px;">點擊延遲 (毫秒)</div>
-                            <div style="color: var(--text-muted); font-size: 12px;">增加延遲可提高穩定性</div>
-                        </div>
-                        <div class="number-adjuster">
-                            <button class="adj-btn" onclick="adjustValue('delayInput', -50)">-</button>
-                            <input type="text" id="delayInput" class="adj-input" value="150" readonly>
-                            <button class="adj-btn" onclick="adjustValue('delayInput', 50)">+</button>
-                        </div>
-                    </div>
-
-                    <div class="setting-row">
-                        <div>
-                            <div style="color: var(--text-primary); margin-bottom: 4px;">找圖容錯率 (%)</div>
-                            <div style="color: var(--text-muted); font-size: 12px;">數值越低要求越精確</div>
-                        </div>
-                        <div class="number-adjuster">
-                            <button class="adj-btn" onclick="adjustValue('toleranceInput', -5)">-</button>
-                            <input type="text" id="toleranceInput" class="adj-input" value="85" readonly>
-                            <button class="adj-btn" onclick="adjustValue('toleranceInput', 5)">+</button>
-                        </div>
-                    </div>
-                    
-                    <div class="setting-row" onclick="toggleCheckbox(this.querySelector('.custom-checkbox').parentElement)" style="cursor: pointer; border-bottom: none;">
-                        <div>
-                            <div style="color: var(--text-primary); margin-bottom: 4px;">啟用除錯模式</div>
-                            <div style="color: var(--text-muted); font-size: 12px;">將會在畫面上繪製點擊位置與範圍</div>
-                        </div>
-                        <div>
-                            <span class="custom-checkbox">☐</span>
-                        </div>
+                    <!-- 底部控制列 -->
+                    <div class="bottom-bar">
+                        <button class="bottom-btn btn-recover interactive-target guide-pulse" data-doc="btn_recover">
+                            <span style="font-size: 16px;">🔄</span> 復原
+                        </button>
+                        <button id="btn-execute-toggle" class="bottom-btn btn-execute interactive-target guide-pulse" data-doc="btn_execute">
+                            <span id="icon-execute">▶</span> <span id="text-execute">執行</span>
+                        </button>
+                        <button class="bottom-btn btn-stop interactive-target guide-pulse" data-doc="btn_stop">
+                            <span style="font-size: 12px;">⛔</span> 停止
+                        </button>
                     </div>
                 </div>
-
-                <!-- 【環境】分頁 -->
-                <div id="tab-env" class="tab-pane">
-                    <div class="section-title">裝置環境檢測</div>
-                    <div style="background: #222; padding: 15px; border-radius: var(--border-radius); margin-bottom: 15px;">
-                        <div style="margin-bottom: 10px; color: var(--color-success);">● 無障礙服務：已啟用</div>
-                        <div style="margin-bottom: 10px; color: var(--color-success);">● 懸浮窗權限：已授權</div>
-                        <div style="color: var(--text-secondary);">● 解析度：1920 x 1080 (DPI 480)</div>
-                    </div>
-
-                    <div class="section-title">進階環境變數</div>
-                    <div class="setting-row">
-                        <div>
-                            <div style="color: var(--text-primary); margin-bottom: 4px;">重啟模擬器逾時 (秒)</div>
-                        </div>
-                        <div class="number-adjuster">
-                            <button class="adj-btn" onclick="adjustValue('timeoutInput', -10)">-</button>
-                            <input type="text" id="timeoutInput" class="adj-input" value="120" readonly>
-                            <button class="adj-btn" onclick="adjustValue('timeoutInput', 10)">+</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 【日誌】分頁 -->
-                <div id="tab-log" class="tab-pane">
-                    <div class="log-status-bar">
-                        <div class="log-status-item">目標帳號：<span>Account_001</span></div>
-                        <div class="log-status-item">目標角色：<span>遊俠 (Slot 1)</span></div>
-                        <div class="log-status-item">目前任務：<span>主程序準備中...</span></div>
-                    </div>
-                    
-                    <div class="log-console" id="logConsole">
-                        <div class="log-entry info">[系統] RO 終極主控台 v2.1.0 啟動成功。</div>
-                        <div class="log-entry info">[環境] 正在檢查解析度... 匹配 1920x1080。</div>
-                        <div class="log-entry info">[環境] 檢查無障礙服務... 正常。</div>
-                        <div class="log-entry warn">[提示] 尚未啟動主程序，請點擊下方「執行」按鈕開始。</div>
-                        <div class="log-entry">[日誌] 初始化中...</div>
-                    </div>
-                </div>
-
             </div>
-        </div>
-
-        <!-- 底部控制列 -->
-        <div class="bottom-bar">
-            <button class="bottom-btn btn-recover">
-                <span style="font-size: 18px;">🔄</span> 復原
-            </button>
-            <button class="bottom-btn btn-execute" onclick="addLog()">
-                <span style="font-size: 14px;">▶</span> 執行
-            </button>
-            <button class="bottom-btn btn-stop" onclick="addStopLog()">
-                <span style="font-size: 14px;">⛔</span> 停止
-            </button>
         </div>
     </div>
 
+    <!-- 右側說明區 -->
+    <div class="instruction-panel" id="instruction-panel">
+        <div id="mobile-close-btn" style="display: none; position: absolute; top: 15px; right: 25px; font-size: 24px; color: #aaa; cursor: pointer;">✖</div>
+        <div id="doc-title" class="panel-header">歡迎使用互動式說明書</div>
+        <div id="doc-desc" class="panel-desc">
+            請點擊或將滑鼠移至左側介面的「任務區塊」或「按鈕」上，這裡將會為您顯示詳細的功能解說與設定建議！<br><br>
+            <i>手機版提示：點選畫面中的任何選項，說明面板就會自動彈出！</i>
+        </div>
+        <div id="doc-alert" class="panel-alert" style="display:none;"></div>
+    </div>
+
     <script>
-        // 側邊欄切換邏輯
-        const navBtns = document.querySelectorAll('.nav-btn');
+        const docs = {
+            'welcome': {
+                title: '歡迎使用互動式說明書',
+                desc: '請點擊或將滑鼠移至左側介面的「任務區塊」或「按鈕」上，這裡將會為您顯示詳細的功能解說與設定建議！<br><br><i>手機版提示：點選畫面中的任何選項，說明面板就會自動彈出！</i><br><br><b>💡 畫面提示：</b><br>您目前看到的背景圖，就是腳本日誌中常常會輸出的尋找「<b>主畫面</b>」。系統會透過辨識左下角旋轉畫面的按鈕來確認是否已經回到待命狀態。'
+            },
+            'mode': {
+                title: '主程序模式選擇',
+                desc: '點擊以切換整體腳本的運作核心。支援三種模式：<br><br>1. <b>每日任務模式</b>：執行常規的日常、公會、商會等打卡任務。<br>2. <b>特殊任務模式</b>：執行一次性或活動型任務（主線/尋寶）。<br>3. <b>跟隨模式</b>：掛機輔助模式（開發中）。',
+                alert: '切換模式後，下方的設定介面會跟著切換為對應的專屬設定。'
+            },
+            // --- 每日任務 ---
+            'daily_challenge': {
+                title: '每日挑戰 (Daily Challenge)',
+                desc: '自動刷新並領取"每日挑戰"的獎勵。<br><br><b>自動刷新功能：</b><br>您可以設定不想要的任務優先級。若當前出現想刷新的任務，腳本會自動刷新。'
+            },
+            'board': {
+                title: '委託版 (Board)',
+                desc: '自動前往委託看板接取並執行委託。<br><br><b>委託種類：</b><br>可以選擇完成所有任務，或僅限跑腿任務(排除戰鬥任務)。<br><br><b>戰鬥秒數：</b><br>控制腳本在打怪狀態的停留時間。',
+                alert: '戰鬥狀態超過設定上限時，腳本才會主動回到面板確認進度；此任務耗時較長，要避免無意義的反覆刷面板。'
+            },
+            'pet': {
+                title: '寵物派遣 (Pet Dispatch)',
+                desc: '自動執行派遣任務並領取獎勵。<br><br><b>活力限制：</b><br>當您的活力大於設定值時，才會觸發領取與重新委派；避免活力不足導致設定被刪除。<br><br><b>委派上限：</b><br>限制腳本每次操作能委派的最大次數。'
+            },
+            'dungeon': {
+                title: '地下城 (Dungeon)',
+                desc: '自動掃盪地下城副本。<br><br><b>自動模式：</b><br>腳本會自動偵測您目前角色已解鎖的「最高難度」，並以此作為目標進行挑戰。<br><br><b>手動模式：</b><br>您也可以手動指定特定等級與難度。'
+            },
+            'purchase': {
+                title: '商會訂單 (Purchase)',
+                desc: '自動提交商會訂單。若材料不足會自動購買CP值最高的選項。<br><br><b>至少購買1商品：</b><br>啟用後若身上物資充足無須購買，仍會強制購買一個價格最低的道具，用以完成活躍度購買任務。'
+            },
+            'guild': {
+                title: '公會訂單 (Guild)',
+                desc: '自動提交公會物資以獲取公會貢獻。'
+            },
+            'guild_trial': {
+                title: '公會試煉 (Guild Trial)',
+                desc: '自動進入公會領地參與公會試煉挑戰。<br><br>您可以自定義挑戰次數以及每次挑戰的戰鬥秒數。上限90秒，避免時間到觸發即死機制。'
+            },
+            'moon': {
+                title: '紅月入侵 (Blood Moon)',
+                desc: '自動完成紅月任務，並可在結束任務時，返回主城避免意外死亡。<br><br>1. <b>關卡等級</b>：自動會選擇已解鎖的最高等級；手動則可指定完成低等級紅月。<br>2. <b>死亡上限</b>：超過該死亡次數後腳本將自動跳過不打，避免無限死。<br>3. <b>只領取經驗</b>：不強制領取4~23次的ZENY與活力藥水。如果死亡且已領完前三箱經驗獎勵，就退出任務。'
+            },
+            'warcraft': {
+                title: '獸王爭霸 (Warcraft)',
+                desc: '自動參與獸王爭霸活動，打王賺積分。<br>您可以設定預期要參與的次數。'
+            },
+            'rewards': {
+                title: '獎勵領取整合 (Rewards)',
+                desc: '包含所有登入或達成條件後的「紅點消除」與領獎動作。<br><br>支援：信箱一鍵領取、每日福利簽到、雙人同行獎勵、活躍度寶箱、通行證解鎖。'
+            },
+            // --- 特殊任務 ---
+            'special_select': {
+                title: '特殊任務種類切換',
+                desc: '在此切換您要在「特殊任務模式」下執行的腳本。目前支援「主線任務」與「尋寶任務(秘境)」。'
+            },
+            'main_quest': {
+                title: '主線任務 (Main Quest)',
+                desc: '系統將會依序自動尋路並執行主線任務章節、過場動畫與戰鬥。<br><br><b>執行時間：</b>限制該次主線推進的總時長。若設定 30 分鐘，腳本會在 30 分鐘後暫停主線任務。設為 0 表示永不停止直到卡等。'
+            },
+            'treasure_hunt': {
+                title: '尋寶任務 / 秘境 (Treasure Hunt)',
+                desc: '自動使用羅盤與六分儀探索大世界，進入秘境尋找寶藏。<br><br><b>任務關卡：</b> 指定探索的區域（如：普隆德拉、古城等）。<br><b>執行上限次數：</b> 限制一次挖寶的最大張數。<br><b>重啟設定：</b> 每挖滿一定次數後重啟遊戲防閃退。'
+            },
+            'follow_mode': {
+                title: '跟隨模式 (Follow Mode)',
+                desc: '專為多開玩家與帶小號設計的功能。<br>目前開發中，預計將提供自動跟隨隊長、協助攻擊、自動復活與補血等輔助功能。'
+            },
+            // --- Login, Sys, Env... ---
+            'login_subtabs': {
+                title: '登入切換',
+                desc: '在「帳號」與「角色」之間切換管理。<br>您可以在此指定要掛機的 Google 帳號清單，以及各伺服器底下的角色。'
+            },
+            'login_accounts': {
+                title: '自動導入帳號',
+                desc: '透過腳本自動掃描 Android 系統內已登入的 Google 帳號並匯入清單。<br><br>打勾的帳號將會被加入自動切換的排程中。<br><br><b>請注意：</b><br>本系統導入時，需先將畫面跳轉到帳號清單頁面。導入前請確認你看的到帳號清單的最上面一筆數據。'
+            },
+            'login_roles': {
+                title: '角色執行設定',
+                desc: '設定每個伺服器底下要執行的角色。<br><br><b>功能特點：</b><br>1. 直接點選左側「伺服器名稱」，可快速全選/取消該伺服器的 3 個角色。<br>2. 右側的 ☑角1, ☑角2, ☑角3 代表該帳號在該伺服器的第 1, 2, 3 個角色欄位。<br>3. 切換帳號時，程式會依照這裡的設定遍歷並登入角色。'
+            },
+            'system_restart': {
+                title: '強制重啟遊戲',
+                desc: '為了避免長時間掛機導致記憶體溢出或閃退，您可以設定每執行 N 個角色後，腳本自動關閉並重新啟動遊戲 APP。',
+                alert: '設定為 0 表示永不執行強制重啟。'
+            },
+            'system_resume': {
+                title: '復原功能細節',
+                desc: '當腳本因為意外中斷，您點擊了「🔄 復原」按鈕時的行為設定。<br><br>若勾選此選項，且遊戲畫面正處於主畫面中，腳本將智慧跳過登入與選角流程，直接從上一次記錄的任務點繼續執行，大幅節省時間。'
+            },
+            'env_permissions': {
+                title: '系統權限檢測',
+                desc: '腳本執行所必需的 Android 系統權限。<br><br>若有缺漏，您可以直接點擊按鈕跳轉至系統設定頁面進行授權。其中「無障礙服務」與「螢幕截圖」為核心必要權限。'
+            },
+            'env_update': {
+                title: '線上更新 (OTA Update)',
+                desc: '腳本內建的 OTA 更新系統。點擊後會連線至 GitHub 檢查是否有最新版本的釋出，若有則會自動下載覆蓋，免去手動覆蓋腳本的麻煩。'
+            },
+            'log_status': {
+                title: '執行狀態監控 (Log Status)',
+                desc: '即時追蹤腳本的運作進度。<br><br><b>目標帳號與角色：</b><br>顯示目前正在掛機的 Google 帳號與指定的伺服器角色。<br><br><b>目前任務：</b><br>顯示當前正在執行的主程序或子任務名稱。<br><br><b>即時輸出日誌：</b><br>下方的終端機視窗會實時回報腳本的操作狀態（例如：成功接取任務、戰鬥剩餘秒數、正在切換帳號等）。當腳本卡住或發生異常時，這裡是最佳的除錯參考依據。'
+            },
+            // --- 視窗控制 ---
+            'btn_minimize': {
+                title: '➖ 縮小懸浮窗',
+                desc: '點選此鈕縮小懸浮框。<br><br><b>排版建議：</b><br>建議將懸浮球放置在畫面的「右上角」（人物頭像右上方），以免屏蔽重要的遊戲畫面或點擊區域。'
+            },
+            'floating_orb': {
+                title: 'RO 懸浮球',
+                desc: '點擊懸浮球即可重新展開主控台面板。<br><br><b>安全機制：</b><br>為了避免誤觸或干擾，當您<b>展開懸浮框時，會自動暫停腳本的執行</b>。當您設定完畢或再次縮小懸浮窗後，腳本才會繼續運作。<br><br><b>邊框顏色提示：</b><br>您可以透過懸浮球的外框顏色快速辨識腳本狀態：<br>🟩 <b>綠邊框</b>：腳本正常運作中。<br>🟥 <b>紅邊框</b>：腳本已停止或發生異常。<br>🟨 <b>黃邊框</b>：腳本暫停中或等待操作。<br>⬜ <b>白邊框</b>：初始化完成，待機中。'
+            },
+            // --- 底部控制按鈕 ---
+            'btn_recover': {
+                title: '🔄 復原 (Recover)',
+                desc: '當腳本因為遊戲閃退、卡死或手動中斷時使用。<br><br>系統會自動讀取上一次中斷時的進度存檔，並從斷點處繼續執行，跳過已經完成的日常任務與已掛過機的角色。',
+                alert: '若您搭配了「系統」分頁裡的復原細節設定，在主畫面點擊復原時可進一步省略登入與選角的過場時間。'
+            },
+            'btn_execute': {
+                title: '▶ 執行 (Execute)',
+                desc: '儲存所有設定，並正式開始執行腳本。<br><br>系統會清除舊的執行紀錄，從頭開始依照您設定的帳號清單與伺服器名單依序登入執行。'
+            },
+            'btn_pause': {
+                title: '⏸ 暫停 (Pause)',
+                desc: '暫時中止腳本的當前動作。<br><br>這會讓腳本停留在目前的畫面並暫停所有操作與計時器，直到您再次點擊「繼續執行」按鈕接續未完成的工作。'
+            },
+            'btn_stop': {
+                title: '⛔ 停止 (Stop)',
+                desc: '立即中止腳本的一切動作。<br><br>這會強制關閉所有運作中的後台線程並記錄目前的斷點進度，若後續需要繼續，可點擊「復原」接續進行。'
+            }
+        };
+
+        const titleEl = document.getElementById('doc-title');
+        const descEl = document.getElementById('doc-desc');
+        const alertEl = document.getElementById('doc-alert');
+        
+        function removePulse() {
+            document.querySelectorAll('.guide-pulse').forEach(el => el.classList.remove('guide-pulse'));
+        }
+
+        const instructionPanel = document.getElementById('instruction-panel');
+
+        function updateDocContent(docKey) {
+            if (docs[docKey]) {
+                removePulse();
+                titleEl.innerHTML = docs[docKey].title;
+                descEl.innerHTML = docs[docKey].desc;
+                if (docs[docKey].alert) {
+                    alertEl.style.display = 'block';
+                    alertEl.innerHTML = '<b>[提示]</b> ' + docs[docKey].alert;
+                } else {
+                    alertEl.style.display = 'none';
+                }
+            }
+        }
+
+        document.querySelectorAll('.interactive-target').forEach(el => {
+            // 桌機版：滑鼠移入時切換
+            el.addEventListener('mouseenter', () => {
+                if (window.innerWidth > 768) {
+                    updateDocContent(el.getAttribute('data-doc'));
+                }
+            });
+            // 手機版：點擊時切換並彈出面板
+            el.addEventListener('click', (e) => {
+                if (window.innerWidth <= 768) {
+                    updateDocContent(el.getAttribute('data-doc'));
+                    instructionPanel.classList.add('show-modal');
+                }
+            });
+        });
+
+        // 手機版關閉按鈕
+        document.getElementById('mobile-close-btn').addEventListener('click', () => {
+            instructionPanel.classList.remove('show-modal');
+        });
+
+        // 執行按鈕切換邏輯
+        let isExecuting = false;
+        const btnExecuteToggle = document.getElementById('btn-execute-toggle');
+        const iconExecute = document.getElementById('icon-execute');
+        const textExecute = document.getElementById('text-execute');
+
+        btnExecuteToggle.addEventListener('click', () => {
+            isExecuting = !isExecuting;
+            if (isExecuting) {
+                iconExecute.innerText = '⏸';
+                textExecute.innerText = '暫停';
+                btnExecuteToggle.setAttribute('data-doc', 'btn_pause');
+                btnExecuteToggle.style.backgroundColor = '#FF9800'; // 橘黃色代表暫停
+                btnExecuteToggle.style.color = '#fff';
+            } else {
+                iconExecute.innerText = '▶';
+                textExecute.innerText = '執行';
+                btnExecuteToggle.setAttribute('data-doc', 'btn_execute');
+                btnExecuteToggle.style.backgroundColor = 'var(--color-accent)';
+                btnExecuteToggle.style.color = '#000';
+            }
+            
+            // 點擊後立刻更新說明內容
+            updateDocContent(btnExecuteToggle.getAttribute('data-doc'));
+            if (window.innerWidth <= 768) {
+                instructionPanel.classList.add('show-modal');
+            }
+        });
+
+        window.toggleAcc = function(header) {
+            const acc = header.parentElement;
+            acc.classList.toggle('open');
+        };
+
+        window.toggleChk = function(span, e) {
+            e.stopPropagation(); 
+            if (span.classList.contains('checked')) {
+                span.classList.remove('checked');
+                span.innerText = '☐';
+            } else {
+                span.classList.add('checked');
+                span.innerText = '☑';
+            }
+        };
+
+        let modeIndex = 0;
+        const modes = ['每日任務模式', '特殊任務模式', '跟隨模式'];
+        window.toggleMainMode = function() {
+            modeIndex = (modeIndex + 1) % modes.length;
+            document.getElementById('txt_main_mode').innerText = modes[modeIndex];
+            
+            document.getElementById('layout_daily_mode').style.display = (modeIndex === 0) ? 'block' : 'none';
+            document.getElementById('layout_special_mode').style.display = (modeIndex === 1) ? 'block' : 'none';
+            document.getElementById('layout_follow_mode').style.display = (modeIndex === 2) ? 'block' : 'none';
+        };
+
+        let specialTaskIndex = 0;
+        const specialTasks = ['主線任務', '尋寶任務'];
+        window.toggleSpecialTask = function() {
+            specialTaskIndex = (specialTaskIndex + 1) % specialTasks.length;
+            document.getElementById('txt_special_task').innerText = specialTasks[specialTaskIndex];
+            
+            document.getElementById('layout_main_quest').style.display = (specialTaskIndex === 0) ? 'block' : 'none';
+            document.getElementById('layout_treasure_hunt').style.display = (specialTaskIndex === 1) ? 'block' : 'none';
+        };
+
+        const windowEl = document.getElementById('main-window');
+        const orbEl = document.getElementById('floating-orb');
+        const minimizeBtn = document.getElementById('btn-minimize');
+
+        minimizeBtn.addEventListener('click', () => {
+            windowEl.classList.add('minimized');
+            setTimeout(() => {
+                windowEl.style.display = 'none';
+                orbEl.style.display = 'flex';
+            }, 300);
+        });
+
+        orbEl.addEventListener('click', () => {
+            orbEl.style.display = 'none';
+            windowEl.style.display = 'flex';
+            void windowEl.offsetWidth;
+            windowEl.classList.remove('minimized');
+        });
+
+        const navBtns = document.querySelectorAll('.sidebar .nav-btn');
         const tabPanes = document.querySelectorAll('.tab-pane');
 
         navBtns.forEach(btn => {
             btn.addEventListener('click', () => {
-                // 移除所有 active
                 navBtns.forEach(b => b.classList.remove('active'));
                 tabPanes.forEach(p => p.classList.remove('active'));
                 
-                // 設定當前 active
                 btn.classList.add('active');
                 const targetId = btn.getAttribute('data-target');
                 document.getElementById(targetId).classList.add('active');
             });
         });
 
-        // 子選單切換邏輯
         const subBtns = document.querySelectorAll('.sub-btn');
         subBtns.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const parent = e.target.parentElement;
-                parent.querySelectorAll('.sub-btn').forEach(b => b.classList.remove('active'));
-                e.target.classList.add('active');
+            btn.addEventListener('click', () => {
+                subBtns.forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.sub-pane').forEach(p => p.style.display = 'none');
+                
+                btn.classList.add('active');
+                const targetId = btn.getAttribute('data-sub');
+                document.getElementById(targetId).style.display = 'block';
             });
         });
 
-        // 自訂 Checkbox 切換邏輯
-        function toggleCheckbox(element) {
-            let checkbox;
-            // 如果點擊的是 list-item 本身，找裡面的 checkbox
-            if(element.classList.contains('list-item') || element.classList.contains('setting-row')) {
-                checkbox = element.querySelector('.custom-checkbox');
-            } else if(element.classList.contains('custom-checkbox')) {
-                checkbox = element;
+        // Generate Server List
+        const SERVER_NAMES = [
+            "金玉滿堂", "傾城之戰", "皇后大道", "普隆德拉", "雲之彼端", "世界之樹",
+            "群星之海", "初心相擁", "星夢奇緣", "諸神詠嘆", "重生之境", "南門之約"
+        ];
+        
+        const serverListContainer = document.getElementById('server-list-container');
+        let serverHTML = '';
+        SERVER_NAMES.forEach((name, index) => {
+            serverHTML += `
+                <div style="display: flex; align-items: center; padding: 8px 10px; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 12px; transition: background 0.2s;">
+                    <div style="width: 75px; color: #ddd; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: bold;" onclick="toggleRowChars(${index})" title="點擊全選/取消">${name}</div>
+                    <div style="display: flex; flex: 1; justify-content: space-around;">
+                        <div style="display: flex; align-items: center; cursor: pointer; transition: transform 0.1s;" onmousedown="this.style.transform='scale(0.9)'" onmouseup="this.style.transform='scale(1)'" onclick="toggleIcon(this)">
+                            <span class="char-icon-${index} custom-checkbox checked" style="font-size: 16px;">☑</span><span style="margin-left: 2px; color: #fff;">角1</span>
+                        </div>
+                        <div style="display: flex; align-items: center; cursor: pointer; transition: transform 0.1s;" onmousedown="this.style.transform='scale(0.9)'" onmouseup="this.style.transform='scale(1)'" onclick="toggleIcon(this)">
+                            <span class="char-icon-${index} custom-checkbox checked" style="font-size: 16px;">☑</span><span style="margin-left: 2px; color: #fff;">角2</span>
+                        </div>
+                        <div style="display: flex; align-items: center; cursor: pointer; transition: transform 0.1s;" onmousedown="this.style.transform='scale(0.9)'" onmouseup="this.style.transform='scale(1)'" onclick="toggleIcon(this)">
+                            <span class="char-icon-${index} custom-checkbox checked" style="font-size: 16px;">☑</span><span style="margin-left: 2px; color: #fff;">角3</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        serverListContainer.innerHTML = serverHTML;
+
+        window.toggleIcon = function(el) {
+            const span = el.querySelector('.custom-checkbox');
+            if (span.classList.contains('checked')) {
+                span.classList.remove('checked');
+                span.innerText = '☐';
+            } else {
+                span.classList.add('checked');
+                span.innerText = '☑';
             }
+        };
 
-            if (checkbox) {
-                if (checkbox.classList.contains('checked')) {
-                    checkbox.classList.remove('checked');
-                    checkbox.innerHTML = '☐';
-                } else {
-                    checkbox.classList.add('checked');
-                    checkbox.innerHTML = '☑';
-                }
-            }
-        }
+        window.toggleRowChars = function(index) {
+            const icons = document.querySelectorAll('.char-icon-' + index);
+            let hasUnchecked = false;
+            icons.forEach(span => { if (!span.classList.contains('checked')) hasUnchecked = true; });
+            icons.forEach(span => {
+                if (hasUnchecked) { span.classList.add('checked'); span.innerText = '☑'; } 
+                else { span.classList.remove('checked'); span.innerText = '☐'; }
+            });
+        };
 
-        // 收合面板 (Accordion) 邏輯
-        function toggleAccordion(headerElement) {
-            const accordionElement = headerElement.parentElement;
-            accordionElement.classList.toggle('open');
-        }
-
-        // 數值調整器邏輯
-        function adjustValue(inputId, delta) {
-            const input = document.getElementById(inputId);
-            let val = parseInt(input.value);
-            if (!isNaN(val)) {
-                val += delta;
-                if(val < 0) val = 0; // 避免負數
-                input.value = val;
-            }
-        }
-
-        // 模擬日誌寫入
-        function addLog() {
-            const consoleEl = document.getElementById('logConsole');
-            const newLog = document.createElement('div');
-            newLog.className = 'log-entry';
-            const time = new Date().toLocaleTimeString('zh-TW', { hour12: false });
-            newLog.innerHTML = `[${time}] 執行中... 開始尋找目標像素。`;
-            consoleEl.appendChild(newLog);
-            consoleEl.scrollTop = consoleEl.scrollHeight;
-        }
-
-        function addStopLog() {
-            const consoleEl = document.getElementById('logConsole');
-            const newLog = document.createElement('div');
-            newLog.className = 'log-entry error';
-            const time = new Date().toLocaleTimeString('zh-TW', { hour12: false });
-            newLog.innerHTML = `[${time}] [警告] 使用者已強制停止程序。`;
-            consoleEl.appendChild(newLog);
-            consoleEl.scrollTop = consoleEl.scrollHeight;
-        }
     </script>
 </body>
 </html>
