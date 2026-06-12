@@ -217,13 +217,13 @@
 
         /* ================= 手機版響應式設計 ================= */
         @media (max-width: 768px) {
-            body { flex-direction: column; }
-            .preview-area { flex: none; height: 100vh; width: 100vw; padding: 10px; box-sizing: border-box; }
+            body { flex-direction: column; overflow-y: auto; height: auto; min-height: 100dvh; }
+            .preview-area { flex: none; height: auto; min-height: 100dvh; width: 100%; padding: 20px 10px 80px 10px; box-sizing: border-box; align-items: flex-start; }
             
-            /* 在手機上自動縮放外框 */
-            .phone-frame { width: 100%; height: 100%; max-width: 400px; border-radius: 20px; box-shadow: none; padding: 5px; }
+            /* 在手機上自動縮放外框並保持比例 */
+            .phone-frame { width: 100%; height: auto; aspect-ratio: 9/16; max-width: 400px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); padding: 8px; margin: 0 auto; }
             .phone-notch { display: none; } /* 隱藏假瀏海 */
-            .phone-screen { border-radius: 15px; }
+            .phone-screen { border-radius: 15px; flex: 1; width: 100%; }
 
             /* 右側面板改為從底部彈出的 Bottom Sheet */
             .instruction-panel {
@@ -790,13 +790,15 @@
 
         document.querySelectorAll('.interactive-target').forEach(el => {
             // 桌機版：滑鼠移入時切換
-            el.addEventListener('mouseenter', () => {
+            el.addEventListener('mouseenter', (e) => {
+                e.stopPropagation();
                 if (window.innerWidth > 768) {
                     updateDocContent(el.getAttribute('data-doc'));
                 }
             });
             // 手機版：點擊時切換並彈出面板
             el.addEventListener('click', (e) => {
+                e.stopPropagation();
                 if (window.innerWidth <= 768) {
                     updateDocContent(el.getAttribute('data-doc'));
                     instructionPanel.classList.add('show-modal');
