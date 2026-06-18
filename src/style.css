@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ror-dark: #0d0d0d;
+  --color-ror-card: rgba(30, 30, 30, 0.95);
+  --color-ror-accent: #ffcc00;
+  --color-ror-accent-hover: #e6b800;
+  --color-ror-muted: #aaaaaa;
+  --color-ror-border: rgba(255,255,255,0.1);
+}
+
+@layer base {
+  body {
+    background-color: var(--color-ror-dark);
+    color: white;
+  }
+}

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RO 終極主控台 - 互動式說明書</title>
+    <title>ROR無人雞 - 互動式說明書</title>
     <style>
         :root {
             --bg-main: rgba(30, 30, 30, 0.95);
@@ -215,15 +215,17 @@
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 204, 0, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(255, 204, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 204, 0, 0); } }
         .guide-pulse { animation: pulse 2s infinite; border: 1px solid var(--color-accent) !important; }
 
+        .drag-handle { display: none; }
+
         /* ================= 手機版響應式設計 ================= */
         @media (max-width: 768px) {
-            body { flex-direction: column; }
-            .preview-area { flex: none; height: 100vh; width: 100vw; padding: 10px; box-sizing: border-box; }
+            body { flex-direction: column; overflow-y: auto; height: auto; min-height: 100dvh; }
+            .preview-area { flex: none; height: auto; min-height: 100dvh; width: 100%; padding: 20px 10px 80px 10px; box-sizing: border-box; align-items: flex-start; }
             
-            /* 在手機上自動縮放外框 */
-            .phone-frame { width: 100%; height: 100%; max-width: 400px; border-radius: 20px; box-shadow: none; padding: 5px; }
+            /* 在手機上自動縮放外框並保持比例 */
+            .phone-frame { width: 100%; height: auto; aspect-ratio: 9/16; max-width: 400px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); padding: 8px; margin: 0 auto; }
             .phone-notch { display: none; } /* 隱藏假瀏海 */
-            .phone-screen { border-radius: 15px; }
+            .phone-screen { border-radius: 15px; flex: 1; width: 100%; }
 
             /* 右側面板改為從底部彈出的 Bottom Sheet */
             .instruction-panel {
@@ -231,17 +233,37 @@
                 bottom: -100%;
                 left: 0;
                 width: 100vw;
-                height: 60vh;
+                height: 25vh; /* 縮小到約 1/4 到 1/3 高度 */
                 border-left: none;
                 border-top: 2px solid var(--color-accent);
                 border-radius: 25px 25px 0 0;
                 z-index: 9999;
-                transition: bottom 0.3s cubic-bezier(0.1, 0.8, 0.2, 1);
+                transition: bottom 0.3s cubic-bezier(0.1, 0.8, 0.2, 1), height 0.3s cubic-bezier(0.1, 0.8, 0.2, 1);
                 box-shadow: 0 -10px 40px rgba(0,0,0,0.9);
-                padding: 40px 25px 25px 25px; /* 上方預留給關閉按鈕 */
+                padding: 30px 25px 25px 25px; /* 上方預留給關閉按鈕 */
                 flex: none;
+                overflow-y: hidden;
             }
             .instruction-panel.show-modal { bottom: 0; }
+            .instruction-panel.show-expanded { height: 75vh; overflow-y: auto; }
+            .instruction-panel.show-minimized { height: 40px; overflow-y: hidden; padding-top: 10px; }
+            .instruction-panel.show-minimized .panel-header, 
+            .instruction-panel.show-minimized .panel-desc, 
+            .instruction-panel.show-minimized .panel-alert,
+            .instruction-panel.show-minimized #mobile-close-btn { display: none !important; }
+
+            .drag-handle {
+                display: block;
+                position: absolute;
+                top: 10px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 50px;
+                height: 6px;
+                background-color: rgba(255, 255, 255, 0.3);
+                border-radius: 3px;
+                cursor: pointer;
+            }
             
             /* 顯示手機版專用關閉按鈕 */
             #mobile-close-btn { display: block !important; }
@@ -622,7 +644,8 @@
 
     <!-- 右側說明區 -->
     <div class="instruction-panel" id="instruction-panel">
-        <div id="mobile-close-btn" style="display: none; position: absolute; top: 15px; right: 25px; font-size: 24px; color: #aaa; cursor: pointer;">✖</div>
+        <div class="drag-handle" id="drag-handle"></div>
+        <div id="mobile-close-btn" style="display: none; position: absolute; top: 15px; right: 25px; font-size: 20px; color: var(--color-accent); cursor: pointer;">▼</div>
         <div id="doc-title" class="panel-header">歡迎使用互動式說明書</div>
         <div id="doc-desc" class="panel-desc">
             請點擊或將滑鼠移至左側介面的「任務區塊」或「按鈕」上，這裡將會為您顯示詳細的功能解說與設定建議！<br><br>
@@ -790,23 +813,56 @@
 
         document.querySelectorAll('.interactive-target').forEach(el => {
             // 桌機版：滑鼠移入時切換
-            el.addEventListener('mouseenter', () => {
+            el.addEventListener('mouseenter', (e) => {
+                e.stopPropagation();
                 if (window.innerWidth > 768) {
                     updateDocContent(el.getAttribute('data-doc'));
                 }
             });
             // 手機版：點擊時切換並彈出面板
             el.addEventListener('click', (e) => {
+                e.stopPropagation();
                 if (window.innerWidth <= 768) {
                     updateDocContent(el.getAttribute('data-doc'));
+                    instructionPanel.classList.remove('show-expanded'); // 點新項目時先取消全螢幕展開
                     instructionPanel.classList.add('show-modal');
                 }
             });
         });
 
-        // 手機版關閉按鈕
+        // 手機版縮小按鈕
         document.getElementById('mobile-close-btn').addEventListener('click', () => {
-            instructionPanel.classList.remove('show-modal');
+            instructionPanel.classList.add('show-minimized');
+            instructionPanel.classList.remove('show-expanded');
+        });
+
+        // 手機版上滑/下滑展開邏輯
+        let startY = 0;
+        instructionPanel.addEventListener('touchstart', (e) => {
+            startY = e.touches[0].clientY;
+        }, {passive: true});
+        instructionPanel.addEventListener('touchend', (e) => {
+            const endY = e.changedTouches[0].clientY;
+            if (startY - endY > 30) { // 往上滑
+                if (instructionPanel.classList.contains('show-minimized')) {
+                    instructionPanel.classList.remove('show-minimized');
+                } else {
+                    instructionPanel.classList.add('show-expanded');
+                }
+            } else if (endY - startY > 30) { // 往下滑
+                if (instructionPanel.classList.contains('show-expanded') && instructionPanel.scrollTop <= 0) {
+                    instructionPanel.classList.remove('show-expanded');
+                } else if (!instructionPanel.classList.contains('show-expanded') && instructionPanel.scrollTop <= 0) {
+                    instructionPanel.classList.add('show-minimized');
+                }
+            }
+        });
+        document.getElementById('drag-handle').addEventListener('click', () => {
+            if (instructionPanel.classList.contains('show-minimized')) {
+                instructionPanel.classList.remove('show-minimized');
+            } else {
+                instructionPanel.classList.toggle('show-expanded');
+            }
         });
 
         // 執行按鈕切換邏輯
@@ -968,6 +1024,16 @@
                 else { span.classList.remove('checked'); span.innerText = '☐'; }
             });
         };
+
+        // 初始化預設顯示為主畫面設定
+        updateDocContent('welcome');
+
+        // 頁面載入後自動彈出歡迎提示 (僅限手機版)
+        window.addEventListener('DOMContentLoaded', () => {
+            if (window.innerWidth <= 768) {
+                instructionPanel.classList.add('show-modal');
+            }
+        });
 
     </script>
 </body>
