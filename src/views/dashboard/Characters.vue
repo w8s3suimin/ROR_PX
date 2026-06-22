@@ -17,10 +17,10 @@
     <!-- Resource List -->
     <div v-else class="space-y-4">
       <!-- List Header -->
-      <div class="hidden md:grid grid-cols-10 gap-4 pl-6 pr-12 py-3 bg-ror-card/50 rounded-lg text-sm font-bold text-ror-muted border border-ror-border/50">
-        <div class="col-span-2 text-center">遊戲帳號/平台ID</div>
+      <div class="hidden md:grid grid-cols-12 gap-4 pl-6 pr-12 py-3 bg-ror-card/50 rounded-lg text-sm font-bold text-ror-muted border border-ror-border/50">
+        <div class="col-span-3 text-center">遊戲帳號/平台ID</div>
         <div class="col-span-1 text-center">伺服器</div>
-        <div class="col-span-2 text-center">角色名稱</div>
+        <div class="col-span-3 text-center">角色名稱</div>
         <div class="col-span-1 text-center">等級</div>
         <div class="col-span-1 text-center">職業</div>
         <div class="col-span-1 text-center">派遣數量</div>
@@ -36,17 +36,17 @@
       >
         <!-- Main Row (Click to toggle) -->
         <div 
-          class="grid grid-cols-2 md:grid-cols-10 gap-4 pl-6 pr-12 py-4 cursor-pointer items-center relative"
+          class="grid grid-cols-2 md:grid-cols-12 gap-4 pl-6 pr-12 py-4 cursor-pointer items-center relative"
           @click="toggleRow(char.id)"
         >
-          <div class="col-span-2 truncate text-center">
+          <div class="col-span-3 truncate text-center">
             <div class="font-bold text-white text-sm">{{ char.game_account || '未知遊戲帳號' }}</div>
             <div class="text-xs text-ror-muted">{{ char.profiles?.email || '未綁定' }}</div>
           </div>
           <div class="col-span-1 text-sm text-gray-300 truncate text-center">
             <span class="inline-block px-2 py-1 rounded bg-white/5 border border-white/10">{{ char.server_name }}</span>
           </div>
-          <div class="col-span-2 text-center truncate">
+          <div class="col-span-3 text-center truncate">
             <div class="text-white font-bold text-sm">{{ char.character_name }}</div>
             <div class="text-xs text-ror-muted">角 {{ char.char_slot }}</div>
           </div>
