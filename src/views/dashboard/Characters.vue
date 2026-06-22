@@ -3,11 +3,6 @@
     <div class="mb-4 flex items-baseline gap-3 flex-wrap">
       <h1 class="text-2xl md:text-3xl font-bold text-white tracking-tight shrink-0 flex items-center gap-3">
         角色管理
-        <!-- Admin Toggle (only visible if isAdminRole) -->
-        <button v-if="isAdminRole" @click="viewAsAdmin = !viewAsAdmin" class="p-1.5 rounded-lg transition-colors group relative" :class="viewAsAdmin ? 'text-green-400 hover:bg-green-400/10' : 'text-red-400 hover:bg-red-400/10'" title="切換管理員檢視">
-          <svg v-if="viewAsAdmin" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-          <svg v-else class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" /></svg>
-        </button>
       </h1>
       <p class="text-sm text-ror-muted">集中監控所有帳號角色的狀態、物資與資產</p>
     </div>
@@ -38,23 +33,23 @@
         <div class="col-span-3 text-center drop-shadow-md">
           角色名稱
         </div>
-        <div class="col-span-1 text-center drop-shadow-md cursor-pointer hover:text-white flex items-center justify-center gap-1" @click="openNumericFilter('level')">
+        <div class="col-span-1 text-center drop-shadow-md cursor-pointer hover:text-white flex items-center justify-center gap-1" @click="handleSort('level')">
           等級
           <span @click.stop="handleSort('level')" class="px-0.5 text-ror-muted hover:text-white text-xs" title="排序">{{ sortConfig.key === 'level' ? (sortConfig.dir === 'asc' ? '▲' : '▼') : '↕' }}</span>
           <span v-if="filters.level" @click.stop="clearFilter('level')" title="解除過濾" class="text-lg">🔒</span>
         </div>
         <div class="col-span-1 text-center drop-shadow-md">職業</div>
-        <div class="col-span-1 text-center drop-shadow-md cursor-pointer hover:text-white flex items-center justify-center gap-1" @click="openNumericFilter('dispatch')">
+        <div class="col-span-1 text-center drop-shadow-md cursor-pointer hover:text-white flex items-center justify-center gap-1" @click="handleSort('dispatch')">
           派遣數量
           <span @click.stop="handleSort('dispatch')" class="px-0.5 text-ror-muted hover:text-white text-xs" title="排序">{{ sortConfig.key === 'dispatch' ? (sortConfig.dir === 'asc' ? '▲' : '▼') : '↕' }}</span>
           <span v-if="filters.dispatch" @click.stop="clearFilter('dispatch')" title="解除過濾" class="text-lg">🔒</span>
         </div>
-        <div class="col-span-1 text-right text-[#4dabf7] drop-shadow-md cursor-pointer hover:text-white flex items-center justify-end gap-1" @click="openNumericFilter('vitality')">
+        <div class="col-span-1 text-right text-[#4dabf7] drop-shadow-md cursor-pointer hover:text-white flex items-center justify-end gap-1" @click="handleSort('vitality')">
           <span v-if="filters.vitality" @click.stop="clearFilter('vitality')" title="解除過濾" class="text-lg">🔒</span>
           <span @click.stop="handleSort('vitality')" class="px-0.5 text-[#4dabf7]/50 hover:text-[#4dabf7] text-xs" title="排序">{{ sortConfig.key === 'vitality' ? (sortConfig.dir === 'asc' ? '▲' : '▼') : '↕' }}</span>
           活力值
         </div>
-        <div class="col-span-1 text-right text-[#ff93d3] drop-shadow-md cursor-pointer hover:text-white flex items-center justify-end gap-1" @click="openNumericFilter('crystal')">
+        <div class="col-span-1 text-right text-[#ff93d3] drop-shadow-md cursor-pointer hover:text-white flex items-center justify-end gap-1" @click="handleSort('crystal')">
           <span v-if="filters.crystal" @click.stop="clearFilter('crystal')" title="解除過濾" class="text-lg">🔒</span>
           <span @click.stop="handleSort('crystal')" class="px-0.5 text-[#ff93d3]/50 hover:text-[#ff93d3] text-xs" title="排序">{{ sortConfig.key === 'crystal' ? (sortConfig.dir === 'asc' ? '▲' : '▼') : '↕' }}</span>
           水晶
@@ -68,16 +63,16 @@
           <span class="text-[10px]" v-if="sortConfig.key === 'mobile_account'">{{ sortConfig.dir === 'asc' ? '▲' : '▼' }}</span>
           <span v-if="filters.game_account || filters.server_name" @click.stop="clearFilter('game_account'); clearFilter('server_name')" title="解除過濾">🔒</span>
         </div>
-        <div class="flex-[1.2] min-w-0 text-center px-1 drop-shadow-md cursor-pointer flex items-center justify-center gap-1" @click="openNumericFilter('level')">
+        <div class="flex-[1.2] min-w-0 text-center px-1 drop-shadow-md cursor-pointer flex items-center justify-center gap-1" @click="handleSort('level')">
           角色/等級
           <span @click.stop="handleSort('level')" class="px-0.5 text-ror-muted hover:text-white text-[10px]">{{ sortConfig.key === 'level' ? (sortConfig.dir === 'asc' ? '▲' : '▼') : '↕' }}</span>
           <span v-if="filters.level" @click.stop="clearFilter('level')" title="解除過濾">🔒</span>
         </div>
-        <div class="flex-[0.8] min-w-0 text-center px-1 text-[#ff93d3] drop-shadow-md cursor-pointer flex items-center justify-center gap-1" @click="openNumericFilter('crystal')">
+        <div class="flex-[0.8] min-w-0 text-center px-1 text-[#ff93d3] drop-shadow-md cursor-pointer flex items-center justify-center gap-1" @click="handleSort('crystal')">
           <span v-if="filters.crystal" @click.stop="clearFilter('crystal')" title="解除過濾">🔒</span>
           水晶<span @click.stop="handleSort('crystal')" class="px-0.5 text-[#ff93d3]/50 text-[10px]">{{ sortConfig.key === 'crystal' ? (sortConfig.dir === 'asc' ? '▲' : '▼') : '↕' }}</span>
         </div>
-        <div class="flex-[0.9] min-w-0 text-right pl-1 text-[#4dabf7] drop-shadow-md cursor-pointer flex items-center justify-end gap-1" @click="openNumericFilter('vitality')">
+        <div class="flex-[0.9] min-w-0 text-right pl-1 text-[#4dabf7] drop-shadow-md cursor-pointer flex items-center justify-end gap-1" @click="handleSort('vitality')">
           <span v-if="filters.vitality || filters.dispatch" @click.stop="clearFilter('vitality'); clearFilter('dispatch')" title="解除過濾">🔒</span>
           活/派
           <span @click.stop="handleSort('vitality')" class="px-0.5 text-[#4dabf7]/50 text-[10px]">{{ sortConfig.key === 'vitality' ? (sortConfig.dir === 'asc' ? '▲' : '▼') : '↕' }}</span>
@@ -108,17 +103,17 @@
           <!-- Col 2: Char Name & Level -->
           <div class="flex-[1.2] min-w-0 px-1 border-r border-ror-border/30 text-center">
             <div class="text-[13px] font-bold text-white truncate">{{ char.character_name }}</div>
-            <div class="text-[11px] font-mono text-gray-300 mt-1">Lv.{{ char.level }}</div>
+            <div class="text-[11px] font-mono text-gray-300 mt-1 cursor-pointer hover:text-ror-accent" @click.stop="openNumericFilter('level')">Lv.{{ char.level }}</div>
           </div>
           
           <!-- Col 3: Crystal -->
           <div class="flex-[0.8] min-w-0 px-1 border-r border-ror-border/30 text-center flex flex-col items-center justify-center">
-            <div class="text-[12px] font-mono text-[#ff93d3] font-bold">{{ formatNumber(char.crystal) }}</div>
+            <div class="text-[12px] font-mono text-[#ff93d3] font-bold cursor-pointer hover:opacity-80" @click.stop="openNumericFilter('crystal')">{{ formatNumber(char.crystal) }}</div>
           </div>
 
           <!-- Col 4: Vitality / Dispatch -->
           <div class="flex-[0.9] text-right min-w-0 pl-1">
-            <div class="text-[13px] font-mono text-[#4dabf7]">{{ formatNumber(char.vitality) }}</div>
+            <div class="text-[13px] font-mono text-[#4dabf7] cursor-pointer hover:opacity-80" @click.stop="openNumericFilter('vitality')">{{ formatNumber(char.vitality) }}</div>
             <div class="text-[10px] mt-1">
               <span @click.stop="toggleDispatchFilter(char.dispatch_current >= char.dispatch_max)" class="px-1 py-0.5 rounded font-bold hover:opacity-80 transition-opacity" :class="char.dispatch_current >= char.dispatch_max ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'">
                 {{ char.dispatch_current }}/{{ char.dispatch_max }}
@@ -148,7 +143,7 @@
           </div>
           
           <div class="col-span-1 text-center text-white font-mono relative group">
-            <span class="text-sm">Lv.{{ char.level }}</span>
+            <span class="text-sm cursor-pointer hover:text-ror-accent transition-colors" @click.stop="openNumericFilter('level')">Lv.{{ char.level }}</span>
             <div class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden md:group-hover:block whitespace-nowrap bg-black text-gray-300 text-xs px-2 py-1 rounded border border-ror-border z-10 pointer-events-none shadow-lg">
               最後更新: {{ formatTime(char.updated_at) }}
             </div>
@@ -171,14 +166,14 @@
           </div>
 
           <div class="col-span-1 text-right font-mono text-[#4dabf7] relative group">
-            {{ formatNumber(char.vitality) }}
+            <span class="cursor-pointer hover:opacity-80 transition-opacity" @click.stop="openNumericFilter('vitality')">{{ formatNumber(char.vitality) }}</span>
             <div class="absolute right-0 bottom-full mb-2 hidden md:group-hover:block whitespace-nowrap bg-black text-gray-300 text-xs px-2 py-1 rounded border border-ror-border z-10 pointer-events-none shadow-lg">
               最後更新: {{ formatTime(char.updated_at) }}
             </div>
           </div>
           
           <div class="col-span-1 text-right font-mono text-[#ff93d3] relative group">
-            {{ formatNumber(char.crystal) }}
+            <span class="cursor-pointer hover:opacity-80 transition-opacity" @click.stop="openNumericFilter('crystal')">{{ formatNumber(char.crystal) }}</span>
             <div class="absolute right-0 bottom-full mb-2 hidden md:group-hover:block whitespace-nowrap bg-black text-gray-300 text-xs px-2 py-1 rounded border border-ror-border z-10 pointer-events-none shadow-lg">
               最後更新: {{ formatTime(char.updated_at) }}
             </div>
@@ -322,16 +317,13 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { supabase } from '../../utils/supabase'
+import { isAdminRole, viewAsAdmin } from '../../utils/adminState'
 
 const characters = ref([])
 const loading = ref(true)
 const error = ref(null)
 const expandedRow = ref(null)
 const selectedMobileChar = ref(null)
-
-// Admin View State
-const isAdminRole = ref(false)
-const viewAsAdmin = ref(false)
 
 // Sorting State
 const sortConfig = ref({ key: 'game_account', dir: 'asc' })
@@ -378,16 +370,6 @@ onMounted(async () => {
   try {
     loading.value = true
     
-    // Check admin role
-    const { data: { session } } = await supabase.auth.getSession()
-    if (session) {
-      const { data: profile } = await supabase.from('profiles').select('role').eq('id', session.user.id).single()
-      if (profile?.role === 'admin') {
-        isAdminRole.value = true
-        viewAsAdmin.value = true
-      }
-    }
-
     // Fetch characters and join with profiles to get the email
     const { data, error: err } = await supabase
       .from('characters')
