@@ -5,7 +5,7 @@
       <h1 class="text-xl md:text-4xl font-bold text-ror-accent mb-1 md:mb-4">
         授權碼方案預告
       </h1>
-      <p class="text-ror-muted text-xs md:text-lg max-w-2xl mx-auto leading-tight md:leading-normal">
+      <p class="text-ror-muted text-sm md:text-lg max-w-2xl mx-auto leading-tight md:leading-normal">
         即將推出基於 PX 點數 (PXP) 的彈性方案。<br class="hidden md:block"/>
         <span class="inline-block md:hidden"> </span>
         儲值比例： <span class="text-white font-semibold">1 台幣 = 1 PXP</span>
@@ -16,58 +16,64 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-8 max-w-5xl mx-auto mb-2 md:mb-12 w-full">
       
       <!-- 日卡 -->
-      <div class="bg-ror-surface/50 border border-ror-border rounded-xl p-3 md:p-8 flex flex-row md:flex-col items-center md:items-stretch hover:border-ror-accent/50 transition-colors">
+      <div class="bg-ror-surface/50 border border-ror-border rounded-xl p-4 md:p-8 flex flex-row md:flex-col items-center md:items-stretch hover:border-ror-accent/50 transition-colors">
         <!-- 左側/上方 資訊區 -->
         <div class="flex-1 w-full text-left md:text-center md:flex md:flex-col md:h-full">
-          <h3 class="text-sm md:text-2xl font-bold text-white mb-0.5 md:mb-2">日卡方案</h3>
-          <div class="text-ror-accent text-lg md:text-4xl font-bold mb-1 md:mb-4">20 <span class="text-[10px] md:text-lg text-ror-muted font-normal">PXP / 天</span></div>
-          <ul class="text-ror-muted space-y-0.5 md:space-y-3 mb-0 md:mb-8 flex-1 text-[10px] md:text-base text-left">
+          <h3 class="text-lg md:text-2xl font-bold text-white mb-0.5 md:mb-2">日卡方案</h3>
+          <div class="text-ror-accent text-2xl md:text-4xl font-bold mb-1 md:mb-4">20 <span class="text-xs md:text-lg text-ror-muted font-normal">PXP / 天</span></div>
+          <ul class="text-ror-muted space-y-0.5 md:space-y-3 mb-0 md:mb-8 flex-1 text-xs md:text-base text-left">
             <li class="flex items-center"><span class="mr-1 md:mr-2 text-ror-accent">✓</span> 適合短期測試與臨時掛機</li>
             <li class="flex items-center"><span class="mr-1 md:mr-2 text-ror-accent">✓</span> 24 小時精確計時</li>
           </ul>
         </div>
         <!-- 右側/下方 按鈕區 -->
-        <div class="ml-2 md:ml-0 md:mt-auto shrink-0 w-20 md:w-full">
-          <button class="w-full py-1.5 md:py-3 text-[10px] md:text-base rounded-md md:rounded-lg bg-ror-surface border border-ror-border text-ror-muted cursor-not-allowed opacity-70">
-            即將開放
+        <div class="ml-2 md:ml-0 md:mt-auto shrink-0 flex items-center justify-center">
+          <button class="w-12 h-12 md:w-full md:h-auto py-1 md:py-3 text-[10px] md:text-base leading-tight md:leading-normal rounded-lg bg-ror-surface border border-ror-border text-ror-muted cursor-not-allowed opacity-70 flex flex-col md:block items-center justify-center">
+            <span class="md:hidden">即將</span>
+            <span class="md:hidden">開放</span>
+            <span class="hidden md:inline">即將開放</span>
           </button>
         </div>
       </div>
 
       <!-- 周卡 -->
-      <div class="bg-ror-surface/50 border border-ror-border rounded-xl p-3 md:p-8 flex flex-row md:flex-col items-center md:items-stretch hover:border-ror-accent/50 transition-colors relative">
+      <div class="bg-ror-surface/50 border border-ror-border rounded-xl p-4 md:p-8 flex flex-row md:flex-col items-center md:items-stretch hover:border-ror-accent/50 transition-colors relative">
         <div class="flex-1 w-full text-left md:text-center md:flex md:flex-col md:h-full">
-          <h3 class="text-sm md:text-2xl font-bold text-white mb-0.5 md:mb-2">周卡方案</h3>
-          <div class="text-ror-accent text-lg md:text-4xl font-bold mb-1 md:mb-4">100 <span class="text-[10px] md:text-lg text-ror-muted font-normal">PXP / 7天</span></div>
-          <ul class="text-ror-muted space-y-0.5 md:space-y-3 mb-0 md:mb-8 flex-1 text-[10px] md:text-base text-left">
+          <h3 class="text-lg md:text-2xl font-bold text-white mb-0.5 md:mb-2">周卡方案</h3>
+          <div class="text-ror-accent text-2xl md:text-4xl font-bold mb-1 md:mb-4">100 <span class="text-xs md:text-lg text-ror-muted font-normal">PXP / 7天</span></div>
+          <ul class="text-ror-muted space-y-0.5 md:space-y-3 mb-0 md:mb-8 flex-1 text-xs md:text-base text-left">
             <li class="flex items-center"><span class="mr-1 md:mr-2 text-ror-accent">✓</span> 平均每日約 14.28 PXP</li>
             <li class="flex items-center"><span class="mr-1 md:mr-2 text-ror-accent">✓</span> 享有按比例加機折扣</li>
           </ul>
         </div>
-        <div class="ml-2 md:ml-0 md:mt-auto shrink-0 w-20 md:w-full">
-          <button class="w-full py-1.5 md:py-3 text-[10px] md:text-base rounded-md md:rounded-lg bg-ror-surface border border-ror-border text-ror-muted cursor-not-allowed opacity-70">
-            即將開放
+        <div class="ml-2 md:ml-0 md:mt-auto shrink-0 flex items-center justify-center">
+          <button class="w-12 h-12 md:w-full md:h-auto py-1 md:py-3 text-[10px] md:text-base leading-tight md:leading-normal rounded-lg bg-ror-surface border border-ror-border text-ror-muted cursor-not-allowed opacity-70 flex flex-col md:block items-center justify-center">
+            <span class="md:hidden">即將</span>
+            <span class="md:hidden">開放</span>
+            <span class="hidden md:inline">即將開放</span>
           </button>
         </div>
       </div>
 
       <!-- 月卡 -->
-      <div class="bg-ror-surface border-2 border-ror-accent rounded-xl p-3 md:p-8 flex flex-row md:flex-col items-center md:items-stretch relative transform hover:-translate-y-1 transition-transform shadow-lg shadow-ror-accent/10 mt-2 md:mt-0">
+      <div class="bg-ror-surface border-2 border-ror-accent rounded-xl p-4 md:p-8 flex flex-row md:flex-col items-center md:items-stretch relative transform hover:-translate-y-1 transition-transform shadow-lg shadow-ror-accent/10 mt-2 md:mt-0">
         <!-- 推薦標籤 -->
-        <div class="absolute -top-2.5 md:-top-4 left-1/2 -translate-x-1/2 bg-ror-accent text-black px-2 md:px-4 py-0.5 md:py-1 rounded-full text-[9px] md:text-sm font-bold whitespace-nowrap">
+        <div class="absolute -top-3 md:-top-4 left-1/2 -translate-x-1/2 bg-ror-accent text-black px-3 md:px-4 py-0.5 md:py-1 rounded-full text-[10px] md:text-sm font-bold whitespace-nowrap">
           最超值推薦
         </div>
         <div class="flex-1 w-full text-left md:text-center md:flex md:flex-col md:h-full">
-          <h3 class="text-sm md:text-2xl font-bold text-white mb-0.5 md:mb-2">月卡方案</h3>
-          <div class="text-ror-accent text-lg md:text-4xl font-bold mb-1 md:mb-4">300 <span class="text-[10px] md:text-lg text-ror-muted font-normal">PXP / 30天</span></div>
-          <ul class="text-ror-muted space-y-0.5 md:space-y-3 mb-0 md:mb-8 flex-1 text-[10px] md:text-base text-left">
+          <h3 class="text-lg md:text-2xl font-bold text-white mb-0.5 md:mb-2">月卡方案</h3>
+          <div class="text-ror-accent text-2xl md:text-4xl font-bold mb-1 md:mb-4">300 <span class="text-xs md:text-lg text-ror-muted font-normal">PXP / 30天</span></div>
+          <ul class="text-ror-muted space-y-0.5 md:space-y-3 mb-0 md:mb-8 flex-1 text-xs md:text-base text-left">
             <li class="flex items-center"><span class="mr-1 md:mr-2 text-ror-accent">✓</span> 平均每日僅 10 PXP</li>
             <li class="flex items-center"><span class="mr-1 md:mr-2 text-ror-accent">✓</span> 享有最優惠比例加機折扣</li>
           </ul>
         </div>
-        <div class="ml-2 md:ml-0 md:mt-auto shrink-0 w-20 md:w-full">
-          <button class="w-full py-1.5 md:py-3 text-[10px] md:text-base rounded-md md:rounded-lg bg-ror-surface border border-ror-border text-ror-muted cursor-not-allowed opacity-70">
-            即將開放
+        <div class="ml-2 md:ml-0 md:mt-auto shrink-0 flex items-center justify-center">
+          <button class="w-12 h-12 md:w-full md:h-auto py-1 md:py-3 text-[10px] md:text-base leading-tight md:leading-normal rounded-lg bg-ror-surface border border-ror-border text-ror-muted cursor-not-allowed opacity-70 flex flex-col md:block items-center justify-center">
+            <span class="md:hidden">即將</span>
+            <span class="md:hidden">開放</span>
+            <span class="hidden md:inline">即將開放</span>
           </button>
         </div>
       </div>
@@ -75,8 +81,8 @@
     </div>
 
     <!-- 底部聲明按鈕 -->
-    <button @click="showInfoModal = true" class="group flex items-center justify-center text-ror-muted hover:text-white transition-colors py-1 md:py-2 px-2 md:px-4 rounded-lg hover:bg-ror-surface/50 text-xs md:text-base mt-auto">
-      <svg class="w-3.5 h-3.5 md:w-5 md:h-5 mr-1.5 md:mr-2 text-ror-accent group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+    <button @click="showInfoModal = true" class="group flex items-center justify-center text-ror-muted hover:text-white transition-colors py-1 md:py-2 px-2 md:px-4 rounded-lg hover:bg-ror-surface/50 text-sm md:text-base mt-auto">
+      <svg class="w-4 h-4 md:w-5 md:h-5 mr-1.5 md:mr-2 text-ror-accent group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
       <span class="underline underline-offset-4 decoration-ror-border group-hover:decoration-ror-accent transition-colors">查看授權機制細節聲明</span>
     </button>
 
@@ -92,7 +98,7 @@
           授權機制細節聲明
         </h3>
         
-        <div class="space-y-4 md:space-y-6 text-ror-muted text-xs md:text-sm leading-relaxed">
+        <div class="space-y-4 md:space-y-6 text-ror-muted text-sm leading-relaxed">
           <div>
             <h4 class="text-white font-semibold mb-1">1. 無硬體綁定</h4>
             <p>我們的授權為「最大同時在線機台數」，不綁定模擬器、電腦硬體或 MAC 位址。模擬器損壞可隨時重置，只要同時上線的腳本數量不超過您的授權上限即可。</p>
