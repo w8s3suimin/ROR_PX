@@ -59,7 +59,7 @@
       <!-- Mobile List Header -->
       <div class="sticky top-16 z-30 flex md:hidden items-center justify-between pl-4 pr-2 py-2.5 bg-gradient-to-r from-[#1a1a1a]/95 via-[#222]/95 to-[#1a1a1a]/95 backdrop-blur-md rounded-xl text-[13px] font-black text-ror-accent border border-ror-accent/20 shadow-[0_10px_30px_rgba(0,0,0,0.8)] tracking-wide mb-2 select-none">
         <div class="flex-[1.2] min-w-0 text-center pr-1 drop-shadow-md cursor-pointer flex items-center justify-center gap-1" @click="handleSort('mobile_account')">
-          伺服/帳號
+          伺服器/帳號
           <span class="text-[10px]" v-if="sortConfig.key === 'mobile_account'">{{ sortConfig.dir === 'asc' ? '▲' : '▼' }}</span>
           <span v-if="filters.game_account || filters.server_name" @click.stop="clearFilter('game_account'); clearFilter('server_name')" title="解除過濾">🔒</span>
         </div>
@@ -75,7 +75,7 @@
         </div>
         <div class="flex-[0.9] min-w-0 text-right pl-1 text-[#4dabf7] drop-shadow-md cursor-pointer flex items-center justify-end gap-1" @click="handleSort('vitality')">
           <span v-if="filters.vitality || filters.dispatch" @click.stop="clearFilter('vitality'); clearFilter('dispatch')" title="解除過濾">🔒</span>
-          活/派
+          活力值
           <span class="text-[10px]" v-if="sortConfig.key === 'vitality'">{{ sortConfig.dir === 'asc' ? '▲' : '▼' }}</span>
         </div>
       </div>
@@ -294,9 +294,9 @@
                 <!-- Highlight Track -->
                 <div class="absolute h-full bg-ror-accent rounded-full pointer-events-none" :style="sliderTrackStyle"></div>
                 <!-- Min Thumb -->
-                <input type="range" :min="numericLimits[activeNumericFilter]?.min || 0" :max="numericLimits[activeNumericFilter]?.max || 100" v-model.number="tempFilterValue.min" class="absolute top-[-6px] left-0 w-full appearance-none bg-transparent pointer-events-auto z-10 custom-range" />
+                <input type="range" :min="numericLimits[activeNumericFilter]?.min || 0" :max="numericLimits[activeNumericFilter]?.max || 100" :step="sliderStep" v-model.number="tempFilterValue.min" @input="handleMinInput" class="absolute top-[-6px] left-0 w-full appearance-none bg-transparent pointer-events-none z-10 custom-range" />
                 <!-- Max Thumb -->
-                <input type="range" :min="numericLimits[activeNumericFilter]?.min || 0" :max="numericLimits[activeNumericFilter]?.max || 100" v-model.number="tempFilterValue.max" class="absolute top-[-6px] left-0 w-full appearance-none bg-transparent pointer-events-auto z-20 custom-range" />
+                <input type="range" :min="numericLimits[activeNumericFilter]?.min || 0" :max="numericLimits[activeNumericFilter]?.max || 100" :step="sliderStep" v-model.number="tempFilterValue.max" @input="handleMaxInput" class="absolute top-[-6px] left-0 w-full appearance-none bg-transparent pointer-events-none z-20 custom-range" />
               </div>
               <div class="flex justify-between text-[10px] text-ror-muted mt-3 font-mono">
                 <span>{{ formatNumber(numericLimits[activeNumericFilter]?.min || 0) }}</span>
@@ -388,7 +388,7 @@ onMounted(async () => {
     // Set dynamic max/min for ranges
     if (data && data.length > 0) {
       ['level', 'vitality', 'crystal'].forEach(key => {
-        const vals = data.map(c => c[key] || 0)
+        const vals = data.map(c => c && c[key] ? c[key] : 0)
         numericLimits.value[key] = {
           min: Math.min(...vals),
           max: Math.max(...vals)
@@ -478,17 +478,19 @@ const openNumericFilter = (key) => {
   if (filters.value[key]) {
     tempFilterValue.value = { ...filters.value[key] }
   } else {
-    tempFilterValue.value = { ...numericLimits.value[key] }
+    tempFilterValue.value = { ...(numericLimits.value[key] || { min: 0, max: 100 }) }
   }
 }
 
 const applyNumericFilter = () => {
-  filters.value[activeNumericFilter.value] = { ...tempFilterValue.value }
+  if (activeNumericFilter.value) {
+    filters.value[activeNumericFilter.value] = { ...tempFilterValue.value }
+  }
   activeNumericFilter.value = null
 }
 
 const clearNumericFilter = (key) => {
-  filters.value[key] = null
+  if (key) filters.value[key] = null
   activeNumericFilter.value = null
 }
 
@@ -497,13 +499,35 @@ const getFilterName = (key) => {
   return map[key] || key
 }
 
+const sliderStep = computed(() => {
+  if (!activeNumericFilter.value) return 1
+  const limits = numericLimits.value[activeNumericFilter.value] || { min: 0, max: 100 }
+  const range = limits.max - limits.min
+  if (range <= 300) return 1
+  return Math.max(1, Math.ceil(range / 150))
+})
+
+const handleMinInput = () => {
+  if (tempFilterValue.value.min > tempFilterValue.value.max) {
+    tempFilterValue.value.min = tempFilterValue.value.max
+  }
+}
+
+const handleMaxInput = () => {
+  if (tempFilterValue.value.max < tempFilterValue.value.min) {
+    tempFilterValue.value.max = tempFilterValue.value.min
+  }
+}
+
 const sliderTrackStyle = computed(() => {
   if (!activeNumericFilter.value) return {}
   const key = activeNumericFilter.value
-  const limits = numericLimits.value[key]
-  const range = limits.max - limits.min || 1
-  const minPercent = ((tempFilterValue.value.min - limits.min) / range) * 100
-  const maxPercent = ((tempFilterValue.value.max - limits.min) / range) * 100
+  const limits = numericLimits.value[key] || { min: 0, max: 100 }
+  const range = (limits.max - limits.min) || 1
+  const tMin = tempFilterValue.value?.min ?? limits.min
+  const tMax = tempFilterValue.value?.max ?? limits.max
+  const minPercent = ((tMin - limits.min) / range) * 100
+  const maxPercent = ((tMax - limits.min) / range) * 100
   const left = Math.min(minPercent, maxPercent)
   const width = Math.abs(maxPercent - minPercent)
   return { left: `${left}%`, width: `${width}%` }
@@ -511,13 +535,13 @@ const sliderTrackStyle = computed(() => {
 
 // computed for table
 const filteredAndSortedCharacters = computed(() => {
-  let res = [...characters.value]
+  let res = [...characters.value].filter(c => c)
   
   // Filtering
   if (filters.value.game_account) res = res.filter(c => c.game_account === filters.value.game_account)
   if (filters.value.server_name) res = res.filter(c => c.server_name === filters.value.server_name)
-  if (filters.value.dispatch === 'full') res = res.filter(c => c.dispatch_current >= c.dispatch_max)
-  if (filters.value.dispatch === 'not_full') res = res.filter(c => c.dispatch_current < c.dispatch_max)
+  if (filters.value.dispatch === 'full') res = res.filter(c => (c.dispatch_current || 0) >= (c.dispatch_max || 0))
+  if (filters.value.dispatch === 'not_full') res = res.filter(c => (c.dispatch_current || 0) < (c.dispatch_max || 0))
   
   ['level', 'vitality', 'crystal'].forEach(key => {
     if (filters.value[key]) {
@@ -548,8 +572,12 @@ const filteredAndSortedCharacters = computed(() => {
         else diff = (a.char_slot || 0) - (b.char_slot || 0)
       }
     } else if (sortConfig.value.key === 'dispatch') {
-      const ratioA = a.dispatch_max > 0 ? a.dispatch_current / a.dispatch_max : 0
-      const ratioB = b.dispatch_max > 0 ? b.dispatch_current / b.dispatch_max : 0
+      const dCurrA = a.dispatch_current || 0
+      const dMaxA = a.dispatch_max || 0
+      const dCurrB = b.dispatch_current || 0
+      const dMaxB = b.dispatch_max || 0
+      const ratioA = dMaxA > 0 ? dCurrA / dMaxA : 0
+      const ratioB = dMaxB > 0 ? dCurrB / dMaxB : 0
       diff = ratioA - ratioB
     } else {
       const valA = a[sortConfig.value.key]
@@ -561,7 +589,7 @@ const filteredAndSortedCharacters = computed(() => {
       }
     }
     
-    return diff * dir
+    return isNaN(diff) ? 0 : diff * dir
   })
   
   return res
