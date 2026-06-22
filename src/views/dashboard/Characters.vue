@@ -18,14 +18,14 @@
     <div v-else class="space-y-4">
       <!-- List Header -->
       <div class="hidden md:grid grid-cols-10 gap-4 pl-6 pr-12 py-3 bg-ror-card/50 rounded-lg text-sm font-bold text-ror-muted border border-ror-border/50">
-        <div class="col-span-2">遊戲帳號/平台ID</div>
-        <div class="col-span-1">伺服器</div>
+        <div class="col-span-2 text-center">遊戲帳號/平台ID</div>
+        <div class="col-span-1 text-center">伺服器</div>
         <div class="col-span-2 text-center">角色名稱</div>
         <div class="col-span-1 text-center">等級</div>
         <div class="col-span-1 text-center">職業</div>
         <div class="col-span-1 text-center">派遣數量</div>
-        <div class="col-span-1 text-right text-blue-400">活力值</div>
-        <div class="col-span-1 text-right text-pink-400">水晶</div>
+        <div class="col-span-1 text-center text-blue-400">活力值</div>
+        <div class="col-span-1 text-center text-pink-400">水晶</div>
       </div>
 
       <!-- List Items -->
