@@ -33,6 +33,7 @@ CREATE TABLE public.characters (
     server_name TEXT NOT NULL,  -- 伺服器
     char_slot INTEGER NOT NULL, -- 角色序
     character_name TEXT NOT NULL,
+    profession TEXT,
     level INTEGER DEFAULT 1,
     dispatch_current INTEGER DEFAULT 0,
     dispatch_max INTEGER DEFAULT 3,
@@ -75,6 +76,7 @@ CREATE OR REPLACE FUNCTION public.update_character_status_by_auth(
     p_server_name TEXT,
     p_char_slot INTEGER,
     p_character_name TEXT DEFAULT NULL,
+    p_profession TEXT DEFAULT NULL,
     p_dispatch_current INTEGER DEFAULT 0,
     p_dispatch_max INTEGER DEFAULT 3,
     p_vitality INTEGER DEFAULT 100
@@ -97,15 +99,16 @@ BEGIN
 
     -- 2. 使用 Upsert 更新或新增角色資料
     INSERT INTO public.characters (
-        user_id, game_account, server_name, char_slot, character_name, 
+        user_id, game_account, server_name, char_slot, character_name, profession,
         dispatch_current, dispatch_max, vitality
     ) VALUES (
-        v_user_id, p_game_account, p_server_name, p_char_slot, COALESCE(p_character_name, '未知角色'),
+        v_user_id, p_game_account, p_server_name, p_char_slot, COALESCE(p_character_name, '未知角色'), p_profession,
         p_dispatch_current, p_dispatch_max, p_vitality
     )
     ON CONFLICT (user_id, game_account, server_name, char_slot) 
     DO UPDATE SET 
         character_name = COALESCE(EXCLUDED.character_name, characters.character_name),
+        profession = COALESCE(EXCLUDED.profession, characters.profession),
         dispatch_current = EXCLUDED.dispatch_current,
         dispatch_max = EXCLUDED.dispatch_max,
         vitality = EXCLUDED.vitality,
@@ -144,11 +147,11 @@ VALUES
 ('11111111-1111-1111-1111-111111111111', 'AUTH-P1-001', 2),
 ('22222222-2222-2222-2222-222222222222', 'AUTH-P2-001', 1);
 
-INSERT INTO public.characters (id, user_id, game_account, server_name, char_slot, character_name, level, dispatch_current, dispatch_max, vitality, crystal, special_items)
+INSERT INTO public.characters (id, user_id, game_account, server_name, char_slot, character_name, profession, level, dispatch_current, dispatch_max, vitality, crystal, special_items)
 VALUES 
-('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '11111111-1111-1111-1111-111111111111', 'game_acc_1', '金玉滿堂', 1, '劍士波波', 45, 2, 3, 85, 12000, '[{"name": "波利卡片", "qty": 1, "quality": "rare"}]'),
-('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', '11111111-1111-1111-1111-111111111111', 'game_acc_1', '金玉滿堂', 2, '法師莉莉', 42, 1, 3, 100, 8500, '[]'),
-('cccccccc-cccc-cccc-cccc-cccccccccccc', '22222222-2222-2222-2222-222222222222', 'game_acc_2', '傾城之戰', 1, '刺客阿薩', 50, 3, 3, 40, 45000, '[{"name": "黃金盜蟲卡片", "qty": 1, "quality": "epic"}]');
+('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '11111111-1111-1111-1111-111111111111', 'game_acc_1', '金玉滿堂', 1, '劍士波波', '騎士', 45, 2, 3, 85, 12000, '[{"name": "波利卡片", "qty": 1, "quality": "rare"}]'),
+('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', '11111111-1111-1111-1111-111111111111', 'game_acc_1', '金玉滿堂', 2, '法師莉莉', '巫師', 42, 1, 3, 100, 8500, '[]'),
+('cccccccc-cccc-cccc-cccc-cccccccccccc', '22222222-2222-2222-2222-222222222222', 'game_acc_2', '傾城之戰', 1, '刺客阿薩', '十字刺客', 50, 3, 3, 40, 45000, '[{"name": "黃金盜蟲卡片", "qty": 1, "quality": "epic"}]');
 
 INSERT INTO public.devices_status (id, user_id, character_id, device_index, current_task, logs)
 VALUES 

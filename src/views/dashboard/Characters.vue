@@ -17,11 +17,12 @@
     <!-- Resource List -->
     <div v-else class="space-y-4">
       <!-- List Header -->
-      <div class="hidden md:grid grid-cols-7 gap-4 pl-6 pr-12 py-3 bg-ror-card/50 rounded-lg text-sm font-bold text-ror-muted border border-ror-border/50">
+      <div class="hidden md:grid grid-cols-8 gap-4 pl-6 pr-12 py-3 bg-ror-card/50 rounded-lg text-sm font-bold text-ror-muted border border-ror-border/50">
         <div class="col-span-1">平台/遊戲帳號</div>
         <div class="col-span-1">伺服器</div>
         <div class="col-span-1 text-center">角色名稱</div>
         <div class="col-span-1 text-center">等級</div>
+        <div class="col-span-1 text-center">職業</div>
         <div class="col-span-1 text-center">派遣數量</div>
         <div class="col-span-1 text-right text-blue-400">活力值</div>
         <div class="col-span-1 text-right text-pink-400">水晶</div>
@@ -35,7 +36,7 @@
       >
         <!-- Main Row (Click to toggle) -->
         <div 
-          class="grid grid-cols-2 md:grid-cols-7 gap-4 pl-6 pr-12 py-4 cursor-pointer items-center relative"
+          class="grid grid-cols-2 md:grid-cols-8 gap-4 pl-6 pr-12 py-4 cursor-pointer items-center relative"
           @click="toggleRow(char.id)"
         >
           <div class="col-span-1 truncate">
@@ -50,6 +51,7 @@
             <div class="text-xs text-ror-muted">角 {{ char.char_slot }}</div>
           </div>
           <div class="col-span-1 text-center text-white font-mono">Lv.{{ char.level }}</div>
+          <div class="col-span-1 text-center text-white text-sm">{{ char.profession || '未知' }}</div>
           
           <div class="col-span-1 text-center">
             <span class="px-2 py-1 rounded text-xs font-bold" :class="char.dispatch_current >= char.dispatch_max ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'">
