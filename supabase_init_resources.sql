@@ -74,10 +74,10 @@ CREATE OR REPLACE FUNCTION public.update_character_status_by_auth(
     p_game_account TEXT,
     p_server_name TEXT,
     p_char_slot INTEGER,
-    p_character_name TEXT,
-    p_dispatch_current INTEGER,
-    p_dispatch_max INTEGER,
-    p_vitality INTEGER
+    p_character_name TEXT DEFAULT NULL,
+    p_dispatch_current INTEGER DEFAULT 0,
+    p_dispatch_max INTEGER DEFAULT 3,
+    p_vitality INTEGER DEFAULT 100
 ) RETURNS jsonb
 LANGUAGE plpgsql
 SECURITY DEFINER -- 以建立者權限執行，繞過 RLS（因為外部腳本沒有登入 auth）
@@ -100,12 +100,12 @@ BEGIN
         user_id, game_account, server_name, char_slot, character_name, 
         dispatch_current, dispatch_max, vitality
     ) VALUES (
-        v_user_id, p_game_account, p_server_name, p_char_slot, p_character_name,
+        v_user_id, p_game_account, p_server_name, p_char_slot, COALESCE(p_character_name, '未知角色'),
         p_dispatch_current, p_dispatch_max, p_vitality
     )
     ON CONFLICT (user_id, game_account, server_name, char_slot) 
     DO UPDATE SET 
-        character_name = EXCLUDED.character_name,
+        character_name = COALESCE(EXCLUDED.character_name, characters.character_name),
         dispatch_current = EXCLUDED.dispatch_current,
         dispatch_max = EXCLUDED.dispatch_max,
         vitality = EXCLUDED.vitality,
