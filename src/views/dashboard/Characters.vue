@@ -17,10 +17,10 @@
     <!-- Resource List -->
     <div v-else class="space-y-4">
       <!-- List Header -->
-      <div class="hidden md:grid grid-cols-8 gap-4 pl-6 pr-12 py-3 bg-ror-card/50 rounded-lg text-sm font-bold text-ror-muted border border-ror-border/50">
-        <div class="col-span-1">平台/遊戲帳號</div>
+      <div class="hidden md:grid grid-cols-10 gap-4 pl-6 pr-12 py-3 bg-ror-card/50 rounded-lg text-sm font-bold text-ror-muted border border-ror-border/50">
+        <div class="col-span-2">遊戲帳號/平台ID</div>
         <div class="col-span-1">伺服器</div>
-        <div class="col-span-1 text-center">角色名稱</div>
+        <div class="col-span-2 text-center">角色名稱</div>
         <div class="col-span-1 text-center">等級</div>
         <div class="col-span-1 text-center">職業</div>
         <div class="col-span-1 text-center">派遣數量</div>
@@ -36,37 +36,57 @@
       >
         <!-- Main Row (Click to toggle) -->
         <div 
-          class="grid grid-cols-2 md:grid-cols-8 gap-4 pl-6 pr-12 py-4 cursor-pointer items-center relative"
+          class="grid grid-cols-2 md:grid-cols-10 gap-4 pl-6 pr-12 py-4 cursor-pointer items-center relative"
           @click="toggleRow(char.id)"
         >
-          <div class="col-span-1 truncate">
-            <div class="font-bold text-white">{{ char.profiles?.email || '未綁定' }}</div>
-            <div class="text-xs text-ror-muted">{{ char.game_account }}</div>
+          <div class="col-span-2 truncate">
+            <div class="font-bold text-white text-sm">{{ char.game_account || '未知遊戲帳號' }}</div>
+            <div class="text-xs text-ror-muted">{{ char.profiles?.email || '未綁定' }}</div>
           </div>
-          <div class="col-span-1 text-sm text-gray-300">
+          <div class="col-span-1 text-sm text-gray-300 truncate">
             <span class="inline-block px-2 py-1 rounded bg-white/5 border border-white/10">{{ char.server_name }}</span>
           </div>
-          <div class="col-span-1 text-center truncate">
-            <div class="text-white font-bold">{{ char.character_name }}</div>
+          <div class="col-span-2 text-center truncate">
+            <div class="text-white font-bold text-sm">{{ char.character_name }}</div>
             <div class="text-xs text-ror-muted">角 {{ char.char_slot }}</div>
           </div>
-          <div class="col-span-1 text-center text-white font-mono">Lv.{{ char.level }}</div>
-          <div class="col-span-1 text-center text-white text-sm">{{ char.profession || '未知' }}</div>
           
-          <div class="col-span-1 text-center">
+          <div class="col-span-1 text-center text-white font-mono relative group">
+            <span class="text-sm">Lv.{{ char.level }}</span>
+            <div class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden md:group-hover:block whitespace-nowrap bg-black text-gray-300 text-xs px-2 py-1 rounded border border-ror-border z-10 pointer-events-none shadow-lg">
+              最後更新: {{ formatTime(char.updated_at) }}
+            </div>
+          </div>
+          
+          <div class="col-span-1 text-center text-white text-sm relative group">
+            {{ char.profession || '未知' }}
+            <div class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden md:group-hover:block whitespace-nowrap bg-black text-gray-300 text-xs px-2 py-1 rounded border border-ror-border z-10 pointer-events-none shadow-lg">
+              最後更新: {{ formatTime(char.updated_at) }}
+            </div>
+          </div>
+          
+          <div class="col-span-1 text-center relative group">
             <span class="px-2 py-1 rounded text-xs font-bold" :class="char.dispatch_current >= char.dispatch_max ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'">
               {{ char.dispatch_current }} / {{ char.dispatch_max }}
             </span>
+            <div class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden md:group-hover:block whitespace-nowrap bg-black text-gray-300 text-xs px-2 py-1 rounded border border-ror-border z-10 pointer-events-none shadow-lg">
+              最後更新: {{ formatTime(char.updated_at) }}
+            </div>
           </div>
 
           <div class="col-span-1 text-right font-mono text-blue-400 relative group">
             {{ formatNumber(char.vitality) }}
-            <!-- Tooltip -->
             <div class="absolute right-0 bottom-full mb-2 hidden md:group-hover:block whitespace-nowrap bg-black text-gray-300 text-xs px-2 py-1 rounded border border-ror-border z-10 pointer-events-none shadow-lg">
               最後更新: {{ formatTime(char.updated_at) }}
             </div>
           </div>
-          <div class="col-span-1 text-right font-mono text-pink-400">{{ formatNumber(char.crystal) }}</div>
+          
+          <div class="col-span-1 text-right font-mono text-pink-400 relative group">
+            {{ formatNumber(char.crystal) }}
+            <div class="absolute right-0 bottom-full mb-2 hidden md:group-hover:block whitespace-nowrap bg-black text-gray-300 text-xs px-2 py-1 rounded border border-ror-border z-10 pointer-events-none shadow-lg">
+              最後更新: {{ formatTime(char.updated_at) }}
+            </div>
+          </div>
           
           <!-- Expand Indicator -->
           <div class="absolute right-4 top-1/2 -translate-y-1/2 text-ror-muted transition-transform duration-300" :class="{ 'rotate-180 text-ror-accent': expandedRow === char.id }">
