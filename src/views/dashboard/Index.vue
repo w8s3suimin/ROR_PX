@@ -83,15 +83,47 @@
       </div>
 
       <div class="bg-ror-card border border-ror-border rounded-xl p-6">
-        <h2 class="text-xl font-bold text-ror-accent mb-4">設備狀態</h2>
-        <div class="flex gap-4 items-center">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3">
+          <h2 class="text-xl font-bold text-ror-accent">設備狀態</h2>
+          <div class="flex space-x-1 bg-black/20 p-1 rounded-lg border border-white/5">
+            <button @click="deviceStatusTab = 'overview'" :class="deviceStatusTab === 'overview' ? 'bg-ror-surface text-white shadow-sm' : 'text-ror-muted hover:text-white'" class="px-3 py-1.5 text-xs rounded-md transition-colors whitespace-nowrap">總覽</button>
+            <button @click="deviceStatusTab = 'by_license'" :class="deviceStatusTab === 'by_license' ? 'bg-ror-surface text-white shadow-sm' : 'text-ror-muted hover:text-white'" class="px-3 py-1.5 text-xs rounded-md transition-colors whitespace-nowrap">依授權分類</button>
+          </div>
+        </div>
+
+        <div v-if="deviceStatusTab === 'overview'" class="flex gap-4 items-center">
           <div class="flex-1 bg-[#1a1a1a] rounded-lg p-5 text-center border border-white/5">
-            <div class="text-3xl font-bold text-green-500 mb-1">0</div>
-            <div class="text-sm text-ror-muted">當前在線數量</div>
+            <div class="text-3xl font-bold text-green-500 mb-1">{{ mockDeviceStats.totalOnline }}</div>
+            <div class="text-sm text-ror-muted">總計在線數量</div>
           </div>
           <div class="flex-1 bg-[#1a1a1a] rounded-lg p-5 text-center border border-white/5">
-            <div class="text-3xl font-bold text-ror-muted mb-1">{{ currentLicense.limit === '無上限' ? '∞' : (currentLicense.limit === 0 ? 0 : Math.max(0, currentLicense.limit - 0)) }}</div>
-            <div class="text-sm text-ror-muted">剩餘可用額度</div>
+            <div class="text-3xl font-bold text-red-500 mb-1">{{ mockDeviceStats.totalOffline }}</div>
+            <div class="text-sm text-ror-muted">總計離線數量</div>
+          </div>
+        </div>
+
+        <div v-else class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div class="bg-[#1a1a1a] rounded-lg p-3 text-center border border-white/5 flex flex-col justify-center">
+            <div class="text-xl font-bold text-white mb-0.5">{{ mockDeviceStats.byLicense.daily }}</div>
+            <div class="text-[10px] text-ror-muted">日卡 (在線)</div>
+          </div>
+          <div class="bg-[#1a1a1a] rounded-lg p-3 text-center border border-white/5 flex flex-col justify-center">
+            <div class="text-xl font-bold text-white mb-0.5">{{ mockDeviceStats.byLicense.weekly }}</div>
+            <div class="text-[10px] text-ror-muted">周卡 (在線)</div>
+          </div>
+          <div class="bg-[#1a1a1a] rounded-lg p-3 text-center border border-white/5 flex flex-col justify-center">
+            <div class="text-xl font-bold text-white mb-0.5">{{ mockDeviceStats.byLicense.monthly }}</div>
+            <div class="text-[10px] text-ror-muted">月卡 (在線)</div>
+          </div>
+          
+          <div v-if="isAdminRole" class="bg-[#1a1a1a] rounded-lg p-3 text-center border border-ror-accent/20 flex flex-col justify-center">
+            <div class="text-xl font-bold text-ror-accent mb-0.5">{{ mockDeviceStats.byLicense.infinite }}</div>
+            <div class="text-[10px] text-ror-muted">無限卡 (在線)</div>
+          </div>
+          
+          <div class="bg-[#1a1a1a] rounded-lg p-3 text-center border border-white/5 flex flex-col justify-center" :class="isAdminRole ? 'col-span-2 sm:col-span-4 mt-1' : ''">
+            <div class="text-xl font-bold text-red-500 mb-0.5">{{ mockDeviceStats.totalOffline }}</div>
+            <div class="text-[10px] text-ror-muted">離線</div>
           </div>
         </div>
       </div>
@@ -108,32 +140,25 @@ const userEmail = ref('載入中...')
 const userCreatedDate = ref('載入中...')
 
 const selectedTab = ref('monthly')
+const deviceStatusTab = ref('overview')
 
 // 預設空的授權狀態
 const licenses = ref({
-  daily: {
-    days: 0,
-    limit: 0,
-    code: '尚未配發',
-    autoRenew: false
-  },
-  weekly: {
-    days: 0,
-    limit: 0,
-    code: '尚未配發',
-    autoRenew: false
-  },
-  monthly: {
-    days: 0,
-    limit: 0,
-    code: '尚未配發',
-    autoRenew: false
-  },
-  infinite: {
-    days: '無限',
-    limit: '無上限',
-    code: 'VIP-ADMIN-INFINITE',
-    autoRenew: true
+  daily: { days: 0, limit: 0, code: '尚未配發', autoRenew: false },
+  weekly: { days: 0, limit: 0, code: '尚未配發', autoRenew: false },
+  monthly: { days: 0, limit: 0, code: '尚未配發', autoRenew: false },
+  infinite: { days: '無限', limit: '無上限', code: 'VIP-ADMIN-INFINITE', autoRenew: true }
+})
+
+// 假的設備狀態數據 (未來從後端抓)
+const mockDeviceStats = ref({
+  totalOnline: 5,
+  totalOffline: 2,
+  byLicense: {
+    daily: 1,
+    weekly: 0,
+    monthly: 4,
+    infinite: 0
   }
 })
 
