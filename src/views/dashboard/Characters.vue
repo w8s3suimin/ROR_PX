@@ -84,6 +84,7 @@
       <div 
         v-for="char in filteredAndSortedCharacters" 
         :key="char.id"
+        v-memo="[char, expandedRow === char.id, viewAsAdmin]"
         class="bg-ror-card border border-ror-border rounded-xl transition-all duration-300 hover:border-ror-accent relative"
       >
         <!-- Mobile Row (4 columns) -->
