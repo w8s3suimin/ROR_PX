@@ -32,7 +32,7 @@
       <div 
         v-for="char in characters" 
         :key="char.id"
-        class="bg-ror-card border border-ror-border rounded-xl overflow-hidden transition-all duration-300 hover:border-ror-accent"
+        class="bg-ror-card border border-ror-border rounded-xl transition-all duration-300 hover:border-ror-accent relative"
       >
         <!-- Main Row (Click to toggle) -->
         <div 
@@ -96,7 +96,7 @@
 
         <!-- Expanded Detail Row (Special Items) -->
         <div 
-          class="bg-[#151515] overflow-hidden transition-all duration-300"
+          class="bg-[#151515] overflow-hidden transition-all duration-300 rounded-b-xl"
           :class="expandedRow === char.id ? 'max-h-96 border-t border-ror-border/50' : 'max-h-0'"
         >
           <div class="p-6">
