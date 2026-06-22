@@ -72,10 +72,16 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { supabase } from '../../utils/supabase'
-import { isAdminRole, viewAsAdmin, initAdminState } from '../../utils/adminState'
+import { isAdminRole as adminRef, viewAsAdmin as viewRef, initAdminState } from '../../utils/adminState'
+
+const isAdminRole = computed(() => adminRef.value)
+const viewAsAdmin = computed({
+  get: () => viewRef.value,
+  set: (val) => { viewRef.value = val }
+})
 
 const isLoggedIn = ref(false)
 const route = useRoute()
