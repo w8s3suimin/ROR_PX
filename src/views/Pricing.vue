@@ -1,13 +1,8 @@
 <template>
-  <div class="min-h-[calc(100vh-4rem)] p-4 max-w-7xl mx-auto py-12 relative">
-    <div class="text-center mb-12 flex flex-col items-center">
-      <h1 class="text-4xl font-bold text-ror-accent mb-4 flex items-center justify-center">
+  <div class="min-h-[calc(100vh-4rem)] p-4 max-w-7xl mx-auto py-12 relative flex flex-col items-center">
+    <div class="text-center mb-12">
+      <h1 class="text-4xl font-bold text-ror-accent mb-4">
         授權碼方案 (預告)
-        <button @click="showInfoModal = true" class="ml-3 text-ror-muted hover:text-ror-accent transition-colors focus:outline-none" title="查看授權機制細節聲明">
-          <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-          </svg>
-        </button>
       </h1>
       <p class="text-ror-muted text-lg max-w-2xl mx-auto">
         我們即將推出基於 PX 點數 (PXP) 的彈性授權方案。<br/>
@@ -16,7 +11,7 @@
     </div>
 
     <!-- 方案卡片 -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto mb-16">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto mb-12 w-full">
       <!-- 日卡 -->
       <div class="bg-ror-surface/50 border border-ror-border rounded-xl p-8 flex flex-col hover:border-ror-accent/50 transition-colors">
         <h3 class="text-2xl font-bold text-white mb-2">日卡方案</h3>
@@ -60,9 +55,15 @@
       </div>
     </div>
 
+    <!-- 底部聲明按鈕 -->
+    <button @click="showInfoModal = true" class="group flex items-center justify-center text-ror-muted hover:text-white transition-colors py-2 px-4 rounded-lg hover:bg-ror-surface/50">
+      <svg class="w-5 h-5 mr-2 text-ror-accent group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+      <span class="underline underline-offset-4 decoration-ror-border group-hover:decoration-ror-accent transition-colors">查看授權機制細節聲明</span>
+    </button>
+
     <!-- 細節聲明 Modal 懸浮框 -->
     <div v-if="showInfoModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" @click.self="showInfoModal = false">
-      <div class="bg-ror-surface border border-ror-border rounded-xl p-8 max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative">
+      <div class="bg-ror-surface border border-ror-border rounded-xl p-8 max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative text-left">
         <button @click="showInfoModal = false" class="absolute top-4 right-4 text-ror-muted hover:text-white transition-colors focus:outline-none">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
         </button>
