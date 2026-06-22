@@ -1,7 +1,14 @@
 <template>
-  <div class="min-h-[calc(100vh-4rem)] p-4 max-w-7xl mx-auto py-12">
-    <div class="text-center mb-12">
-      <h1 class="text-4xl font-bold text-ror-accent mb-4">授權碼方案 (預告)</h1>
+  <div class="min-h-[calc(100vh-4rem)] p-4 max-w-7xl mx-auto py-12 relative">
+    <div class="text-center mb-12 flex flex-col items-center">
+      <h1 class="text-4xl font-bold text-ror-accent mb-4 flex items-center justify-center">
+        授權碼方案 (預告)
+        <button @click="showInfoModal = true" class="ml-3 text-ror-muted hover:text-ror-accent transition-colors focus:outline-none" title="查看授權機制細節聲明">
+          <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </button>
+      </h1>
       <p class="text-ror-muted text-lg max-w-2xl mx-auto">
         我們即將推出基於 PX 點數 (PXP) 的彈性授權方案。<br/>
         儲值比例： <span class="text-white font-semibold">1 台幣 = 1 PXP</span>
@@ -53,32 +60,39 @@
       </div>
     </div>
 
-    <!-- 細節聲明 -->
-    <div class="max-w-4xl mx-auto bg-ror-surface/30 rounded-xl p-8 border border-ror-border">
-      <h3 class="text-xl font-bold text-white mb-6 flex items-center">
-        <svg class="w-6 h-6 mr-2 text-ror-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-        授權機制細節聲明
-      </h3>
-      <div class="space-y-6 text-ror-muted text-sm leading-relaxed">
-        <div>
-          <h4 class="text-white font-semibold mb-1">1. 無硬體綁定 (Concurrent Sessions)</h4>
-          <p>我們的授權為「最大同時在線機台數」，完全不綁定模擬器、電腦硬體或 MAC 位址。模擬器損壞可隨時重置，只要同時上線的腳本數量不超過您的授權上限即可。</p>
-        </div>
-        <div>
-          <h4 class="text-white font-semibold mb-1">2. 彈性比例加機</h4>
-          <p>當您需要臨時增加掛機機台時，系統會精準以您原方案的「剩餘天數比例」來計算加機費用（無條件捨去小數點）。這意味著月卡與周卡用戶若有臨時加機需求，同樣享有原方案的單日超值折扣價，讓您的擴充成本降到最低。</p>
-        </div>
-        <div>
-          <h4 class="text-white font-semibold mb-1">3. 防暴衝安全上限與無縫擴充</h4>
-          <p>我們深知腳本多開可能導致的失誤。因此，您可以在後台明確設定「最大機台授權上限」。在這個安全上限範圍內，只要您的錢包餘額充足，即可無縫開啟多台設備，系統會自動幫您擴充額度；一旦超過您設定的上限，系統將直接攔截並拒絕扣款，徹底保護您的點數安全，絕不隨意自動加開。</p>
-        </div>
-        <div>
-          <h4 class="text-white font-semibold mb-1">4. 友善的啟動續費機制 (預設手動)</h4>
-          <p>我們絕不在背景隨意扣款。授權過期時，只有當您「實際開啟並執行腳本」的瞬間才會觸發續費。為了讓您保有絕對的選擇權，系統預設為「手動續費（不自動扣款）」。未來系統將提供設定，讓您可以自由切換為「腳本彈窗確認續費」或「靜默自動續費」。</p>
-        </div>
-        <div>
-          <h4 class="text-white font-semibold mb-1">5. 單一方案專屬授權碼</h4>
-          <p>為了方便您管理，同一帳號下每種方案（日/周/月）只會發放一組專屬授權碼。所有的加機、續費操作，都會直接疊加擴充在該組授權碼上，您不需要管理多組雜亂的序號。</p>
+    <!-- 細節聲明 Modal 懸浮框 -->
+    <div v-if="showInfoModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" @click.self="showInfoModal = false">
+      <div class="bg-ror-surface border border-ror-border rounded-xl p-8 max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative">
+        <button @click="showInfoModal = false" class="absolute top-4 right-4 text-ror-muted hover:text-white transition-colors focus:outline-none">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+        
+        <h3 class="text-2xl font-bold text-white mb-6 flex items-center">
+          <svg class="w-6 h-6 mr-2 text-ror-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          授權機制細節聲明
+        </h3>
+        
+        <div class="space-y-6 text-ror-muted text-sm leading-relaxed">
+          <div>
+            <h4 class="text-white font-semibold mb-1">1. 無硬體綁定</h4>
+            <p>我們的授權為「最大同時在線機台數」，不綁定模擬器、電腦硬體或 MAC 位址。模擬器損壞可隨時重置，只要同時上線的腳本數量不超過您的授權上限即可。</p>
+          </div>
+          <div>
+            <h4 class="text-white font-semibold mb-1">2. 彈性加機</h4>
+            <p>當您需要臨時增加掛機機台時，系統會精準以您原方案的「剩餘天數比例」來計算加機費用（無條件捨去小數點）。這意味著月卡與周卡用戶若有臨時加機需求，同樣享有原方案的單日超值折扣價，讓您的擴充成本降到最低。</p>
+          </div>
+          <div>
+            <h4 class="text-white font-semibold mb-1">3. 友善的自動續費機制</h4>
+            <p>我們絕不在背景隨意扣款。授權過期時，只有當您「實際開啟並執行腳本」的瞬間才會觸發續費。為了讓您保有絕對的選擇權，系統預設為「不自動扣款」，只有當您於管理中心勾選「自動續費」，才會啟用本功能。</p>
+          </div>
+          <div>
+            <h4 class="text-white font-semibold mb-1">4. 防暴衝安全上限與無縫擴充</h4>
+            <p>我們深知腳本多開可能導致的失誤。因此，在您開啟自動續費機制後，可以在後台明確設定「最大機台授權上限」。只要您的錢包餘額充足並且在安全上限內，您可以使用對應的授權來開啟多台設備，系統會自動幫您擴充額度；若超過您設定的上限，系統將攔截並拒絕扣款，保護您的點數安全。</p>
+          </div>
+          <div>
+            <h4 class="text-white font-semibold mb-1">5. 單一方案專屬授權碼</h4>
+            <p>為了方便您管理，每種方案（日/周/月）僅在該帳號第一次購買時派發對應方案授權碼。所有的加機、續費操作，都會直接疊加擴充在該組授權碼上，您不需要管理多組雜亂的授權碼，也不需要頻繁更新授權。</p>
+          </div>
         </div>
       </div>
     </div>
@@ -86,5 +100,7 @@
 </template>
 
 <script setup>
-// 目前為預告展示頁面，暫無業務邏輯
+import { ref } from 'vue'
+
+const showInfoModal = ref(false)
 </script>
