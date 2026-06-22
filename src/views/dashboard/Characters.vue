@@ -34,28 +34,33 @@
         :key="char.id"
         class="bg-ror-card border border-ror-border rounded-xl transition-all duration-300 hover:border-ror-accent relative"
       >
-        <!-- Mobile Row (3 columns) -->
+        <!-- Mobile Row (4 columns) -->
         <div 
-          class="flex md:hidden items-center justify-between pl-6 pr-4 py-4 cursor-pointer relative"
+          class="flex md:hidden items-center justify-between pl-4 pr-2 py-4 cursor-pointer relative"
           @click="openMobileModal(char)"
         >
           <!-- Col 1: Server-Char / Account -->
-          <div class="flex-[1.2] min-w-0 pr-2 border-r border-ror-border/30">
-            <div class="text-sm font-bold text-white truncate">{{ char.server_name }}-角{{ char.char_slot }}</div>
-            <div class="text-xs text-ror-muted truncate mt-1">{{ char.game_account || '未知遊戲帳號' }}</div>
+          <div class="flex-[1.2] min-w-0 pr-1 border-r border-ror-border/30">
+            <div class="text-[13px] font-bold text-white truncate">{{ char.server_name }}-角{{ char.char_slot }}</div>
+            <div class="text-[11px] text-ror-muted truncate mt-1">{{ char.game_account || '未知遊戲帳號' }}</div>
           </div>
           
-          <!-- Col 2: Level / Crystal -->
-          <div class="flex-1 text-center min-w-0 px-2 border-r border-ror-border/30">
-            <div class="text-sm font-mono text-white">Lv.{{ char.level }}</div>
-            <div class="text-xs font-mono text-pink-400 mt-1">{{ formatNumber(char.crystal) }}</div>
+          <!-- Col 2: Char Name & Level -->
+          <div class="flex-[1.2] min-w-0 px-1 border-r border-ror-border/30 text-center">
+            <div class="text-[13px] font-bold text-white truncate">{{ char.character_name }}</div>
+            <div class="text-[11px] font-mono text-gray-300 mt-1">Lv.{{ char.level }}</div>
           </div>
           
-          <!-- Col 3: Vitality / Dispatch -->
-          <div class="flex-[0.8] text-right min-w-0 pl-2">
-            <div class="text-sm font-mono text-blue-400">{{ formatNumber(char.vitality) }}</div>
-            <div class="text-xs mt-1">
-              <span class="px-1.5 py-0.5 rounded font-bold" :class="char.dispatch_current >= char.dispatch_max ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'">
+          <!-- Col 3: Crystal -->
+          <div class="flex-[0.8] min-w-0 px-1 border-r border-ror-border/30 text-center flex flex-col items-center justify-center">
+            <div class="text-[12px] font-mono text-pink-400 font-bold">{{ formatNumber(char.crystal) }}</div>
+          </div>
+
+          <!-- Col 4: Vitality / Dispatch -->
+          <div class="flex-[0.9] text-right min-w-0 pl-1">
+            <div class="text-[13px] font-mono text-blue-400">{{ formatNumber(char.vitality) }}</div>
+            <div class="text-[10px] mt-1">
+              <span class="px-1 py-0.5 rounded font-bold" :class="char.dispatch_current >= char.dispatch_max ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'">
                 {{ char.dispatch_current }}/{{ char.dispatch_max }}
               </span>
             </div>

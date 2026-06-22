@@ -1,7 +1,7 @@
 <template>
   <aside 
-    class="w-64 h-[calc(100vh-4rem)] bg-ror-dark/95 md:bg-ror-dark/80 backdrop-blur-xl border-r border-ror-border flex flex-col fixed left-0 top-16 text-white z-50 transition-transform duration-300 shadow-[4px_0_24px_rgba(0,0,0,0.5)]"
-    :class="isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'"
+    class="w-64 h-[calc(100vh-4rem)] bg-ror-dark/95 md:bg-ror-dark/80 backdrop-blur-xl border-x md:border-l-0 md:border-r border-ror-border flex flex-col fixed right-0 md:right-auto md:left-0 top-16 text-white z-50 transition-transform duration-300 shadow-[-4px_0_24px_rgba(0,0,0,0.5)] md:shadow-[4px_0_24px_rgba(0,0,0,0.5)]"
+    :class="isOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0'"
   >
     <!-- Close Button (Mobile Only) -->
     <div class="md:hidden flex justify-end p-4 border-b border-ror-border/50">
