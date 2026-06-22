@@ -19,7 +19,7 @@
     <!-- Resource List -->
     <div v-else class="space-y-4">
       <!-- Desktop List Header -->
-      <div class="sticky top-16 z-30 hidden md:grid gap-4 pl-6 pr-20 py-3.5 bg-gradient-to-r from-[#1a1a1a]/95 via-[#222]/95 to-[#1a1a1a]/95 backdrop-blur-md rounded-xl text-[15px] font-black text-ror-accent border border-ror-accent/20 shadow-[0_10px_30px_rgba(0,0,0,0.8)] tracking-wider mb-2 select-none" :class="viewAsAdmin ? 'grid-cols-[24]' : 'grid-cols-[22]'">
+      <div class="sticky top-16 z-30 hidden md:grid gap-4 pl-6 pr-20 py-3.5 bg-gradient-to-r from-[#1a1a1a]/95 via-[#222]/95 to-[#1a1a1a]/95 backdrop-blur-md rounded-xl text-[15px] font-black text-ror-accent border border-ror-accent/20 shadow-[0_10px_30px_rgba(0,0,0,0.8)] tracking-wider mb-2 select-none" :style="{ gridTemplateColumns: viewAsAdmin ? 'repeat(24, minmax(0, 1fr))' : 'repeat(22, minmax(0, 1fr))' }">
         <div class="text-center drop-shadow-md cursor-pointer hover:text-white flex items-center justify-center gap-1" :class="viewAsAdmin ? 'col-span-6' : 'col-span-4'" @click="handleSort('game_account')">
           遊戲帳號<span v-if="viewAsAdmin">/平台ID</span>
           <span class="text-[10px]" v-if="sortConfig.key === 'game_account'">{{ sortConfig.dir === 'asc' ? '▲' : '▼' }}</span>
@@ -127,7 +127,7 @@
         <!-- Main Row (Desktop) -->
         <div 
           class="hidden md:grid gap-4 pl-6 pr-20 py-4 cursor-pointer items-center relative"
-          :class="viewAsAdmin ? 'grid-cols-[24]' : 'grid-cols-[22]'"
+          :style="{ gridTemplateColumns: viewAsAdmin ? 'repeat(24, minmax(0, 1fr))' : 'repeat(22, minmax(0, 1fr))' }"
           @click="toggleRow(char.id)"
         >
           <div class="truncate text-center" :class="viewAsAdmin ? 'col-span-6' : 'col-span-4'">
