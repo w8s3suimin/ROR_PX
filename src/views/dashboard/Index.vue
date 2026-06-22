@@ -47,7 +47,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { supabase } from '@/utils/supabase'
+import { supabase } from '../../utils/supabase'
 
 const authCode = ref('載入中...')
 const allowedDevices = ref(0)
