@@ -19,15 +19,15 @@
     <!-- Resource List -->
     <div v-else class="space-y-4">
       <!-- Desktop List Header -->
-      <div class="sticky top-16 z-30 hidden md:grid gap-4 pl-6 pr-12 py-3.5 bg-gradient-to-r from-[#1a1a1a]/95 via-[#222]/95 to-[#1a1a1a]/95 backdrop-blur-md rounded-xl text-[15px] font-black text-ror-accent border border-ror-accent/20 shadow-[0_10px_30px_rgba(0,0,0,0.8)] tracking-wider mb-2 select-none" :class="viewAsAdmin ? 'grid-cols-12' : 'grid-cols-11'">
+      <div class="sticky top-16 z-30 hidden md:grid gap-4 pl-6 pr-20 py-3.5 bg-gradient-to-r from-[#1a1a1a]/95 via-[#222]/95 to-[#1a1a1a]/95 backdrop-blur-md rounded-xl text-[15px] font-black text-ror-accent border border-ror-accent/20 shadow-[0_10px_30px_rgba(0,0,0,0.8)] tracking-wider mb-2 select-none" :class="viewAsAdmin ? 'grid-cols-12' : 'grid-cols-11'">
         <div class="text-center drop-shadow-md cursor-pointer hover:text-white flex items-center justify-center gap-1" :class="viewAsAdmin ? 'col-span-3' : 'col-span-2'" @click="handleSort('game_account')">
           遊戲帳號<span v-if="viewAsAdmin">/平台ID</span>
-          <span class="text-xs" v-if="sortConfig.key === 'game_account'">{{ sortConfig.dir === 'asc' ? '▲' : '▼' }}</span>
+          <span class="text-[10px]" v-if="sortConfig.key === 'game_account'">{{ sortConfig.dir === 'asc' ? '▲' : '▼' }}</span>
           <span v-if="filters.game_account" @click.stop="clearFilter('game_account')" title="解除過濾" class="text-lg">🔒</span>
         </div>
         <div class="col-span-1 text-center drop-shadow-md cursor-pointer hover:text-white flex items-center justify-center gap-1" @click="handleSort('server_name')">
           伺服器
-          <span class="text-xs" v-if="sortConfig.key === 'server_name'">{{ sortConfig.dir === 'asc' ? '▲' : '▼' }}</span>
+          <span class="text-[10px]" v-if="sortConfig.key === 'server_name'">{{ sortConfig.dir === 'asc' ? '▲' : '▼' }}</span>
           <span v-if="filters.server_name" @click.stop="clearFilter('server_name')" title="解除過濾" class="text-lg">🔒</span>
         </div>
         <div class="col-span-3 text-center drop-shadow-md">
@@ -35,24 +35,24 @@
         </div>
         <div class="col-span-1 text-center drop-shadow-md cursor-pointer hover:text-white flex items-center justify-center gap-1" @click="handleSort('level')">
           等級
-          <span @click.stop="handleSort('level')" class="px-0.5 text-ror-muted hover:text-white text-xs" title="排序">{{ sortConfig.key === 'level' ? (sortConfig.dir === 'asc' ? '▲' : '▼') : '↕' }}</span>
+          <span class="text-[10px]" v-if="sortConfig.key === 'level'">{{ sortConfig.dir === 'asc' ? '▲' : '▼' }}</span>
           <span v-if="filters.level" @click.stop="clearFilter('level')" title="解除過濾" class="text-lg">🔒</span>
         </div>
         <div class="col-span-1 text-center drop-shadow-md">職業</div>
         <div class="col-span-1 text-center drop-shadow-md cursor-pointer hover:text-white flex items-center justify-center gap-1" @click="handleSort('dispatch')">
           派遣數量
-          <span @click.stop="handleSort('dispatch')" class="px-0.5 text-ror-muted hover:text-white text-xs" title="排序">{{ sortConfig.key === 'dispatch' ? (sortConfig.dir === 'asc' ? '▲' : '▼') : '↕' }}</span>
+          <span class="text-[10px]" v-if="sortConfig.key === 'dispatch'">{{ sortConfig.dir === 'asc' ? '▲' : '▼' }}</span>
           <span v-if="filters.dispatch" @click.stop="clearFilter('dispatch')" title="解除過濾" class="text-lg">🔒</span>
         </div>
         <div class="col-span-1 text-right text-[#4dabf7] drop-shadow-md cursor-pointer hover:text-white flex items-center justify-end gap-1" @click="handleSort('vitality')">
           <span v-if="filters.vitality" @click.stop="clearFilter('vitality')" title="解除過濾" class="text-lg">🔒</span>
-          <span @click.stop="handleSort('vitality')" class="px-0.5 text-[#4dabf7]/50 hover:text-[#4dabf7] text-xs" title="排序">{{ sortConfig.key === 'vitality' ? (sortConfig.dir === 'asc' ? '▲' : '▼') : '↕' }}</span>
           活力值
+          <span class="text-[10px]" v-if="sortConfig.key === 'vitality'">{{ sortConfig.dir === 'asc' ? '▲' : '▼' }}</span>
         </div>
         <div class="col-span-1 text-right text-[#ff93d3] drop-shadow-md cursor-pointer hover:text-white flex items-center justify-end gap-1" @click="handleSort('crystal')">
           <span v-if="filters.crystal" @click.stop="clearFilter('crystal')" title="解除過濾" class="text-lg">🔒</span>
-          <span @click.stop="handleSort('crystal')" class="px-0.5 text-[#ff93d3]/50 hover:text-[#ff93d3] text-xs" title="排序">{{ sortConfig.key === 'crystal' ? (sortConfig.dir === 'asc' ? '▲' : '▼') : '↕' }}</span>
           水晶
+          <span class="text-[10px]" v-if="sortConfig.key === 'crystal'">{{ sortConfig.dir === 'asc' ? '▲' : '▼' }}</span>
         </div>
       </div>
 
@@ -65,17 +65,18 @@
         </div>
         <div class="flex-[1.2] min-w-0 text-center px-1 drop-shadow-md cursor-pointer flex items-center justify-center gap-1" @click="handleSort('level')">
           角色/等級
-          <span @click.stop="handleSort('level')" class="px-0.5 text-ror-muted hover:text-white text-[10px]">{{ sortConfig.key === 'level' ? (sortConfig.dir === 'asc' ? '▲' : '▼') : '↕' }}</span>
+          <span class="text-[10px]" v-if="sortConfig.key === 'level'">{{ sortConfig.dir === 'asc' ? '▲' : '▼' }}</span>
           <span v-if="filters.level" @click.stop="clearFilter('level')" title="解除過濾">🔒</span>
         </div>
         <div class="flex-[0.8] min-w-0 text-center px-1 text-[#ff93d3] drop-shadow-md cursor-pointer flex items-center justify-center gap-1" @click="handleSort('crystal')">
           <span v-if="filters.crystal" @click.stop="clearFilter('crystal')" title="解除過濾">🔒</span>
-          水晶<span @click.stop="handleSort('crystal')" class="px-0.5 text-[#ff93d3]/50 text-[10px]">{{ sortConfig.key === 'crystal' ? (sortConfig.dir === 'asc' ? '▲' : '▼') : '↕' }}</span>
+          水晶
+          <span class="text-[10px]" v-if="sortConfig.key === 'crystal'">{{ sortConfig.dir === 'asc' ? '▲' : '▼' }}</span>
         </div>
         <div class="flex-[0.9] min-w-0 text-right pl-1 text-[#4dabf7] drop-shadow-md cursor-pointer flex items-center justify-end gap-1" @click="handleSort('vitality')">
           <span v-if="filters.vitality || filters.dispatch" @click.stop="clearFilter('vitality'); clearFilter('dispatch')" title="解除過濾">🔒</span>
           活/派
-          <span @click.stop="handleSort('vitality')" class="px-0.5 text-[#4dabf7]/50 text-[10px]">{{ sortConfig.key === 'vitality' ? (sortConfig.dir === 'asc' ? '▲' : '▼') : '↕' }}</span>
+          <span class="text-[10px]" v-if="sortConfig.key === 'vitality'">{{ sortConfig.dir === 'asc' ? '▲' : '▼' }}</span>
         </div>
       </div>
 
@@ -124,7 +125,7 @@
 
         <!-- Main Row (Desktop) -->
         <div 
-          class="hidden md:grid gap-4 pl-6 pr-12 py-4 cursor-pointer items-center relative"
+          class="hidden md:grid gap-4 pl-6 pr-20 py-4 cursor-pointer items-center relative"
           :class="viewAsAdmin ? 'grid-cols-12' : 'grid-cols-11'"
           @click="toggleRow(char.id)"
         >
