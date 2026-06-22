@@ -19,40 +19,40 @@
     <!-- Resource List -->
     <div v-else class="space-y-4">
       <!-- Desktop List Header -->
-      <div class="sticky top-16 z-30 hidden md:grid gap-4 pl-6 pr-20 py-3.5 bg-gradient-to-r from-[#1a1a1a]/95 via-[#222]/95 to-[#1a1a1a]/95 backdrop-blur-md rounded-xl text-[15px] font-black text-ror-accent border border-ror-accent/20 shadow-[0_10px_30px_rgba(0,0,0,0.8)] tracking-wider mb-2 select-none" :class="viewAsAdmin ? 'grid-cols-12' : 'grid-cols-11'">
-        <div class="text-center drop-shadow-md cursor-pointer hover:text-white flex items-center justify-center gap-1" :class="viewAsAdmin ? 'col-span-3' : 'col-span-2'" @click="handleSort('game_account')">
+      <div class="sticky top-16 z-30 hidden md:grid gap-4 pl-6 pr-20 py-3.5 bg-gradient-to-r from-[#1a1a1a]/95 via-[#222]/95 to-[#1a1a1a]/95 backdrop-blur-md rounded-xl text-[15px] font-black text-ror-accent border border-ror-accent/20 shadow-[0_10px_30px_rgba(0,0,0,0.8)] tracking-wider mb-2 select-none" :class="viewAsAdmin ? 'grid-cols-[24]' : 'grid-cols-[22]'">
+        <div class="text-center drop-shadow-md cursor-pointer hover:text-white flex items-center justify-center gap-1" :class="viewAsAdmin ? 'col-span-6' : 'col-span-4'" @click="handleSort('game_account')">
           遊戲帳號<span v-if="viewAsAdmin">/平台ID</span>
           <span class="text-[10px]" v-if="sortConfig.key === 'game_account'">{{ sortConfig.dir === 'asc' ? '▲' : '▼' }}</span>
           <span v-if="filters.game_account" @click.stop="clearFilter('game_account')" title="解除過濾" class="text-lg">🔒</span>
         </div>
-        <div class="col-span-1 text-center drop-shadow-md cursor-pointer hover:text-white flex items-center justify-center gap-1" @click="handleSort('server_name')">
+        <div class="col-span-2 text-center drop-shadow-md cursor-pointer hover:text-white flex items-center justify-center gap-1" @click="handleSort('server_name')">
           伺服器
           <span class="text-[10px]" v-if="sortConfig.key === 'server_name'">{{ sortConfig.dir === 'asc' ? '▲' : '▼' }}</span>
           <span v-if="filters.server_name" @click.stop="clearFilter('server_name')" title="解除過濾" class="text-lg">🔒</span>
         </div>
-        <div class="col-span-2 text-center drop-shadow-md">
+        <div class="col-span-5 text-center drop-shadow-md">
           角色名稱
         </div>
-        <div class="col-span-1 text-center drop-shadow-md cursor-pointer hover:text-white flex items-center justify-center gap-1" @click="handleSort('level')">
+        <div class="col-span-2 text-center drop-shadow-md cursor-pointer hover:text-white flex items-center justify-center gap-1" @click="handleSort('level')">
           等級
           <span class="text-[10px]" v-if="sortConfig.key === 'level'">{{ sortConfig.dir === 'asc' ? '▲' : '▼' }}</span>
           <span v-if="filters.level" @click.stop="clearFilter('level')" title="解除過濾" class="text-lg">🔒</span>
         </div>
-        <div class="col-span-1 text-center drop-shadow-md">職業</div>
-        <div class="col-span-1 text-center drop-shadow-md cursor-pointer hover:text-white flex items-center justify-center gap-1" @click="handleSort('dispatch')">
+        <div class="col-span-2 text-center drop-shadow-md">職業</div>
+        <div class="col-span-3 text-right text-[#ff93d3] drop-shadow-md cursor-pointer hover:text-white flex items-center justify-end gap-1" @click="handleSort('crystal')">
+          <span v-if="filters.crystal" @click.stop="clearFilter('crystal')" title="解除過濾" class="text-lg">🔒</span>
+          水晶
+          <span class="text-[10px]" v-if="sortConfig.key === 'crystal'">{{ sortConfig.dir === 'asc' ? '▲' : '▼' }}</span>
+        </div>
+        <div class="col-span-2 text-center drop-shadow-md cursor-pointer hover:text-white flex items-center justify-center gap-1" @click="handleSort('dispatch')">
           派遣狀態
           <span class="text-[10px]" v-if="sortConfig.key === 'dispatch'">{{ sortConfig.dir === 'asc' ? '▲' : '▼' }}</span>
           <span v-if="filters.dispatch" @click.stop="clearFilter('dispatch')" title="解除過濾" class="text-lg">🔒</span>
         </div>
-        <div class="col-span-1 text-right text-[#4dabf7] drop-shadow-md cursor-pointer hover:text-white flex items-center justify-end gap-1" @click="handleSort('vitality')">
+        <div class="col-span-2 text-right text-[#4dabf7] drop-shadow-md cursor-pointer hover:text-white flex items-center justify-end gap-1" @click="handleSort('vitality')">
           <span v-if="filters.vitality" @click.stop="clearFilter('vitality')" title="解除過濾" class="text-lg">🔒</span>
           活力值
           <span class="text-[10px]" v-if="sortConfig.key === 'vitality'">{{ sortConfig.dir === 'asc' ? '▲' : '▼' }}</span>
-        </div>
-        <div class="col-span-2 text-right text-[#ff93d3] drop-shadow-md cursor-pointer hover:text-white flex items-center justify-end gap-1" @click="handleSort('crystal')">
-          <span v-if="filters.crystal" @click.stop="clearFilter('crystal')" title="解除過濾" class="text-lg">🔒</span>
-          水晶
-          <span class="text-[10px]" v-if="sortConfig.key === 'crystal'">{{ sortConfig.dir === 'asc' ? '▲' : '▼' }}</span>
         </div>
       </div>
 
@@ -127,38 +127,45 @@
         <!-- Main Row (Desktop) -->
         <div 
           class="hidden md:grid gap-4 pl-6 pr-20 py-4 cursor-pointer items-center relative"
-          :class="viewAsAdmin ? 'grid-cols-12' : 'grid-cols-11'"
+          :class="viewAsAdmin ? 'grid-cols-[24]' : 'grid-cols-[22]'"
           @click="toggleRow(char.id)"
         >
-          <div class="truncate text-center" :class="viewAsAdmin ? 'col-span-3' : 'col-span-2'">
+          <div class="truncate text-center" :class="viewAsAdmin ? 'col-span-6' : 'col-span-4'">
             <div class="font-bold text-white text-sm">
               <span @click.stop="toggleStringFilter('game_account', char.game_account)" class="hover:text-ror-accent transition-colors">{{ char.game_account || '未知遊戲帳號' }}</span>
             </div>
             <div v-if="viewAsAdmin" class="text-xs text-ror-muted">{{ char.profiles?.email || '未綁定' }}</div>
           </div>
-          <div class="col-span-1 text-sm text-gray-300 truncate text-center">
+          <div class="col-span-2 text-sm text-gray-300 truncate text-center">
             <span @click.stop="toggleStringFilter('server_name', char.server_name)" class="inline-block px-2 py-1 rounded bg-white/5 border border-white/10 hover:text-ror-accent hover:border-ror-accent/50 transition-colors">{{ char.server_name }}</span>
           </div>
-          <div class="col-span-2 text-center truncate">
+          <div class="col-span-5 text-center truncate">
             <div class="text-white font-bold text-sm">{{ char.character_name }}</div>
             <div class="text-xs text-ror-muted">角 {{ char.char_slot }}</div>
           </div>
           
-          <div class="col-span-1 text-center text-white font-mono relative group">
+          <div class="col-span-2 text-center text-white font-mono relative group">
             <span class="text-sm cursor-pointer hover:text-ror-accent transition-colors" @click.stop="openNumericFilter('level')">Lv.{{ char.level }}</span>
             <div class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden md:group-hover:block whitespace-nowrap bg-black text-gray-300 text-xs px-2 py-1 rounded border border-ror-border z-10 pointer-events-none shadow-lg">
               最後更新: {{ formatTime(char.updated_at) }}
             </div>
           </div>
           
-          <div class="col-span-1 text-center text-white text-sm relative group">
+          <div class="col-span-2 text-center text-white text-sm relative group">
             {{ char.profession || '未知' }}
             <div class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden md:group-hover:block whitespace-nowrap bg-black text-gray-300 text-xs px-2 py-1 rounded border border-ror-border z-10 pointer-events-none shadow-lg">
               最後更新: {{ formatTime(char.updated_at) }}
             </div>
           </div>
           
-          <div class="col-span-1 text-center relative group">
+          <div class="col-span-3 text-right font-mono text-[#ff93d3] relative group">
+            <span class="cursor-pointer hover:opacity-80 transition-opacity" @click.stop="openNumericFilter('crystal')">{{ formatNumber(char.crystal) }}</span>
+            <div class="absolute right-0 bottom-full mb-2 hidden md:group-hover:block whitespace-nowrap bg-black text-gray-300 text-xs px-2 py-1 rounded border border-ror-border z-10 pointer-events-none shadow-lg">
+              最後更新: {{ formatTime(char.updated_at) }}
+            </div>
+          </div>
+          
+          <div class="col-span-2 text-center relative group">
             <span @click.stop="toggleDispatchFilter(char.dispatch_current >= char.dispatch_max)" class="px-2 py-1 rounded text-xs font-bold hover:opacity-80 transition-opacity" :class="char.dispatch_current >= char.dispatch_max ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'">
               {{ char.dispatch_current }} / {{ char.dispatch_max }}
             </span>
@@ -167,15 +174,8 @@
             </div>
           </div>
 
-          <div class="col-span-1 text-right font-mono text-[#4dabf7] relative group">
+          <div class="col-span-2 text-right font-mono text-[#4dabf7] relative group">
             <span class="cursor-pointer hover:opacity-80 transition-opacity" @click.stop="openNumericFilter('vitality')">{{ formatNumber(char.vitality) }}</span>
-            <div class="absolute right-0 bottom-full mb-2 hidden md:group-hover:block whitespace-nowrap bg-black text-gray-300 text-xs px-2 py-1 rounded border border-ror-border z-10 pointer-events-none shadow-lg">
-              最後更新: {{ formatTime(char.updated_at) }}
-            </div>
-          </div>
-          
-          <div class="col-span-2 text-right font-mono text-[#ff93d3] relative group">
-            <span class="cursor-pointer hover:opacity-80 transition-opacity" @click.stop="openNumericFilter('crystal')">{{ formatNumber(char.crystal) }}</span>
             <div class="absolute right-0 bottom-full mb-2 hidden md:group-hover:block whitespace-nowrap bg-black text-gray-300 text-xs px-2 py-1 rounded border border-ror-border z-10 pointer-events-none shadow-lg">
               最後更新: {{ formatTime(char.updated_at) }}
             </div>
