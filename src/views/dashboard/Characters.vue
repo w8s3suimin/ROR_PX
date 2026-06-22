@@ -541,8 +541,12 @@ const filteredAndSortedCharacters = computed(() => {
   // Filtering
   if (filters.value.game_account) res = res.filter(c => c.game_account === filters.value.game_account)
   if (filters.value.server_name) res = res.filter(c => c.server_name === filters.value.server_name)
-  if (filters.value.dispatch === 'full') res = res.filter(c => (c.dispatch_current || 0) >= (c.dispatch_max || 0))
-  if (filters.value.dispatch === 'not_full') res = res.filter(c => (c.dispatch_current || 0) < (c.dispatch_max || 0))
+  if (filters.value.dispatch === 'full') {
+    res = res.filter(c => (Number(c.dispatch_current) || 0) >= (Number(c.dispatch_max) || 0))
+  }
+  if (filters.value.dispatch === 'not_full') {
+    res = res.filter(c => (Number(c.dispatch_current) || 0) < (Number(c.dispatch_max) || 0))
+  }
   
   ['level', 'vitality', 'crystal'].forEach(key => {
     if (filters.value[key]) {
@@ -573,10 +577,10 @@ const filteredAndSortedCharacters = computed(() => {
         else diff = (a.char_slot || 0) - (b.char_slot || 0)
       }
     } else if (sortConfig.value.key === 'dispatch') {
-      const dCurrA = a.dispatch_current || 0
-      const dMaxA = a.dispatch_max || 0
-      const dCurrB = b.dispatch_current || 0
-      const dMaxB = b.dispatch_max || 0
+      const dCurrA = Number(a.dispatch_current) || 0
+      const dMaxA = Number(a.dispatch_max) || 0
+      const dCurrB = Number(b.dispatch_current) || 0
+      const dMaxB = Number(b.dispatch_max) || 0
       const ratioA = dMaxA > 0 ? dCurrA / dMaxA : 0
       const ratioB = dMaxB > 0 ? dCurrB / dMaxB : 0
       diff = ratioA - ratioB
