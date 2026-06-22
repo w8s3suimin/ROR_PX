@@ -45,9 +45,9 @@ const router = createRouter({
           component: () => import('../views/dashboard/Monitor.vue')
         },
         {
-          path: 'resources',
-          name: 'resources',
-          component: () => import('../views/dashboard/Resources.vue')
+          path: 'characters',
+          name: 'characters',
+          component: () => import('../views/dashboard/Characters.vue')
         },
         {
           path: 'deploy',

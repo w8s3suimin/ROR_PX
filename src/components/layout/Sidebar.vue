@@ -59,7 +59,7 @@ const isLoggedIn = ref(false)
 const navItems = [
   { name: '管理總覽', path: '/dashboard', icon: 'home' },
   { name: '設備監控', path: '/dashboard/monitor', icon: 'chart' },
-  { name: '資源管理', path: '/dashboard/resources', icon: 'database' },
+  { name: '角色管理', path: '/dashboard/characters', icon: 'database' },
   { name: '任務部署', path: '/dashboard/deploy', icon: 'cloud' },
 ]
 
