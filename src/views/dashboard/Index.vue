@@ -15,15 +15,23 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div class="bg-ror-card border border-ror-border rounded-xl p-6">
-        <h2 class="text-xl font-bold text-ror-accent mb-4">設備狀態</h2>
-        <div class="flex gap-4">
-          <div class="flex-1 bg-[#1a1a1a] rounded p-4 text-center">
-            <div class="text-3xl font-bold text-green-500 mb-1">16</div>
-            <div class="text-sm text-ror-muted">在線數量</div>
+        <h2 class="text-xl font-bold text-ror-accent mb-4">帳號資訊</h2>
+        <div class="space-y-4">
+          <div class="flex items-center justify-between border-b border-white/5 pb-3">
+            <span class="text-ror-muted text-sm">註冊信箱</span>
+            <span class="text-white font-medium">{{ userEmail }}</span>
           </div>
-          <div class="flex-1 bg-[#1a1a1a] rounded p-4 text-center">
-            <div class="text-3xl font-bold text-red-500 mb-1">0</div>
-            <div class="text-sm text-ror-muted">離線數量</div>
+          <div class="flex items-center justify-between border-b border-white/5 pb-3">
+            <span class="text-ror-muted text-sm">權限身份</span>
+            <span class="font-bold flex items-center gap-1.5" :class="isAdminRole ? 'text-green-400' : 'text-blue-400'">
+              <svg v-if="isAdminRole" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+              <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+              {{ isAdminRole ? '系統管理員' : '一般使用者' }}
+            </span>
+          </div>
+          <div class="flex items-center justify-between pb-1">
+            <span class="text-ror-muted text-sm">註冊時間</span>
+            <span class="text-white font-mono text-sm">{{ userCreatedDate }}</span>
           </div>
         </div>
       </div>
@@ -47,6 +55,20 @@
           </div>
         </div>
       </div>
+
+      <div class="bg-ror-card border border-ror-border rounded-xl p-6">
+        <h2 class="text-xl font-bold text-ror-accent mb-4">設備狀態</h2>
+        <div class="flex gap-4 items-center">
+          <div class="flex-1 bg-[#1a1a1a] rounded-lg p-5 text-center border border-white/5">
+            <div class="text-3xl font-bold text-green-500 mb-1">16</div>
+            <div class="text-sm text-ror-muted">在線數量</div>
+          </div>
+          <div class="flex-1 bg-[#1a1a1a] rounded-lg p-5 text-center border border-white/5">
+            <div class="text-3xl font-bold text-red-500 mb-1">0</div>
+            <div class="text-sm text-ror-muted">離線數量</div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -58,11 +80,15 @@ import { isAdminRole } from '../../utils/adminState'
 
 const authCode = ref('載入中...')
 const allowedDevices = ref(0)
+const userEmail = ref('載入中...')
+const userCreatedDate = ref('載入中...')
 
 onMounted(async () => {
   try {
     const { data: { user } } = await supabase.auth.getUser()
     if (user) {
+      userEmail.value = user.email || '未提供'
+      userCreatedDate.value = new Date(user.created_at).toLocaleDateString('zh-TW', { year: 'numeric', month: '2-digit', day: '2-digit' })
       const { data, error } = await supabase
         .from('authorization_codes')
         .select('code, allowed_devices')
