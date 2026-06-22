@@ -9,7 +9,7 @@
 
     <Sidebar :is-open="isMobileSidebarOpen" @close="isMobileSidebarOpen = false" />
     
-    <main class="flex-1 overflow-y-auto md:ml-64 p-4 md:p-6 bg-ror-dark w-full min-h-[calc(100vh-4rem)]">
+    <main class="flex-1 md:ml-64 p-4 md:p-6 bg-ror-dark w-full min-h-[calc(100vh-4rem)]">
       <router-view></router-view>
     </main>
   </div>
