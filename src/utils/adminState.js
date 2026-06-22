@@ -8,10 +8,10 @@ export const initAdminState = async () => {
   try {
     const { data: { session } } = await supabase.auth.getSession()
     if (session) {
-      const { data: profile, error } = await supabase.from('profiles').select('role').eq('id', session.user.id).single()
+      const { data: profile, error } = await supabase.from('profiles').select('is_admin').eq('id', session.user.id).single()
       if (error) {
         console.error('Failed to fetch profile role:', error)
-      } else if (profile?.role === 'admin') {
+      } else if (profile?.is_admin === true) {
         isAdminRole.value = true
         viewAsAdmin.value = true
       }
