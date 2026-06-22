@@ -1,7 +1,17 @@
 <template>
-  <aside class="w-64 h-[calc(100vh-4rem)] bg-ror-dark/80 backdrop-blur-xl border-r border-ror-border flex flex-col fixed left-0 top-16 text-white z-50 transition-all duration-300 shadow-[4px_0_24px_rgba(0,0,0,0.5)]">
+  <aside 
+    class="w-64 h-[calc(100vh-4rem)] bg-ror-dark/95 md:bg-ror-dark/80 backdrop-blur-xl border-r border-ror-border flex flex-col fixed left-0 top-16 text-white z-50 transition-transform duration-300 shadow-[4px_0_24px_rgba(0,0,0,0.5)]"
+    :class="isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'"
+  >
+    <!-- Close Button (Mobile Only) -->
+    <div class="md:hidden flex justify-end p-4 border-b border-ror-border/50">
+      <button @click="$emit('close')" class="text-ror-muted hover:text-white">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+      </button>
+    </div>
+
     <!-- Navigation Links -->
-    <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-2">
+    <nav class="flex-1 overflow-y-auto py-4 md:py-6 px-4 space-y-2">
       <template v-for="item in navItems" :key="item.name">
         <a v-if="item.external"
           :href="item.path"
@@ -15,6 +25,7 @@
         </a>
         <router-link v-else
           :to="item.path"
+          @click="$emit('close')"
           class="flex items-center px-4 py-3 rounded-xl transition-all duration-300 group relative overflow-hidden"
           :class="[
             $route.path === item.path 
@@ -51,6 +62,15 @@
 import { computed, ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { supabase } from '../../utils/supabase'
+
+const props = defineProps({
+  isOpen: {
+    type: Boolean,
+    default: false
+  }
+})
+
+defineEmits(['close'])
 
 const route = useRoute()
 const router = useRouter()

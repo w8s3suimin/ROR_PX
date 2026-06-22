@@ -34,9 +34,37 @@
         :key="char.id"
         class="bg-ror-card border border-ror-border rounded-xl transition-all duration-300 hover:border-ror-accent relative"
       >
-        <!-- Main Row (Click to toggle) -->
+        <!-- Mobile Row (3 columns) -->
         <div 
-          class="grid grid-cols-2 md:grid-cols-12 gap-4 pl-6 pr-12 py-4 cursor-pointer items-center relative"
+          class="flex md:hidden items-center justify-between pl-6 pr-4 py-4 cursor-pointer relative"
+          @click="openMobileModal(char)"
+        >
+          <!-- Col 1: Server-Char / Account -->
+          <div class="flex-[1.2] min-w-0 pr-2 border-r border-ror-border/30">
+            <div class="text-sm font-bold text-white truncate">{{ char.server_name }}-角{{ char.char_slot }}</div>
+            <div class="text-xs text-ror-muted truncate mt-1">{{ char.game_account || '未知遊戲帳號' }}</div>
+          </div>
+          
+          <!-- Col 2: Level / Crystal -->
+          <div class="flex-1 text-center min-w-0 px-2 border-r border-ror-border/30">
+            <div class="text-sm font-mono text-white">Lv.{{ char.level }}</div>
+            <div class="text-xs font-mono text-pink-400 mt-1">{{ formatNumber(char.crystal) }}</div>
+          </div>
+          
+          <!-- Col 3: Vitality / Dispatch -->
+          <div class="flex-[0.8] text-right min-w-0 pl-2">
+            <div class="text-sm font-mono text-blue-400">{{ formatNumber(char.vitality) }}</div>
+            <div class="text-xs mt-1">
+              <span class="px-1.5 py-0.5 rounded font-bold" :class="char.dispatch_current >= char.dispatch_max ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'">
+                {{ char.dispatch_current }}/{{ char.dispatch_max }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main Row (Desktop) -->
+        <div 
+          class="hidden md:grid grid-cols-12 gap-4 pl-6 pr-12 py-4 cursor-pointer items-center relative"
           @click="toggleRow(char.id)"
         >
           <div class="col-span-3 truncate text-center">
@@ -96,7 +124,7 @@
 
         <!-- Expanded Detail Row (Special Items) -->
         <div 
-          class="bg-[#151515] overflow-hidden transition-all duration-300 rounded-b-xl"
+          class="hidden md:block bg-[#151515] overflow-hidden transition-all duration-300 rounded-b-xl"
           :class="expandedRow === char.id ? 'max-h-96 border-t border-ror-border/50' : 'max-h-0'"
         >
           <div class="p-6">
@@ -133,6 +161,45 @@
         <p class="text-ror-muted">目前還沒有任何角色資料。</p>
         <p class="text-xs text-ror-muted mt-2">請確保已經在資料庫中初始化資料表或等候系統派發任務。</p>
       </div>
+
+      <!-- Mobile Modal -->
+      <div v-if="selectedMobileChar" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 md:hidden">
+        <div class="bg-ror-dark border border-ror-border rounded-xl w-full max-w-sm overflow-hidden flex flex-col max-h-[80vh] shadow-[0_0_30px_rgba(0,0,0,0.8)]">
+          <div class="flex justify-between items-center p-4 border-b border-ror-border/50 bg-black/40">
+            <h3 class="text-lg font-bold text-white">{{ selectedMobileChar.server_name }}-角{{ selectedMobileChar.char_slot }}</h3>
+            <button @click="selectedMobileChar = null" class="text-ror-muted hover:text-white bg-white/5 rounded-lg p-1">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+          </div>
+          <div class="p-4 overflow-y-auto">
+            <h4 class="text-sm font-bold text-ror-accent mb-3 flex items-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
+              特殊高價物列表
+            </h4>
+            
+            <div v-if="selectedMobileChar.special_items && selectedMobileChar.special_items.length > 0" class="space-y-3">
+              <div 
+                v-for="(item, idx) in selectedMobileChar.special_items" 
+                :key="idx"
+                class="bg-black/40 border border-white/5 rounded-lg p-3 flex items-center gap-3"
+              >
+                <div class="w-10 h-10 rounded bg-white/5 flex items-center justify-center shrink-0 border" :class="getQualityBorder(item.quality)">
+                  <span class="text-xs font-bold">{{ item.qty }}x</span>
+                </div>
+                <div class="flex-1 truncate">
+                  <div class="text-sm text-white truncate" :class="getQualityTextColor(item.quality)">{{ item.name }}</div>
+                  <div class="text-xs text-ror-muted">{{ translateQuality(item.quality) }}</div>
+                </div>
+              </div>
+            </div>
+            
+            <div v-else class="text-center py-6 text-ror-muted text-sm border border-dashed border-ror-border/50 rounded-lg">
+              此角色目前沒有特殊高價物
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </template>
@@ -145,6 +212,7 @@ const characters = ref([])
 const loading = ref(true)
 const error = ref(null)
 const expandedRow = ref(null)
+const selectedMobileChar = ref(null)
 
 const toggleRow = (id) => {
   if (expandedRow.value === id) {
@@ -152,6 +220,10 @@ const toggleRow = (id) => {
   } else {
     expandedRow.value = id
   }
+}
+
+const openMobileModal = (char) => {
+  selectedMobileChar.value = char
 }
 
 const formatNumber = (num) => {
