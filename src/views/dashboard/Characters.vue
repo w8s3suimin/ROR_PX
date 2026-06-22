@@ -40,7 +40,7 @@
         </div>
         <div class="col-span-1 text-center drop-shadow-md">職業</div>
         <div class="col-span-1 text-center drop-shadow-md cursor-pointer hover:text-white flex items-center justify-center gap-1" @click="handleSort('dispatch')">
-          派遣數量
+          派遣狀態
           <span class="text-[10px]" v-if="sortConfig.key === 'dispatch'">{{ sortConfig.dir === 'asc' ? '▲' : '▼' }}</span>
           <span v-if="filters.dispatch" @click.stop="clearFilter('dispatch')" title="解除過濾" class="text-lg">🔒</span>
         </div>
