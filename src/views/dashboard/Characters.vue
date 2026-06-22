@@ -30,7 +30,7 @@
           <span class="text-[10px]" v-if="sortConfig.key === 'server_name'">{{ sortConfig.dir === 'asc' ? '▲' : '▼' }}</span>
           <span v-if="filters.server_name" @click.stop="clearFilter('server_name')" title="解除過濾" class="text-lg">🔒</span>
         </div>
-        <div class="col-span-3 text-center drop-shadow-md">
+        <div class="col-span-2 text-center drop-shadow-md">
           角色名稱
         </div>
         <div class="col-span-1 text-center drop-shadow-md cursor-pointer hover:text-white flex items-center justify-center gap-1" @click="handleSort('level')">
@@ -49,7 +49,7 @@
           活力值
           <span class="text-[10px]" v-if="sortConfig.key === 'vitality'">{{ sortConfig.dir === 'asc' ? '▲' : '▼' }}</span>
         </div>
-        <div class="col-span-1 text-right text-[#ff93d3] drop-shadow-md cursor-pointer hover:text-white flex items-center justify-end gap-1" @click="handleSort('crystal')">
+        <div class="col-span-2 text-right text-[#ff93d3] drop-shadow-md cursor-pointer hover:text-white flex items-center justify-end gap-1" @click="handleSort('crystal')">
           <span v-if="filters.crystal" @click.stop="clearFilter('crystal')" title="解除過濾" class="text-lg">🔒</span>
           水晶
           <span class="text-[10px]" v-if="sortConfig.key === 'crystal'">{{ sortConfig.dir === 'asc' ? '▲' : '▼' }}</span>
@@ -139,7 +139,7 @@
           <div class="col-span-1 text-sm text-gray-300 truncate text-center">
             <span @click.stop="toggleStringFilter('server_name', char.server_name)" class="inline-block px-2 py-1 rounded bg-white/5 border border-white/10 hover:text-ror-accent hover:border-ror-accent/50 transition-colors">{{ char.server_name }}</span>
           </div>
-          <div class="col-span-3 text-center truncate">
+          <div class="col-span-2 text-center truncate">
             <div class="text-white font-bold text-sm">{{ char.character_name }}</div>
             <div class="text-xs text-ror-muted">角 {{ char.char_slot }}</div>
           </div>
@@ -174,7 +174,7 @@
             </div>
           </div>
           
-          <div class="col-span-1 text-right font-mono text-[#ff93d3] relative group">
+          <div class="col-span-2 text-right font-mono text-[#ff93d3] relative group">
             <span class="cursor-pointer hover:opacity-80 transition-opacity" @click.stop="openNumericFilter('crystal')">{{ formatNumber(char.crystal) }}</span>
             <div class="absolute right-0 bottom-full mb-2 hidden md:group-hover:block whitespace-nowrap bg-black text-gray-300 text-xs px-2 py-1 rounded border border-ror-border z-10 pointer-events-none shadow-lg">
               最後更新: {{ formatTime(char.updated_at) }}
