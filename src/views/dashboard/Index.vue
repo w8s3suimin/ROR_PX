@@ -74,7 +74,7 @@
             <div class="flex items-center justify-between border-t border-white/5 pt-2">
               <span class="text-xs text-ror-muted">自動續費狀態</span>
               <span v-if="currentLicense.code === '尚未配發'" class="text-xs text-ror-muted">--</span>
-              <span v-else :class="currentLicense.autoRenew ? 'text-green-400 bg-green-400/10' : 'text-ror-muted bg-white/5'" class="font-bold text-[10px] px-2 py-0.5 rounded-full border" :class="currentLicense.autoRenew ? 'border-green-400/20' : 'border-white/5'">
+              <span v-else class="font-bold text-[10px] px-2 py-0.5 rounded-full border" :class="currentLicense.autoRenew ? 'text-green-400 bg-green-400/10 border-green-400/20' : 'text-ror-muted bg-white/5 border-white/5'">
                 {{ currentLicense.autoRenew ? '已開啟' : '未開啟' }}
               </span>
             </div>
