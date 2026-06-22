@@ -1,8 +1,8 @@
 <template>
   <div class="h-full">
-    <div class="mb-6">
-      <h1 class="text-3xl font-bold text-white tracking-tight">角色管理</h1>
-      <p class="text-ror-muted mt-1">集中監控所有帳號角色的狀態、物資與資產</p>
+    <div class="mb-4 flex items-baseline gap-3 flex-wrap">
+      <h1 class="text-2xl md:text-3xl font-bold text-white tracking-tight shrink-0">角色管理</h1>
+      <p class="text-sm text-ror-muted">集中監控所有帳號角色的狀態、物資與資產</p>
     </div>
 
     <!-- Error/Loading States -->
@@ -16,8 +16,8 @@
 
     <!-- Resource List -->
     <div v-else class="space-y-4">
-      <!-- List Header -->
-      <div class="hidden md:grid grid-cols-12 gap-4 pl-6 pr-12 py-3 bg-ror-card/50 rounded-lg text-sm font-bold text-ror-muted border border-ror-border/50">
+      <!-- Desktop List Header -->
+      <div class="sticky top-0 z-20 hidden md:grid grid-cols-12 gap-4 pl-6 pr-12 py-3 bg-ror-card/95 backdrop-blur-xl rounded-lg text-sm font-bold text-ror-muted border border-ror-border/50 shadow-[0_4px_20px_rgba(0,0,0,0.5)]">
         <div class="col-span-3 text-center">遊戲帳號/平台ID</div>
         <div class="col-span-1 text-center">伺服器</div>
         <div class="col-span-3 text-center">角色名稱</div>
@@ -26,6 +26,14 @@
         <div class="col-span-1 text-center">派遣數量</div>
         <div class="col-span-1 text-right text-blue-400">活力值</div>
         <div class="col-span-1 text-right text-pink-400">水晶</div>
+      </div>
+
+      <!-- Mobile List Header -->
+      <div class="sticky top-0 z-20 flex md:hidden items-center justify-between pl-4 pr-2 py-1.5 bg-ror-card/95 backdrop-blur-xl rounded-lg text-[11px] font-bold text-ror-muted border border-ror-border/50 shadow-[0_4px_20px_rgba(0,0,0,0.5)]">
+        <div class="flex-[1.2] min-w-0 text-center pr-1">伺服/帳號</div>
+        <div class="flex-[1.2] min-w-0 text-center px-1">角色/等級</div>
+        <div class="flex-[0.8] min-w-0 text-center px-1 text-pink-400">水晶</div>
+        <div class="flex-[0.9] min-w-0 text-right pl-1 text-blue-400">活力/派遣</div>
       </div>
 
       <!-- List Items -->
