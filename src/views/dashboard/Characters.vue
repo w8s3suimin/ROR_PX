@@ -25,7 +25,7 @@
     <div v-else class="space-y-4">
       <!-- Desktop List Header -->
       <div class="sticky top-16 z-30 hidden md:grid gap-4 pl-6 pr-12 py-3.5 bg-gradient-to-r from-[#1a1a1a]/95 via-[#222]/95 to-[#1a1a1a]/95 backdrop-blur-md rounded-xl text-[15px] font-black text-ror-accent border border-ror-accent/20 shadow-[0_10px_30px_rgba(0,0,0,0.8)] tracking-wider mb-2 select-none" :class="viewAsAdmin ? 'grid-cols-12' : 'grid-cols-11'">
-        <div class="text-center drop-shadow-md cursor-pointer hover:text-white flex items-center justify-center gap-1" :class="viewAsAdmin ? 'col-span-3' : 'col-span-3'" @click="handleSort('game_account')">
+        <div class="text-center drop-shadow-md cursor-pointer hover:text-white flex items-center justify-center gap-1" :class="viewAsAdmin ? 'col-span-3' : 'col-span-2'" @click="handleSort('game_account')">
           遊戲帳號<span v-if="viewAsAdmin">/平台ID</span>
           <span class="text-xs" v-if="sortConfig.key === 'game_account'">{{ sortConfig.dir === 'asc' ? '▲' : '▼' }}</span>
           <span v-if="filters.game_account" @click.stop="clearFilter('game_account')" title="解除過濾" class="text-lg">🔒</span>
@@ -133,7 +133,7 @@
           :class="viewAsAdmin ? 'grid-cols-12' : 'grid-cols-11'"
           @click="toggleRow(char.id)"
         >
-          <div class="truncate text-center" :class="viewAsAdmin ? 'col-span-3' : 'col-span-3'">
+          <div class="truncate text-center" :class="viewAsAdmin ? 'col-span-3' : 'col-span-2'">
             <div class="font-bold text-white text-sm">
               <span @click.stop="toggleStringFilter('game_account', char.game_account)" class="hover:text-ror-accent transition-colors">{{ char.game_account || '未知遊戲帳號' }}</span>
             </div>
