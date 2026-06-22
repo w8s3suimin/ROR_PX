@@ -1,7 +1,14 @@
 <template>
   <div class="h-full">
     <div class="mb-4 flex items-baseline gap-3 flex-wrap">
-      <h1 class="text-2xl md:text-3xl font-bold text-white tracking-tight shrink-0">角色管理</h1>
+      <h1 class="text-2xl md:text-3xl font-bold text-white tracking-tight shrink-0 flex items-center gap-3">
+        角色管理
+        <!-- Admin Toggle (only visible if isAdminRole) -->
+        <button v-if="isAdminRole" @click="viewAsAdmin = !viewAsAdmin" class="p-1.5 rounded-lg transition-colors group relative" :class="viewAsAdmin ? 'text-green-400 hover:bg-green-400/10' : 'text-red-400 hover:bg-red-400/10'" title="切換管理員檢視">
+          <svg v-if="viewAsAdmin" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+          <svg v-else class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" /></svg>
+        </button>
+      </h1>
       <p class="text-sm text-ror-muted">集中監控所有帳號角色的狀態、物資與資產</p>
     </div>
 
@@ -17,28 +24,69 @@
     <!-- Resource List -->
     <div v-else class="space-y-4">
       <!-- Desktop List Header -->
-      <div class="sticky top-16 z-30 hidden md:grid grid-cols-12 gap-4 pl-6 pr-12 py-3.5 bg-gradient-to-r from-[#1a1a1a]/95 via-[#222]/95 to-[#1a1a1a]/95 backdrop-blur-md rounded-xl text-[15px] font-black text-ror-accent border border-ror-accent/20 shadow-[0_10px_30px_rgba(0,0,0,0.8)] tracking-wider mb-2">
-        <div class="col-span-3 text-center drop-shadow-md">遊戲帳號/平台ID</div>
-        <div class="col-span-1 text-center drop-shadow-md">伺服器</div>
-        <div class="col-span-3 text-center drop-shadow-md">角色名稱</div>
-        <div class="col-span-1 text-center drop-shadow-md">等級</div>
+      <div class="sticky top-16 z-30 hidden md:grid gap-4 pl-6 pr-12 py-3.5 bg-gradient-to-r from-[#1a1a1a]/95 via-[#222]/95 to-[#1a1a1a]/95 backdrop-blur-md rounded-xl text-[15px] font-black text-ror-accent border border-ror-accent/20 shadow-[0_10px_30px_rgba(0,0,0,0.8)] tracking-wider mb-2 select-none" :class="viewAsAdmin ? 'grid-cols-12' : 'grid-cols-11'">
+        <div class="text-center drop-shadow-md cursor-pointer hover:text-white flex items-center justify-center gap-1" :class="viewAsAdmin ? 'col-span-3' : 'col-span-3'" @click="handleSort('game_account')">
+          遊戲帳號<span v-if="viewAsAdmin">/平台ID</span>
+          <span class="text-xs" v-if="sortConfig.key === 'game_account'">{{ sortConfig.dir === 'asc' ? '▲' : '▼' }}</span>
+          <span v-if="filters.game_account" @click.stop="clearFilter('game_account')" title="解除過濾" class="text-lg">🔒</span>
+        </div>
+        <div class="col-span-1 text-center drop-shadow-md cursor-pointer hover:text-white flex items-center justify-center gap-1" @click="handleSort('server_name')">
+          伺服器
+          <span class="text-xs" v-if="sortConfig.key === 'server_name'">{{ sortConfig.dir === 'asc' ? '▲' : '▼' }}</span>
+          <span v-if="filters.server_name" @click.stop="clearFilter('server_name')" title="解除過濾" class="text-lg">🔒</span>
+        </div>
+        <div class="col-span-3 text-center drop-shadow-md">
+          角色名稱
+        </div>
+        <div class="col-span-1 text-center drop-shadow-md cursor-pointer hover:text-white flex items-center justify-center gap-1" @click="openNumericFilter('level')">
+          等級
+          <span @click.stop="handleSort('level')" class="px-0.5 text-ror-muted hover:text-white text-xs" title="排序">{{ sortConfig.key === 'level' ? (sortConfig.dir === 'asc' ? '▲' : '▼') : '↕' }}</span>
+          <span v-if="filters.level" @click.stop="clearFilter('level')" title="解除過濾" class="text-lg">🔒</span>
+        </div>
         <div class="col-span-1 text-center drop-shadow-md">職業</div>
-        <div class="col-span-1 text-center drop-shadow-md">派遣數量</div>
-        <div class="col-span-1 text-right text-[#4dabf7] drop-shadow-md">活力值</div>
-        <div class="col-span-1 text-right text-[#ff93d3] drop-shadow-md">水晶</div>
+        <div class="col-span-1 text-center drop-shadow-md cursor-pointer hover:text-white flex items-center justify-center gap-1" @click="openNumericFilter('dispatch')">
+          派遣數量
+          <span @click.stop="handleSort('dispatch')" class="px-0.5 text-ror-muted hover:text-white text-xs" title="排序">{{ sortConfig.key === 'dispatch' ? (sortConfig.dir === 'asc' ? '▲' : '▼') : '↕' }}</span>
+          <span v-if="filters.dispatch" @click.stop="clearFilter('dispatch')" title="解除過濾" class="text-lg">🔒</span>
+        </div>
+        <div class="col-span-1 text-right text-[#4dabf7] drop-shadow-md cursor-pointer hover:text-white flex items-center justify-end gap-1" @click="openNumericFilter('vitality')">
+          <span v-if="filters.vitality" @click.stop="clearFilter('vitality')" title="解除過濾" class="text-lg">🔒</span>
+          <span @click.stop="handleSort('vitality')" class="px-0.5 text-[#4dabf7]/50 hover:text-[#4dabf7] text-xs" title="排序">{{ sortConfig.key === 'vitality' ? (sortConfig.dir === 'asc' ? '▲' : '▼') : '↕' }}</span>
+          活力值
+        </div>
+        <div class="col-span-1 text-right text-[#ff93d3] drop-shadow-md cursor-pointer hover:text-white flex items-center justify-end gap-1" @click="openNumericFilter('crystal')">
+          <span v-if="filters.crystal" @click.stop="clearFilter('crystal')" title="解除過濾" class="text-lg">🔒</span>
+          <span @click.stop="handleSort('crystal')" class="px-0.5 text-[#ff93d3]/50 hover:text-[#ff93d3] text-xs" title="排序">{{ sortConfig.key === 'crystal' ? (sortConfig.dir === 'asc' ? '▲' : '▼') : '↕' }}</span>
+          水晶
+        </div>
       </div>
 
       <!-- Mobile List Header -->
-      <div class="sticky top-16 z-30 flex md:hidden items-center justify-between pl-4 pr-2 py-2.5 bg-gradient-to-r from-[#1a1a1a]/95 via-[#222]/95 to-[#1a1a1a]/95 backdrop-blur-md rounded-xl text-[13px] font-black text-ror-accent border border-ror-accent/20 shadow-[0_10px_30px_rgba(0,0,0,0.8)] tracking-wide mb-2">
-        <div class="flex-[1.2] min-w-0 text-center pr-1 drop-shadow-md">伺服/帳號</div>
-        <div class="flex-[1.2] min-w-0 text-center px-1 drop-shadow-md">角色/等級</div>
-        <div class="flex-[0.8] min-w-0 text-center px-1 text-[#ff93d3] drop-shadow-md">水晶</div>
-        <div class="flex-[0.9] min-w-0 text-right pl-1 text-[#4dabf7] drop-shadow-md">活力/派遣</div>
+      <div class="sticky top-16 z-30 flex md:hidden items-center justify-between pl-4 pr-2 py-2.5 bg-gradient-to-r from-[#1a1a1a]/95 via-[#222]/95 to-[#1a1a1a]/95 backdrop-blur-md rounded-xl text-[13px] font-black text-ror-accent border border-ror-accent/20 shadow-[0_10px_30px_rgba(0,0,0,0.8)] tracking-wide mb-2 select-none">
+        <div class="flex-[1.2] min-w-0 text-center pr-1 drop-shadow-md cursor-pointer flex items-center justify-center gap-1" @click="handleSort('mobile_account')">
+          伺服/帳號
+          <span class="text-[10px]" v-if="sortConfig.key === 'mobile_account'">{{ sortConfig.dir === 'asc' ? '▲' : '▼' }}</span>
+          <span v-if="filters.game_account || filters.server_name" @click.stop="clearFilter('game_account'); clearFilter('server_name')" title="解除過濾">🔒</span>
+        </div>
+        <div class="flex-[1.2] min-w-0 text-center px-1 drop-shadow-md cursor-pointer flex items-center justify-center gap-1" @click="openNumericFilter('level')">
+          角色/等級
+          <span @click.stop="handleSort('level')" class="px-0.5 text-ror-muted hover:text-white text-[10px]">{{ sortConfig.key === 'level' ? (sortConfig.dir === 'asc' ? '▲' : '▼') : '↕' }}</span>
+          <span v-if="filters.level" @click.stop="clearFilter('level')" title="解除過濾">🔒</span>
+        </div>
+        <div class="flex-[0.8] min-w-0 text-center px-1 text-[#ff93d3] drop-shadow-md cursor-pointer flex items-center justify-center gap-1" @click="openNumericFilter('crystal')">
+          <span v-if="filters.crystal" @click.stop="clearFilter('crystal')" title="解除過濾">🔒</span>
+          水晶<span @click.stop="handleSort('crystal')" class="px-0.5 text-[#ff93d3]/50 text-[10px]">{{ sortConfig.key === 'crystal' ? (sortConfig.dir === 'asc' ? '▲' : '▼') : '↕' }}</span>
+        </div>
+        <div class="flex-[0.9] min-w-0 text-right pl-1 text-[#4dabf7] drop-shadow-md cursor-pointer flex items-center justify-end gap-1" @click="openNumericFilter('vitality')">
+          <span v-if="filters.vitality || filters.dispatch" @click.stop="clearFilter('vitality'); clearFilter('dispatch')" title="解除過濾">🔒</span>
+          活/派
+          <span @click.stop="handleSort('vitality')" class="px-0.5 text-[#4dabf7]/50 text-[10px]">{{ sortConfig.key === 'vitality' ? (sortConfig.dir === 'asc' ? '▲' : '▼') : '↕' }}</span>
+        </div>
       </div>
 
       <!-- List Items -->
       <div 
-        v-for="char in characters" 
+        v-for="char in filteredAndSortedCharacters" 
         :key="char.id"
         class="bg-ror-card border border-ror-border rounded-xl transition-all duration-300 hover:border-ror-accent relative"
       >
@@ -49,8 +97,12 @@
         >
           <!-- Col 1: Server-Char / Account -->
           <div class="flex-[1.2] min-w-0 pr-1 border-r border-ror-border/30">
-            <div class="text-[13px] font-bold text-white truncate">{{ char.server_name }}-角{{ char.char_slot }}</div>
-            <div class="text-[11px] text-ror-muted truncate mt-1">{{ char.game_account || '未知遊戲帳號' }}</div>
+            <div class="text-[13px] font-bold text-white truncate">
+              <span @click.stop="toggleStringFilter('server_name', char.server_name)" class="hover:text-ror-accent transition-colors">{{ char.server_name }}</span>-角{{ char.char_slot }}
+            </div>
+            <div class="text-[11px] text-ror-muted truncate mt-1">
+              <span @click.stop="toggleStringFilter('game_account', char.game_account)" class="hover:text-ror-accent transition-colors">{{ char.game_account || '未知遊戲帳號' }}</span>
+            </div>
           </div>
           
           <!-- Col 2: Char Name & Level -->
@@ -61,14 +113,14 @@
           
           <!-- Col 3: Crystal -->
           <div class="flex-[0.8] min-w-0 px-1 border-r border-ror-border/30 text-center flex flex-col items-center justify-center">
-            <div class="text-[12px] font-mono text-pink-400 font-bold">{{ formatNumber(char.crystal) }}</div>
+            <div class="text-[12px] font-mono text-[#ff93d3] font-bold">{{ formatNumber(char.crystal) }}</div>
           </div>
 
           <!-- Col 4: Vitality / Dispatch -->
           <div class="flex-[0.9] text-right min-w-0 pl-1">
-            <div class="text-[13px] font-mono text-blue-400">{{ formatNumber(char.vitality) }}</div>
+            <div class="text-[13px] font-mono text-[#4dabf7]">{{ formatNumber(char.vitality) }}</div>
             <div class="text-[10px] mt-1">
-              <span class="px-1 py-0.5 rounded font-bold" :class="char.dispatch_current >= char.dispatch_max ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'">
+              <span @click.stop="toggleDispatchFilter(char.dispatch_current >= char.dispatch_max)" class="px-1 py-0.5 rounded font-bold hover:opacity-80 transition-opacity" :class="char.dispatch_current >= char.dispatch_max ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'">
                 {{ char.dispatch_current }}/{{ char.dispatch_max }}
               </span>
             </div>
@@ -77,15 +129,18 @@
 
         <!-- Main Row (Desktop) -->
         <div 
-          class="hidden md:grid grid-cols-12 gap-4 pl-6 pr-12 py-4 cursor-pointer items-center relative"
+          class="hidden md:grid gap-4 pl-6 pr-12 py-4 cursor-pointer items-center relative"
+          :class="viewAsAdmin ? 'grid-cols-12' : 'grid-cols-11'"
           @click="toggleRow(char.id)"
         >
-          <div class="col-span-3 truncate text-center">
-            <div class="font-bold text-white text-sm">{{ char.game_account || '未知遊戲帳號' }}</div>
-            <div class="text-xs text-ror-muted">{{ char.profiles?.email || '未綁定' }}</div>
+          <div class="truncate text-center" :class="viewAsAdmin ? 'col-span-3' : 'col-span-3'">
+            <div class="font-bold text-white text-sm">
+              <span @click.stop="toggleStringFilter('game_account', char.game_account)" class="hover:text-ror-accent transition-colors">{{ char.game_account || '未知遊戲帳號' }}</span>
+            </div>
+            <div v-if="viewAsAdmin" class="text-xs text-ror-muted">{{ char.profiles?.email || '未綁定' }}</div>
           </div>
           <div class="col-span-1 text-sm text-gray-300 truncate text-center">
-            <span class="inline-block px-2 py-1 rounded bg-white/5 border border-white/10">{{ char.server_name }}</span>
+            <span @click.stop="toggleStringFilter('server_name', char.server_name)" class="inline-block px-2 py-1 rounded bg-white/5 border border-white/10 hover:text-ror-accent hover:border-ror-accent/50 transition-colors">{{ char.server_name }}</span>
           </div>
           <div class="col-span-3 text-center truncate">
             <div class="text-white font-bold text-sm">{{ char.character_name }}</div>
@@ -107,7 +162,7 @@
           </div>
           
           <div class="col-span-1 text-center relative group">
-            <span class="px-2 py-1 rounded text-xs font-bold" :class="char.dispatch_current >= char.dispatch_max ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'">
+            <span @click.stop="toggleDispatchFilter(char.dispatch_current >= char.dispatch_max)" class="px-2 py-1 rounded text-xs font-bold hover:opacity-80 transition-opacity" :class="char.dispatch_current >= char.dispatch_max ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'">
               {{ char.dispatch_current }} / {{ char.dispatch_max }}
             </span>
             <div class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden md:group-hover:block whitespace-nowrap bg-black text-gray-300 text-xs px-2 py-1 rounded border border-ror-border z-10 pointer-events-none shadow-lg">
@@ -115,14 +170,14 @@
             </div>
           </div>
 
-          <div class="col-span-1 text-right font-mono text-blue-400 relative group">
+          <div class="col-span-1 text-right font-mono text-[#4dabf7] relative group">
             {{ formatNumber(char.vitality) }}
             <div class="absolute right-0 bottom-full mb-2 hidden md:group-hover:block whitespace-nowrap bg-black text-gray-300 text-xs px-2 py-1 rounded border border-ror-border z-10 pointer-events-none shadow-lg">
               最後更新: {{ formatTime(char.updated_at) }}
             </div>
           </div>
           
-          <div class="col-span-1 text-right font-mono text-pink-400 relative group">
+          <div class="col-span-1 text-right font-mono text-[#ff93d3] relative group">
             {{ formatNumber(char.crystal) }}
             <div class="absolute right-0 bottom-full mb-2 hidden md:group-hover:block whitespace-nowrap bg-black text-gray-300 text-xs px-2 py-1 rounded border border-ror-border z-10 pointer-events-none shadow-lg">
               最後更新: {{ formatTime(char.updated_at) }}
@@ -170,9 +225,11 @@
       </div>
       
       <!-- Empty State -->
-      <div v-if="characters.length === 0" class="text-center py-12 bg-ror-card border border-ror-border rounded-xl">
-        <p class="text-ror-muted">目前還沒有任何角色資料。</p>
-        <p class="text-xs text-ror-muted mt-2">請確保已經在資料庫中初始化資料表或等候系統派發任務。</p>
+      <div v-if="filteredAndSortedCharacters.length === 0" class="text-center py-12 bg-ror-card border border-ror-border rounded-xl">
+        <p class="text-ror-muted">找不到符合條件的角色資料。</p>
+        <button v-if="hasActiveFilters" @click="clearAllFilters" class="mt-4 px-4 py-2 bg-ror-accent text-black font-bold rounded-lg hover:bg-ror-accent-hover transition-colors">
+          清除所有過濾條件
+        </button>
       </div>
 
       <!-- Mobile Modal -->
@@ -213,12 +270,57 @@
         </div>
       </div>
 
+      <!-- Numeric Filter Modal -->
+      <div v-if="activeNumericFilter" class="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/80">
+        <div class="bg-ror-dark border border-ror-border rounded-xl w-full max-w-sm overflow-hidden flex flex-col shadow-[0_0_30px_rgba(0,0,0,0.8)]" @click.stop>
+          <div class="flex justify-between items-center p-4 border-b border-ror-border/50 bg-black/40">
+            <h3 class="text-lg font-bold text-white">篩選: {{ getFilterName(activeNumericFilter) }}</h3>
+            <button @click="activeNumericFilter = null" class="text-ror-muted hover:text-white bg-white/5 rounded-lg p-1 transition-colors">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+          </div>
+          <div class="p-6 space-y-6">
+            <div class="flex items-center gap-4">
+              <div class="flex-1">
+                <label class="block text-xs text-ror-muted mb-1">最小值</label>
+                <input type="number" v-model.number="tempFilterValue.min" class="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-ror-accent font-mono text-center" />
+              </div>
+              <div class="text-ror-muted mt-5 font-bold">-</div>
+              <div class="flex-1">
+                <label class="block text-xs text-ror-muted mb-1">最大值</label>
+                <input type="number" v-model.number="tempFilterValue.max" class="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-ror-accent font-mono text-center" />
+              </div>
+            </div>
+            
+            <!-- Mobile Slider (only visible on mobile) -->
+            <div class="md:hidden pt-6 pb-2 px-3">
+              <div class="relative w-full h-2 bg-black/40 rounded-full border border-white/10">
+                <!-- Highlight Track -->
+                <div class="absolute h-full bg-ror-accent rounded-full pointer-events-none" :style="sliderTrackStyle"></div>
+                <!-- Min Thumb -->
+                <input type="range" :min="numericLimits[activeNumericFilter]?.min || 0" :max="numericLimits[activeNumericFilter]?.max || 100" v-model.number="tempFilterValue.min" class="absolute top-[-6px] left-0 w-full appearance-none bg-transparent pointer-events-auto z-10 custom-range" />
+                <!-- Max Thumb -->
+                <input type="range" :min="numericLimits[activeNumericFilter]?.min || 0" :max="numericLimits[activeNumericFilter]?.max || 100" v-model.number="tempFilterValue.max" class="absolute top-[-6px] left-0 w-full appearance-none bg-transparent pointer-events-auto z-20 custom-range" />
+              </div>
+              <div class="flex justify-between text-[10px] text-ror-muted mt-3 font-mono">
+                <span>{{ formatNumber(numericLimits[activeNumericFilter]?.min || 0) }}</span>
+                <span>{{ formatNumber(numericLimits[activeNumericFilter]?.max || 100) }}</span>
+              </div>
+            </div>
+            
+            <div class="flex gap-3 pt-2">
+              <button @click="clearNumericFilter(activeNumericFilter)" class="flex-1 py-2.5 rounded-lg border border-ror-border text-ror-muted font-bold hover:text-white hover:bg-white/5 transition-colors">清除過濾</button>
+              <button @click="applyNumericFilter" class="flex-1 py-2.5 rounded-lg bg-ror-accent text-black font-bold hover:bg-ror-accent-hover transition-colors shadow-[0_0_15px_rgba(255,204,0,0.3)]">套用</button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { supabase } from '../../utils/supabase'
 
 const characters = ref([])
@@ -227,12 +329,99 @@ const error = ref(null)
 const expandedRow = ref(null)
 const selectedMobileChar = ref(null)
 
-const toggleRow = (id) => {
-  if (expandedRow.value === id) {
-    expandedRow.value = null
-  } else {
-    expandedRow.value = id
+// Admin View State
+const isAdminRole = ref(false)
+const viewAsAdmin = ref(false)
+
+// Sorting State
+const sortConfig = ref({ key: 'game_account', dir: 'asc' })
+
+// Filtering State
+const filters = ref({
+  game_account: null,
+  server_name: null,
+  level: null,
+  vitality: null,
+  crystal: null,
+  dispatch: null,
+})
+
+const hasActiveFilters = computed(() => {
+  return Object.values(filters.value).some(val => val !== null)
+})
+
+const clearAllFilters = () => {
+  Object.keys(filters.value).forEach(key => {
+    filters.value[key] = null
+  })
+}
+
+// Numeric Filter Popup State
+const activeNumericFilter = ref(null)
+const tempFilterValue = ref({ min: 0, max: 0 })
+const numericLimits = ref({
+  level: { min: 1, max: 120 },
+  vitality: { min: 0, max: 100000 },
+  crystal: { min: 0, max: 1000000 }
+})
+
+const SERVER_ORDER = [
+  "金玉滿堂", "傾城之戰", "皇后大道", "普隆德拉", "雲之彼端", "世界之樹", 
+  "群星之海", "初心相擁", "星夢奇緣", "諸神詠嘆", "重生之境", "南門之約"
+]
+const getServerWeight = (serverName) => {
+  const index = SERVER_ORDER.indexOf(serverName)
+  return index !== -1 ? index : 999
+}
+
+onMounted(async () => {
+  try {
+    loading.value = true
+    
+    // Check admin role
+    const { data: { session } } = await supabase.auth.getSession()
+    if (session) {
+      const { data: profile } = await supabase.from('profiles').select('role').eq('id', session.user.id).single()
+      if (profile?.role === 'admin') {
+        isAdminRole.value = true
+        viewAsAdmin.value = true
+      }
+    }
+
+    // Fetch characters and join with profiles to get the email
+    const { data, error: err } = await supabase
+      .from('characters')
+      .select(`
+        *,
+        profiles (
+          email
+        )
+      `)
+
+    if (err) throw err
+    
+    characters.value = data || []
+    
+    // Set dynamic max/min for ranges
+    if (data && data.length > 0) {
+      ['level', 'vitality', 'crystal'].forEach(key => {
+        const vals = data.map(c => c[key] || 0)
+        numericLimits.value[key] = {
+          min: Math.min(...vals),
+          max: Math.max(...vals)
+        }
+      })
+    }
+  } catch (err) {
+    console.error('Error fetching characters:', err)
+    error.value = `無法拉取角色資料：${err.message}。如果尚未建立資料表，請先至 Supabase 執行初始化 SQL 指令。`
+  } finally {
+    loading.value = false
   }
+})
+
+const toggleRow = (id) => {
+  expandedRow.value = expandedRow.value === id ? null : id
 }
 
 const openMobileModal = (char) => {
@@ -240,7 +429,7 @@ const openMobileModal = (char) => {
 }
 
 const formatNumber = (num) => {
-  if (!num) return '0'
+  if (num === null || num === undefined) return '0'
   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
 }
 
@@ -278,31 +467,145 @@ const translateQuality = (quality) => {
   }
 }
 
-onMounted(async () => {
-  try {
-    loading.value = true
-    // Fetch characters and join with profiles to get the email
-    const { data, error: err } = await supabase
-      .from('characters')
-      .select(`
-        *,
-        profiles (
-          email
-        )
-      `)
-      .order('server_name', { ascending: true })
-      .order('character_name', { ascending: true })
+// Logic methods
+const handleSort = (key) => {
+  if (sortConfig.value.key === key) {
+    sortConfig.value.dir = sortConfig.value.dir === 'asc' ? 'desc' : 'asc'
+  } else {
+    sortConfig.value = { key, dir: 'asc' }
+  }
+}
 
-    if (err) {
-      throw err
+const toggleStringFilter = (key, val) => {
+  filters.value[key] = filters.value[key] === val ? null : val
+}
+
+const toggleDispatchFilter = (isFull) => {
+  const type = isFull ? 'full' : 'not_full'
+  filters.value.dispatch = filters.value.dispatch === type ? null : type
+}
+
+const clearFilter = (key) => {
+  filters.value[key] = null
+}
+
+const openNumericFilter = (key) => {
+  if (key === 'dispatch') return
+  activeNumericFilter.value = key
+  if (filters.value[key]) {
+    tempFilterValue.value = { ...filters.value[key] }
+  } else {
+    tempFilterValue.value = { ...numericLimits.value[key] }
+  }
+}
+
+const applyNumericFilter = () => {
+  filters.value[activeNumericFilter.value] = { ...tempFilterValue.value }
+  activeNumericFilter.value = null
+}
+
+const clearNumericFilter = (key) => {
+  filters.value[key] = null
+  activeNumericFilter.value = null
+}
+
+const getFilterName = (key) => {
+  const map = { level: '等級', vitality: '活力值', crystal: '水晶' }
+  return map[key] || key
+}
+
+const sliderTrackStyle = computed(() => {
+  if (!activeNumericFilter.value) return {}
+  const key = activeNumericFilter.value
+  const limits = numericLimits.value[key]
+  const range = limits.max - limits.min || 1
+  const minPercent = ((tempFilterValue.value.min - limits.min) / range) * 100
+  const maxPercent = ((tempFilterValue.value.max - limits.min) / range) * 100
+  const left = Math.min(minPercent, maxPercent)
+  const width = Math.abs(maxPercent - minPercent)
+  return { left: `${left}%`, width: `${width}%` }
+})
+
+// computed for table
+const filteredAndSortedCharacters = computed(() => {
+  let res = [...characters.value]
+  
+  // Filtering
+  if (filters.value.game_account) res = res.filter(c => c.game_account === filters.value.game_account)
+  if (filters.value.server_name) res = res.filter(c => c.server_name === filters.value.server_name)
+  if (filters.value.dispatch === 'full') res = res.filter(c => c.dispatch_current >= c.dispatch_max)
+  if (filters.value.dispatch === 'not_full') res = res.filter(c => c.dispatch_current < c.dispatch_max)
+  
+  ['level', 'vitality', 'crystal'].forEach(key => {
+    if (filters.value[key]) {
+      res = res.filter(c => {
+        const val = c[key] || 0
+        const min = Math.min(filters.value[key].min, filters.value[key].max)
+        const max = Math.max(filters.value[key].min, filters.value[key].max)
+        return val >= min && val <= max
+      })
+    }
+  })
+
+  // Sorting
+  res.sort((a, b) => {
+    let diff = 0
+    const dir = sortConfig.value.dir === 'asc' ? 1 : -1
+    
+    if (sortConfig.value.key === 'server_name') {
+      diff = getServerWeight(a.server_name) - getServerWeight(b.server_name)
+    } else if (sortConfig.value.key === 'mobile_account') {
+      // Game Account > Server > Char slot
+      const accA = a.game_account || ''
+      const accB = b.game_account || ''
+      if (accA !== accB) diff = accA.localeCompare(accB)
+      else {
+        const srvDiff = getServerWeight(a.server_name) - getServerWeight(b.server_name)
+        if (srvDiff !== 0) diff = srvDiff
+        else diff = (a.char_slot || 0) - (b.char_slot || 0)
+      }
+    } else if (sortConfig.value.key === 'dispatch') {
+      const ratioA = a.dispatch_max > 0 ? a.dispatch_current / a.dispatch_max : 0
+      const ratioB = b.dispatch_max > 0 ? b.dispatch_current / b.dispatch_max : 0
+      diff = ratioA - ratioB
+    } else {
+      const valA = a[sortConfig.value.key]
+      const valB = b[sortConfig.value.key]
+      if (typeof valA === 'string' && typeof valB === 'string') {
+        diff = valA.localeCompare(valB)
+      } else {
+        diff = (valA || 0) - (valB || 0)
+      }
     }
     
-    characters.value = data || []
-  } catch (err) {
-    console.error('Error fetching characters:', err)
-    error.value = `無法拉取角色資料：${err.message}。如果尚未建立資料表，請先至 Supabase 執行初始化 SQL 指令。`
-  } finally {
-    loading.value = false
-  }
+    return diff * dir
+  })
+  
+  return res
 })
 </script>
+
+<style scoped>
+/* Custom Range Slider Thumb */
+.custom-range::-webkit-slider-thumb {
+  pointer-events: auto;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #ffcc00;
+  cursor: pointer;
+  box-shadow: 0 0 5px rgba(0,0,0,0.8);
+  border: 2px solid #fff;
+}
+.custom-range::-moz-range-thumb {
+  pointer-events: auto;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #ffcc00;
+  cursor: pointer;
+  box-shadow: 0 0 5px rgba(0,0,0,0.8);
+  border: 2px solid #fff;
+}
+</style>
