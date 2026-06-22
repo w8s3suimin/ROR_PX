@@ -1,14 +1,13 @@
 <template>
-  <div class="min-h-[calc(100vh-4rem)] p-2 md:p-4 max-w-7xl mx-auto py-2 md:py-12 relative flex flex-col items-center justify-center">
+  <div class="min-h-[calc(100vh-4rem)] p-2 md:p-4 max-w-7xl mx-auto py-4 md:py-12 relative flex flex-col items-center justify-center">
     <!-- Header -->
-    <div class="text-center mb-2 md:mb-12">
-      <h1 class="text-xl md:text-4xl font-bold text-ror-accent mb-1 md:mb-4">
+    <div class="text-center mb-4 md:mb-12">
+      <h1 class="text-xl md:text-4xl font-bold text-ror-accent mb-2 md:mb-4">
         授權碼方案預告
       </h1>
-      <p class="text-ror-muted text-sm md:text-lg max-w-2xl mx-auto leading-tight md:leading-normal">
-        即將推出基於 PX 點數 (PXP) 的彈性方案。<br class="hidden md:block"/>
-        <span class="inline-block md:hidden"> </span>
-        儲值比例： <span class="text-white font-semibold">1 台幣 = 1 PXP</span>
+      <p class="text-ror-muted text-sm md:text-lg max-w-2xl mx-auto leading-normal">
+        即將推出基於 PX 點數 (PXP) 的彈性方案。<br/>
+        儲值比例：<span class="text-white font-semibold whitespace-nowrap ml-1">1 台幣 = 1 PXP</span>
       </p>
     </div>
 
@@ -81,7 +80,7 @@
     </div>
 
     <!-- 底部聲明按鈕 -->
-    <button @click="showInfoModal = true" class="group flex items-center justify-center text-ror-muted hover:text-white transition-colors py-1 md:py-2 px-2 md:px-4 rounded-lg hover:bg-ror-surface/50 text-sm md:text-base mt-auto">
+    <button @click="showInfoModal = true" class="group flex items-center justify-center text-ror-muted hover:text-white transition-colors py-2 px-4 rounded-lg hover:bg-ror-surface/50 text-sm md:text-base mt-2 md:mt-0">
       <svg class="w-4 h-4 md:w-5 md:h-5 mr-1.5 md:mr-2 text-ror-accent group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
       <span class="underline underline-offset-4 decoration-ror-border group-hover:decoration-ror-accent transition-colors">查看授權機制細節聲明</span>
     </button>
