@@ -65,10 +65,13 @@
           
           <div class="flex-1 w-full space-y-3 mt-4 sm:mt-0 px-2 bg-white/5 sm:bg-transparent rounded-lg p-3 sm:p-0 border border-white/5 sm:border-none">
             <div>
-              <p class="text-xs text-ror-muted mb-1">專屬授權碼：</p>
-              <div class="bg-black/30 px-3 py-2 rounded border border-white/5 text-white select-all text-sm font-mono break-all font-semibold flex items-center justify-between group cursor-text">
+              <p class="text-xs text-ror-muted mb-1 flex items-center justify-between">
+                <span>專屬授權碼：</span>
+                <span v-if="copied" class="text-green-400 text-[10px] animate-pulse">已複製!</span>
+              </p>
+              <div @click="copyCode(currentLicense.code)" class="bg-black/30 px-3 py-2 rounded border border-white/5 text-white select-all text-sm font-mono break-all font-semibold flex items-center justify-between group cursor-pointer hover:border-ror-accent/50 transition-colors">
                 {{ currentLicense.code }}
-                <svg v-if="currentLicense.code !== '尚未配發'" class="w-4 h-4 text-ror-muted group-hover:text-ror-accent opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                <svg v-if="currentLicense.code !== '尚未配發'" class="w-4 h-4 text-ror-muted group-hover:text-ror-accent transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
               </div>
             </div>
             <div class="flex items-center justify-between border-t border-white/5 pt-2">
@@ -142,12 +145,24 @@ const userCreatedDate = ref('載入中...')
 const selectedTab = ref('monthly')
 const deviceStatusTab = ref('overview')
 
+const copied = ref(false)
+const copyCode = async (code) => {
+  if (code === '尚未配發') return
+  try {
+    await navigator.clipboard.writeText(code)
+    copied.value = true
+    setTimeout(() => { copied.value = false }, 2000)
+  } catch (e) {
+    console.error('Failed to copy', e)
+  }
+}
+
 // 預設空的授權狀態
 const licenses = ref({
   daily: { days: 0, limit: 0, code: '尚未配發', autoRenew: false },
   weekly: { days: 0, limit: 0, code: '尚未配發', autoRenew: false },
   monthly: { days: 0, limit: 0, code: '尚未配發', autoRenew: false },
-  infinite: { days: '∞', limit: '∞', code: 'VIP-ADMIN-INFINITE', autoRenew: true }
+  infinite: { days: '∞', limit: '∞', code: '尚未配發', autoRenew: true }
 })
 
 // 假的設備狀態數據 (未來從後端抓)
@@ -184,18 +199,25 @@ onMounted(async () => {
       userEmail.value = user.email || '未提供'
       userCreatedDate.value = new Date(user.created_at).toLocaleDateString('zh-TW', { year: 'numeric', month: '2-digit', day: '2-digit' })
       
-      // 這裡未來會從資料庫拉取三種卡片的授權碼。目前為了預告版面，我們先抓取舊表的第一筆資料做為示範填入月卡。
       const { data, error } = await supabase
         .from('authorization_codes')
-        .select('code, allowed_devices')
+        .select('code, allowed_devices, plan_type')
         .eq('user_id', user.id)
       
       if (data && data.length > 0) {
-        // Mock 範例資料，未來由後端提供
-        licenses.value.monthly.code = data[0].code
-        licenses.value.monthly.limit = data[0].allowed_devices
-        licenses.value.monthly.days = 15 // 範例假資料
-        licenses.value.monthly.autoRenew = false
+        data.forEach(item => {
+          const type = item.plan_type
+          if (licenses.value[type]) {
+            licenses.value[type].code = item.code
+            if (type === 'infinite') {
+              licenses.value[type].limit = '∞'
+              licenses.value[type].days = '∞'
+            } else {
+              licenses.value[type].limit = item.allowed_devices
+              licenses.value[type].days = 15 // Mock data
+            }
+          }
+        })
       }
     }
   } catch (e) {

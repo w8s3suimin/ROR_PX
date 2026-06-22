@@ -19,6 +19,7 @@ CREATE TABLE public.authorization_codes (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
     code TEXT NOT NULL UNIQUE,
+    plan_type TEXT NOT NULL DEFAULT 'monthly', -- 'daily', 'weekly', 'monthly', 'infinite'
     allowed_devices INTEGER NOT NULL DEFAULT 1,
     auth_time TIMESTAMP WITH TIME ZONE DEFAULT now(),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
@@ -142,10 +143,10 @@ VALUES
 ('11111111-1111-1111-1111-111111111111', 'player1@test.com', false),
 ('22222222-2222-2222-2222-222222222222', 'player2@test.com', false);
 
-INSERT INTO public.authorization_codes (user_id, code, allowed_devices)
+INSERT INTO public.authorization_codes (user_id, code, plan_type, allowed_devices)
 VALUES 
-('11111111-1111-1111-1111-111111111111', 'AUTH-P1-001', 2),
-('22222222-2222-2222-2222-222222222222', 'AUTH-P2-001', 1);
+('11111111-1111-1111-1111-111111111111', 'AUTH-P1-001', 'monthly', 2),
+('22222222-2222-2222-2222-222222222222', 'AUTH-P2-001', 'weekly', 1);
 
 INSERT INTO public.characters (id, user_id, game_account, server_name, char_slot, character_name, profession, level, dispatch_current, dispatch_max, vitality, crystal, special_items)
 VALUES 
