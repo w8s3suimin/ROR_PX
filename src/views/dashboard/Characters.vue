@@ -18,13 +18,13 @@
     <div v-else class="space-y-4">
       <!-- List Header -->
       <div class="hidden md:grid grid-cols-7 gap-4 px-6 py-3 bg-ror-card/50 rounded-lg text-sm font-bold text-ror-muted border border-ror-border/50">
-        <div class="col-span-1">帳號/信箱</div>
+        <div class="col-span-1">平台/遊戲帳號</div>
         <div class="col-span-1">伺服器</div>
         <div class="col-span-1 text-center">角色名稱</div>
         <div class="col-span-1 text-center">等級</div>
         <div class="col-span-1 text-center">派遣數量</div>
         <div class="col-span-1 text-right text-blue-400">水晶</div>
-        <div class="col-span-1 text-right text-yellow-400">ZENY</div>
+        <div class="col-span-1 text-right text-green-400">活力值</div>
       </div>
 
       <!-- List Items -->
@@ -38,11 +38,17 @@
           class="grid grid-cols-2 md:grid-cols-7 gap-4 px-6 py-4 cursor-pointer items-center relative"
           @click="toggleRow(char.id)"
         >
-          <div class="col-span-1 font-bold text-white truncate">{{ char.profiles?.email || '未綁定' }}</div>
+          <div class="col-span-1 truncate">
+            <div class="font-bold text-white">{{ char.profiles?.email || '未綁定' }}</div>
+            <div class="text-xs text-ror-muted">{{ char.game_account }}</div>
+          </div>
           <div class="col-span-1 text-sm text-gray-300">
             <span class="inline-block px-2 py-1 rounded bg-white/5 border border-white/10">{{ char.server_name }}</span>
           </div>
-          <div class="col-span-1 text-center text-ror-muted font-bold">{{ char.character_name }}</div>
+          <div class="col-span-1 text-center truncate">
+            <div class="text-white font-bold">{{ char.character_name }}</div>
+            <div class="text-xs text-ror-muted">角 {{ char.char_slot }}</div>
+          </div>
           <div class="col-span-1 text-center text-white font-mono">Lv.{{ char.level }}</div>
           
           <div class="col-span-1 text-center">
@@ -52,7 +58,7 @@
           </div>
 
           <div class="col-span-1 text-right font-mono text-blue-400">{{ formatNumber(char.crystal) }}</div>
-          <div class="col-span-1 text-right font-mono text-yellow-400">{{ formatNumber(char.zeny) }}</div>
+          <div class="col-span-1 text-right font-mono text-green-400">{{ formatNumber(char.vitality) }}</div>
           
           <!-- Expand Indicator -->
           <div class="absolute right-4 top-1/2 -translate-y-1/2 text-ror-muted transition-transform duration-300" :class="{ 'rotate-180 text-ror-accent': expandedRow === char.id }">
