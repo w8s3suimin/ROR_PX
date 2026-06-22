@@ -147,7 +147,7 @@ const licenses = ref({
   daily: { days: 0, limit: 0, code: '尚未配發', autoRenew: false },
   weekly: { days: 0, limit: 0, code: '尚未配發', autoRenew: false },
   monthly: { days: 0, limit: 0, code: '尚未配發', autoRenew: false },
-  infinite: { days: '無限', limit: '無上限', code: 'VIP-ADMIN-INFINITE', autoRenew: true }
+  infinite: { days: '∞', limit: '∞', code: 'VIP-ADMIN-INFINITE', autoRenew: true }
 })
 
 // 假的設備狀態數據 (未來從後端抓)
