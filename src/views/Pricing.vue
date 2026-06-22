@@ -1,31 +1,86 @@
 <template>
-  <div class="min-h-[calc(100vh-4rem)] flex items-center justify-center p-4">
-    <div class="text-center">
-      <h1 class="text-4xl font-bold text-ror-accent mb-4">授權碼方案</h1>
-      <p class="text-ror-muted text-lg">授權方案即將公告，敬請期待！</p>
+  <div class="min-h-[calc(100vh-4rem)] p-4 max-w-7xl mx-auto py-12">
+    <div class="text-center mb-12">
+      <h1 class="text-4xl font-bold text-ror-accent mb-4">授權碼方案 (預告)</h1>
+      <p class="text-ror-muted text-lg max-w-2xl mx-auto">
+        我們即將推出基於 PX 點數 (PXP) 的彈性授權方案。<br/>
+        儲值比例： <span class="text-white font-semibold">1 台幣 = 1 PXP</span>
+      </p>
+    </div>
+
+    <!-- 方案卡片 -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto mb-16">
+      <!-- 日卡 -->
+      <div class="bg-ror-surface/50 border border-ror-border rounded-xl p-8 flex flex-col hover:border-ror-accent/50 transition-colors">
+        <h3 class="text-2xl font-bold text-white mb-2">日卡方案</h3>
+        <div class="text-ror-accent text-4xl font-bold mb-4">20 <span class="text-lg text-ror-muted font-normal">PXP / 天</span></div>
+        <ul class="text-ror-muted space-y-3 mb-8 flex-1">
+          <li class="flex items-center"><span class="mr-2 text-ror-accent">✓</span> 適合短期測試與臨時掛機</li>
+          <li class="flex items-center"><span class="mr-2 text-ror-accent">✓</span> 24 小時精確計時</li>
+        </ul>
+        <button class="w-full py-3 rounded-lg bg-ror-surface border border-ror-border text-ror-muted cursor-not-allowed opacity-70">
+          即將開放
+        </button>
+      </div>
+
+      <!-- 周卡 -->
+      <div class="bg-ror-surface/50 border border-ror-border rounded-xl p-8 flex flex-col hover:border-ror-accent/50 transition-colors relative">
+        <h3 class="text-2xl font-bold text-white mb-2">周卡方案</h3>
+        <div class="text-ror-accent text-4xl font-bold mb-4">100 <span class="text-lg text-ror-muted font-normal">PXP / 7天</span></div>
+        <ul class="text-ror-muted space-y-3 mb-8 flex-1">
+          <li class="flex items-center"><span class="mr-2 text-ror-accent">✓</span> 平均每日約 14.28 PXP</li>
+          <li class="flex items-center"><span class="mr-2 text-ror-accent">✓</span> 享有按比例加機折扣</li>
+        </ul>
+        <button class="w-full py-3 rounded-lg bg-ror-surface border border-ror-border text-ror-muted cursor-not-allowed opacity-70">
+          即將開放
+        </button>
+      </div>
+
+      <!-- 月卡 -->
+      <div class="bg-ror-surface border-2 border-ror-accent rounded-xl p-8 flex flex-col relative transform hover:-translate-y-1 transition-transform shadow-lg shadow-ror-accent/10">
+        <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-ror-accent text-black px-4 py-1 rounded-full text-sm font-bold">
+          最超值推薦
+        </div>
+        <h3 class="text-2xl font-bold text-white mb-2">月卡方案</h3>
+        <div class="text-ror-accent text-4xl font-bold mb-4">300 <span class="text-lg text-ror-muted font-normal">PXP / 30天</span></div>
+        <ul class="text-ror-muted space-y-3 mb-8 flex-1">
+          <li class="flex items-center"><span class="mr-2 text-ror-accent">✓</span> 平均每日僅 10 PXP (半價)</li>
+          <li class="flex items-center"><span class="mr-2 text-ror-accent">✓</span> 享有最優惠按比例加機折扣</li>
+        </ul>
+        <button class="w-full py-3 rounded-lg bg-ror-surface border border-ror-border text-ror-muted cursor-not-allowed opacity-70">
+          即將開放
+        </button>
+      </div>
+    </div>
+
+    <!-- 細節聲明 -->
+    <div class="max-w-4xl mx-auto bg-ror-surface/30 rounded-xl p-8 border border-ror-border">
+      <h3 class="text-xl font-bold text-white mb-6 flex items-center">
+        <svg class="w-6 h-6 mr-2 text-ror-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        授權機制細節聲明
+      </h3>
+      <div class="space-y-6 text-ror-muted text-sm leading-relaxed">
+        <div>
+          <h4 class="text-white font-semibold mb-1">1. 無硬體綁定 (Concurrent Sessions)</h4>
+          <p>我們的授權為「最大同時在線機台數」，完全不綁定模擬器、電腦硬體或 MAC 位址。模擬器損壞可隨時重置，只要同時上線的腳本數量不超過您的授權上限即可。</p>
+        </div>
+        <div>
+          <h4 class="text-white font-semibold mb-1">2. 彈性加機與自動擴充</h4>
+          <p>當您擁有的授權卡仍在效期內，若開啟超過上限的機台，系統會自動幫您以「剩餘天數比例」扣除 PXP 並擴充上限（無條件捨去小數點）。這意味著月卡與周卡用戶臨時加機，同樣享有該方案的單日折扣價。首次購買的用戶只要錢包餘額充足，即可無縫開啟多台設備，系統會自動按比例計算並擴充上限。為保護您的點數安全，強烈建議在後台設定「最大機台授權上限」。</p>
+        </div>
+        <div>
+          <h4 class="text-white font-semibold mb-1">3. 友善的啟動續費機制 (預設手動)</h4>
+          <p>我們絕不在背景隨意扣款。授權過期時，只有當您「實際開啟並執行腳本」的瞬間才會觸發續費。為了讓您保有絕對的選擇權，系統預設為「手動續費（不自動扣款）」。未來系統將提供設定，讓您可以自由切換為「腳本彈窗確認續費」或「靜默自動續費」。</p>
+        </div>
+        <div>
+          <h4 class="text-white font-semibold mb-1">4. 單一方案專屬授權碼</h4>
+          <p>為了方便您管理，同一帳號下每種方案（日/周/月）只會發放一組專屬授權碼。所有的加機、續費操作，都會直接疊加擴充在該組授權碼上，您不需要管理多組雜亂的序號。</p>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-/**
- * 未來授權購買模式規劃 (Business Logic Draft)
- * 
- * 1. 授權碼驗證機制：
- *    - 腳本開啟後會驗證授權碼有效性，並定時上傳訊息以維持心跳。
- * 
- * 2. 授權碼關鍵資訊：
- *    - (a) 授權天數 (Days)
- *    - (b) 上線最大數量 (Max Devices)
- *    - 總額度計算：授權天數 * 上線最大數量 = 總 PX 點數 (PXP)
- *      (例如：30天 * 10台設備 ＝ 額度 300 PXP)
- * 
- * 3. 方案轉換機制 (未來可能支援人工轉換)：
- *    - 目前不支援自動轉換。
- *    - 未來可由人工協助轉換授權比例 (例如：將「30天 * 10台」轉換為「10天 * 30台」)。
- * 
- * 4. 點數扣除模式 (替代方案)：
- *    - 以儲值 PXP 點數的方式購買。
- *    - 當天設備「第一次」開啟並執行腳本後，才進行當日的點數扣除。
- */
+// 目前為預告展示頁面，暫無業務邏輯
 </script>
