@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-[calc(100vh-4rem)] p-2 md:p-4 max-w-7xl mx-auto py-4 md:py-12 relative flex flex-col items-center justify-center">
+  <div class="min-h-[calc(100vh-4rem)] p-2 md:p-4 max-w-7xl mx-auto pt-6 pb-4 md:py-12 relative flex flex-col items-center justify-start md:justify-center">
     <!-- Header -->
     <div class="text-center mb-4 md:mb-12">
       <h1 class="text-xl md:text-4xl font-bold text-ror-accent mb-2 md:mb-4">
