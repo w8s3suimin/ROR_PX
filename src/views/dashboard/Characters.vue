@@ -23,8 +23,8 @@
         <div class="col-span-1 text-center">角色名稱</div>
         <div class="col-span-1 text-center">等級</div>
         <div class="col-span-1 text-center">派遣數量</div>
-        <div class="col-span-1 text-right text-blue-400">水晶</div>
-        <div class="col-span-1 text-right text-green-400">活力值</div>
+        <div class="col-span-1 text-right text-blue-400">活力值</div>
+        <div class="col-span-1 text-right text-pink-400">水晶</div>
       </div>
 
       <!-- List Items -->
@@ -57,8 +57,8 @@
             </span>
           </div>
 
-          <div class="col-span-1 text-right font-mono text-blue-400">{{ formatNumber(char.crystal) }}</div>
-          <div class="col-span-1 text-right font-mono text-green-400">{{ formatNumber(char.vitality) }}</div>
+          <div class="col-span-1 text-right font-mono text-blue-400">{{ formatNumber(char.vitality) }}</div>
+          <div class="col-span-1 text-right font-mono text-pink-400">{{ formatNumber(char.crystal) }}</div>
           
           <!-- Expand Indicator -->
           <div class="absolute right-4 top-1/2 -translate-y-1/2 text-ror-muted transition-transform duration-300" :class="{ 'rotate-180 text-ror-accent': expandedRow === char.id }">
