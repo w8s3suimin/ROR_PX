@@ -57,7 +57,13 @@
             </span>
           </div>
 
-          <div class="col-span-1 text-right font-mono text-blue-400">{{ formatNumber(char.vitality) }}</div>
+          <div class="col-span-1 text-right font-mono text-blue-400 relative group">
+            {{ formatNumber(char.vitality) }}
+            <!-- Tooltip -->
+            <div class="absolute right-0 bottom-full mb-2 hidden md:group-hover:block whitespace-nowrap bg-black text-gray-300 text-xs px-2 py-1 rounded border border-ror-border z-10 pointer-events-none shadow-lg">
+              最後更新: {{ formatTime(char.updated_at) }}
+            </div>
+          </div>
           <div class="col-span-1 text-right font-mono text-pink-400">{{ formatNumber(char.crystal) }}</div>
           
           <!-- Expand Indicator -->
@@ -129,6 +135,16 @@ const toggleRow = (id) => {
 const formatNumber = (num) => {
   if (!num) return '0'
   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+}
+
+const formatTime = (dateStr) => {
+  if (!dateStr) return '未知'
+  const date = new Date(dateStr)
+  return date.toLocaleString('zh-TW', {
+    month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', second: '2-digit',
+    hour12: false
+  })
 }
 
 const getQualityBorder = (quality) => {
