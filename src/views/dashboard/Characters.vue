@@ -24,8 +24,8 @@
         <div class="col-span-1 text-center">等級</div>
         <div class="col-span-1 text-center">職業</div>
         <div class="col-span-1 text-center">派遣數量</div>
-        <div class="col-span-1 text-center text-blue-400">活力值</div>
-        <div class="col-span-1 text-center text-pink-400">水晶</div>
+        <div class="col-span-1 text-right text-blue-400">活力值</div>
+        <div class="col-span-1 text-right text-pink-400">水晶</div>
       </div>
 
       <!-- List Items -->
@@ -39,11 +39,11 @@
           class="grid grid-cols-2 md:grid-cols-10 gap-4 pl-6 pr-12 py-4 cursor-pointer items-center relative"
           @click="toggleRow(char.id)"
         >
-          <div class="col-span-2 truncate">
+          <div class="col-span-2 truncate text-center">
             <div class="font-bold text-white text-sm">{{ char.game_account || '未知遊戲帳號' }}</div>
             <div class="text-xs text-ror-muted">{{ char.profiles?.email || '未綁定' }}</div>
           </div>
-          <div class="col-span-1 text-sm text-gray-300 truncate">
+          <div class="col-span-1 text-sm text-gray-300 truncate text-center">
             <span class="inline-block px-2 py-1 rounded bg-white/5 border border-white/10">{{ char.server_name }}</span>
           </div>
           <div class="col-span-2 text-center truncate">
