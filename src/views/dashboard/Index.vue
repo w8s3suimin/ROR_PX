@@ -42,9 +42,9 @@
           
           <!-- 授權種類切換 Tabs -->
           <div class="flex space-x-1 bg-black/20 p-1 rounded-lg border border-white/5 overflow-x-auto hide-scrollbar">
-            <button @click="selectedTab = 'daily'" :class="selectedTab === 'daily' ? 'bg-ror-surface text-white shadow-sm ring-1 ring-white/20' : 'text-ror-muted hover:text-white'" class="px-3 py-1.5 text-xs rounded-md transition-colors whitespace-nowrap focus:outline-none">日卡</button>
-            <button @click="selectedTab = 'weekly'" :class="selectedTab === 'weekly' ? 'bg-ror-surface text-white shadow-sm ring-1 ring-white/20' : 'text-ror-muted hover:text-white'" class="px-3 py-1.5 text-xs rounded-md transition-colors whitespace-nowrap focus:outline-none">周卡</button>
-            <button @click="selectedTab = 'monthly'" :class="selectedTab === 'monthly' ? 'bg-ror-surface text-white shadow-sm ring-1 ring-white/20' : 'text-ror-muted hover:text-white'" class="px-3 py-1.5 text-xs rounded-md transition-colors whitespace-nowrap focus:outline-none">月卡</button>
+            <button @click="selectedTab = 'daily'" :class="selectedTab === 'daily' ? 'bg-ror-accent/20 text-ror-accent shadow-sm ring-1 ring-ror-accent/30' : 'text-ror-muted hover:text-ror-accent'" class="px-3 py-1.5 text-xs rounded-md transition-colors whitespace-nowrap focus:outline-none">日卡</button>
+            <button @click="selectedTab = 'weekly'" :class="selectedTab === 'weekly' ? 'bg-ror-accent/20 text-ror-accent shadow-sm ring-1 ring-ror-accent/30' : 'text-ror-muted hover:text-ror-accent'" class="px-3 py-1.5 text-xs rounded-md transition-colors whitespace-nowrap focus:outline-none">周卡</button>
+            <button @click="selectedTab = 'monthly'" :class="selectedTab === 'monthly' ? 'bg-ror-accent/20 text-ror-accent shadow-sm ring-1 ring-ror-accent/30' : 'text-ror-muted hover:text-ror-accent'" class="px-3 py-1.5 text-xs rounded-md transition-colors whitespace-nowrap focus:outline-none">月卡</button>
             <button v-if="isAdminRole" @click="selectedTab = 'infinite'" :class="selectedTab === 'infinite' ? 'bg-ror-accent/20 text-ror-accent shadow-sm ring-1 ring-ror-accent/30' : 'text-ror-muted hover:text-ror-accent'" class="px-3 py-1.5 text-xs rounded-md transition-colors font-bold whitespace-nowrap focus:outline-none">尊榮 ∞ 卡</button>
           </div>
         </div>
@@ -105,28 +105,22 @@
           </div>
         </div>
 
-        <div v-else class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div v-else class="grid grid-cols-4 gap-3">
           <div class="bg-[#1a1a1a] rounded-lg p-3 text-center border border-white/5 flex flex-col justify-center">
-            <div class="text-xl font-bold text-white mb-0.5">{{ mockDeviceStats.byLicense.daily }}</div>
-            <div class="text-[10px] text-ror-muted">日卡 (在線)</div>
-          </div>
-          <div class="bg-[#1a1a1a] rounded-lg p-3 text-center border border-white/5 flex flex-col justify-center">
-            <div class="text-xl font-bold text-white mb-0.5">{{ mockDeviceStats.byLicense.weekly }}</div>
-            <div class="text-[10px] text-ror-muted">周卡 (在線)</div>
+            <div class="text-2xl font-bold text-green-500 mb-0.5">{{ mockDeviceStats.byLicense.daily }}</div>
+            <div class="text-xs text-ror-muted">日卡 (在線)</div>
           </div>
           <div class="bg-[#1a1a1a] rounded-lg p-3 text-center border border-white/5 flex flex-col justify-center">
-            <div class="text-xl font-bold text-white mb-0.5">{{ mockDeviceStats.byLicense.monthly }}</div>
-            <div class="text-[10px] text-ror-muted">月卡 (在線)</div>
+            <div class="text-2xl font-bold text-green-500 mb-0.5">{{ mockDeviceStats.byLicense.weekly }}</div>
+            <div class="text-xs text-ror-muted">周卡 (在線)</div>
           </div>
-          
-          <div v-if="isAdminRole" class="bg-[#1a1a1a] rounded-lg p-3 text-center border border-ror-accent/20 flex flex-col justify-center">
-            <div class="text-xl font-bold text-ror-accent mb-0.5">{{ mockDeviceStats.byLicense.infinite }}</div>
-            <div class="text-[10px] text-ror-muted">∞ 卡 (在線)</div>
+          <div class="bg-[#1a1a1a] rounded-lg p-3 text-center border border-white/5 flex flex-col justify-center">
+            <div class="text-2xl font-bold text-green-500 mb-0.5">{{ mockDeviceStats.byLicense.monthly }}</div>
+            <div class="text-xs text-ror-muted">月卡 (在線)</div>
           </div>
-          
-          <div class="bg-[#1a1a1a] rounded-lg p-3 text-center border border-white/5 flex flex-col justify-center" :class="isAdminRole ? 'col-span-2 sm:col-span-4 mt-1' : ''">
-            <div class="text-xl font-bold text-red-500 mb-0.5">{{ mockDeviceStats.totalOffline }}</div>
-            <div class="text-[10px] text-ror-muted">離線</div>
+          <div class="bg-[#1a1a1a] rounded-lg p-3 text-center border border-white/5 flex flex-col justify-center">
+            <div class="text-2xl font-bold text-red-500 mb-0.5">{{ mockDeviceStats.totalOffline }}</div>
+            <div class="text-xs text-ror-muted">總離線</div>
           </div>
         </div>
       </div>
