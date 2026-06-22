@@ -2,7 +2,7 @@
   <div class="min-h-[calc(100vh-4rem)] p-4 max-w-7xl mx-auto py-12 relative flex flex-col items-center">
     <div class="text-center mb-12">
       <h1 class="text-4xl font-bold text-ror-accent mb-4">
-        授權碼方案 (預告)
+        授權碼方案預告
       </h1>
       <p class="text-ror-muted text-lg max-w-2xl mx-auto">
         我們即將推出基於 PX 點數 (PXP) 的彈性授權方案。<br/>
