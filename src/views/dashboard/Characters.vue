@@ -605,8 +605,17 @@ const filteredAndSortedCharacters = computed(() => {
         diff = (valA || 0) - (valB || 0)
       }
     }
+    if (isNaN(diff)) diff = 0
+    if (diff !== 0) return diff * dir
     
-    return isNaN(diff) ? 0 : diff * dir
+    // Secondary sort: updated_at desc (newest first)
+    if (!sortConfig.value.key.includes('updated_at')) {
+      const timeA = a.updated_at ? new Date(a.updated_at).getTime() : 0
+      const timeB = b.updated_at ? new Date(b.updated_at).getTime() : 0
+      return timeB - timeA
+    }
+    
+    return 0
   })
   
   return res
