@@ -27,10 +27,7 @@
 
         <!-- Status Details -->
         <div class="flex-1 space-y-2">
-          <div class="flex justify-between items-center text-sm">
-            <span class="text-ror-muted">授權碼</span>
-            <span class="text-white font-mono text-xs">{{ authCode }}</span>
-          </div>
+
           <div class="flex justify-between items-center text-sm">
             <span class="text-ror-muted">目標帳號</span>
             <span class="text-white font-mono">{{ dev.characters?.game_account || '未知' }}</span>

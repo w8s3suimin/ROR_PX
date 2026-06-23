@@ -41,6 +41,9 @@ CREATE TABLE public.characters (
     vitality INTEGER DEFAULT 100, -- 活力值 (取代了 Zeny)
     crystal INTEGER DEFAULT 0,
     special_items JSONB DEFAULT '[]'::jsonb,
+    crystal_updated_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+    profile_updated_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+    vitality_dispatch_updated_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
     -- 確保同一使用者底下的同一個遊戲帳號、伺服器、角色序不會重複，方便我們做 Upsert
@@ -78,9 +81,11 @@ CREATE OR REPLACE FUNCTION public.update_character_status_by_auth(
     p_char_slot INTEGER,
     p_character_name TEXT DEFAULT NULL,
     p_profession TEXT DEFAULT NULL,
-    p_dispatch_current INTEGER DEFAULT 0,
-    p_dispatch_max INTEGER DEFAULT 3,
-    p_vitality INTEGER DEFAULT 100
+    p_level INTEGER DEFAULT NULL,
+    p_dispatch_current INTEGER DEFAULT NULL,
+    p_dispatch_max INTEGER DEFAULT NULL,
+    p_vitality INTEGER DEFAULT NULL,
+    p_crystal INTEGER DEFAULT NULL
 ) RETURNS jsonb
 LANGUAGE plpgsql
 SECURITY DEFINER -- 以建立者權限執行，繞過 RLS（因為外部腳本沒有登入 auth）
@@ -100,19 +105,43 @@ BEGIN
 
     -- 2. 使用 Upsert 更新或新增角色資料
     INSERT INTO public.characters (
-        user_id, game_account, server_name, char_slot, character_name, profession,
-        dispatch_current, dispatch_max, vitality
+        user_id, game_account, server_name, char_slot, character_name, profession, level,
+        dispatch_current, dispatch_max, vitality, crystal
     ) VALUES (
-        v_user_id, p_game_account, p_server_name, p_char_slot, COALESCE(p_character_name, '未知角色'), p_profession,
-        p_dispatch_current, p_dispatch_max, p_vitality
+        v_user_id, p_game_account, p_server_name, p_char_slot, COALESCE(p_character_name, '未知角色'), p_profession, COALESCE(p_level, 1),
+        COALESCE(p_dispatch_current, 0), COALESCE(p_dispatch_max, 3), COALESCE(p_vitality, 100), COALESCE(p_crystal, 0)
     )
     ON CONFLICT (user_id, game_account, server_name, char_slot) 
     DO UPDATE SET 
         character_name = COALESCE(EXCLUDED.character_name, characters.character_name),
         profession = COALESCE(EXCLUDED.profession, characters.profession),
-        dispatch_current = EXCLUDED.dispatch_current,
-        dispatch_max = EXCLUDED.dispatch_max,
-        vitality = EXCLUDED.vitality,
+        level = COALESCE(EXCLUDED.level, characters.level),
+        profile_updated_at = CASE 
+            WHEN characters.character_name IS DISTINCT FROM EXCLUDED.character_name OR
+                 characters.profession IS DISTINCT FROM EXCLUDED.profession OR
+                 characters.level IS DISTINCT FROM EXCLUDED.level 
+            THEN now() 
+            ELSE characters.profile_updated_at 
+        END,
+        
+        dispatch_current = COALESCE(EXCLUDED.dispatch_current, characters.dispatch_current),
+        dispatch_max = COALESCE(EXCLUDED.dispatch_max, characters.dispatch_max),
+        vitality = COALESCE(EXCLUDED.vitality, characters.vitality),
+        vitality_dispatch_updated_at = CASE 
+            WHEN characters.dispatch_current IS DISTINCT FROM EXCLUDED.dispatch_current OR
+                 characters.dispatch_max IS DISTINCT FROM EXCLUDED.dispatch_max OR
+                 characters.vitality IS DISTINCT FROM EXCLUDED.vitality 
+            THEN now() 
+            ELSE characters.vitality_dispatch_updated_at 
+        END,
+        
+        crystal = COALESCE(EXCLUDED.crystal, characters.crystal),
+        crystal_updated_at = CASE 
+            WHEN characters.crystal IS DISTINCT FROM EXCLUDED.crystal 
+            THEN now() 
+            ELSE characters.crystal_updated_at 
+        END,
+        
         updated_at = now()
     RETURNING id INTO v_char_id;
 
