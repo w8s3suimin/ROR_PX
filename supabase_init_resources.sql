@@ -123,17 +123,58 @@ $$;
 -- ==========================================
 -- 設定 Row Level Security (RLS) 與 Policies
 -- ==========================================
+-- 建立判斷是否為管理員的函數 (繞過 RLS 防止無限迴圈)
+CREATE OR REPLACE FUNCTION public.is_admin()
+RETURNS BOOLEAN AS $$
+  SELECT COALESCE(
+    (SELECT is_admin FROM public.profiles WHERE id = auth.uid()),
+    false
+  );
+$$ LANGUAGE sql SECURITY DEFINER;
+
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.authorization_codes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.characters ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.devices_status ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.task_queue ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Allow all profiles" ON public.profiles FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Allow all auth_codes" ON public.authorization_codes FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Allow all characters" ON public.characters FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Allow all devices" ON public.devices_status FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Allow all tasks" ON public.task_queue FOR ALL USING (true) WITH CHECK (true);
+-- Profiles: 用戶只能看到/修改自己的，管理員可看全部
+CREATE POLICY "Profiles view policy" ON public.profiles FOR SELECT USING (auth.uid() = id OR public.is_admin());
+CREATE POLICY "Profiles update policy" ON public.profiles FOR UPDATE USING (auth.uid() = id OR public.is_admin());
+CREATE POLICY "Profiles insert policy" ON public.profiles FOR INSERT WITH CHECK (auth.uid() = id OR public.is_admin());
+CREATE POLICY "Profiles delete policy" ON public.profiles FOR DELETE USING (public.is_admin());
+
+-- Authorization Codes: 用戶只能看到自己的，管理員全權管理
+CREATE POLICY "Auth codes view policy" ON public.authorization_codes FOR SELECT USING (auth.uid() = user_id OR public.is_admin());
+CREATE POLICY "Auth codes insert policy" ON public.authorization_codes FOR INSERT WITH CHECK (public.is_admin());
+CREATE POLICY "Auth codes update policy" ON public.authorization_codes FOR UPDATE USING (public.is_admin());
+CREATE POLICY "Auth codes delete policy" ON public.authorization_codes FOR DELETE USING (public.is_admin());
+
+-- Characters: 用戶只能看/改自己的，管理員可看全部
+CREATE POLICY "Characters view policy" ON public.characters FOR SELECT USING (auth.uid() = user_id OR public.is_admin());
+CREATE POLICY "Characters insert policy" ON public.characters FOR INSERT WITH CHECK (auth.uid() = user_id OR public.is_admin());
+CREATE POLICY "Characters update policy" ON public.characters FOR UPDATE USING (auth.uid() = user_id OR public.is_admin());
+CREATE POLICY "Characters delete policy" ON public.characters FOR DELETE USING (auth.uid() = user_id OR public.is_admin());
+
+-- Devices Status: 用戶只能看/改自己的設備
+CREATE POLICY "Devices view policy" ON public.devices_status FOR SELECT USING (auth.uid() = user_id OR public.is_admin());
+CREATE POLICY "Devices insert policy" ON public.devices_status FOR INSERT WITH CHECK (auth.uid() = user_id OR public.is_admin());
+CREATE POLICY "Devices update policy" ON public.devices_status FOR UPDATE USING (auth.uid() = user_id OR public.is_admin());
+CREATE POLICY "Devices delete policy" ON public.devices_status FOR DELETE USING (auth.uid() = user_id OR public.is_admin());
+
+-- Task Queue: 用戶只能管理屬於自己設備的任務
+CREATE POLICY "Tasks view policy" ON public.task_queue FOR SELECT USING (
+  device_id IN (SELECT id FROM public.devices_status WHERE user_id = auth.uid()) OR public.is_admin()
+);
+CREATE POLICY "Tasks insert policy" ON public.task_queue FOR INSERT WITH CHECK (
+  device_id IN (SELECT id FROM public.devices_status WHERE user_id = auth.uid()) OR public.is_admin()
+);
+CREATE POLICY "Tasks update policy" ON public.task_queue FOR UPDATE USING (
+  device_id IN (SELECT id FROM public.devices_status WHERE user_id = auth.uid()) OR public.is_admin()
+);
+CREATE POLICY "Tasks delete policy" ON public.task_queue FOR DELETE USING (
+  device_id IN (SELECT id FROM public.devices_status WHERE user_id = auth.uid()) OR public.is_admin()
+);
 
 -- ==========================================
 -- 插入示範用的假資料 (Dummy Data)
