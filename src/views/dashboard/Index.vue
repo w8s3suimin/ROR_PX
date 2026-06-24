@@ -16,13 +16,15 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div class="bg-ror-card border border-ror-border rounded-xl p-6">
         <h2 class="text-xl font-bold text-ror-accent mb-4">帳號資訊</h2>
-        <div class="flex gap-6 relative">
-          <div class="flex-shrink-0 w-36 sm:w-40 bg-[#1a1a1a] rounded-xl p-4 flex flex-col items-center justify-center border border-white/5 relative overflow-hidden group">
-            <div class="absolute inset-0 bg-ror-accent/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            <div class="text-3xl font-bold text-ror-accent mb-1">{{ userPxp }}</div>
-            <div class="text-xs text-ror-muted font-bold tracking-wider">PX點數</div>
+        <div class="grid grid-cols-1 sm:grid-cols-[40%_60%] gap-6 sm:gap-0">
+          <div>
+            <div class="w-36 sm:w-40 bg-[#1a1a1a] rounded-xl p-4 flex flex-col items-center justify-center border border-white/5 relative overflow-hidden group">
+              <div class="absolute inset-0 bg-ror-accent/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <div class="text-3xl font-bold text-ror-accent mb-1">{{ userPxp }}</div>
+              <div class="text-xs text-ror-muted font-bold tracking-wider">PX點數</div>
+            </div>
           </div>
-          <div class="flex-1 space-y-4 flex flex-col justify-center sm:pl-6 lg:pl-[5%]">
+          <div class="space-y-4 flex flex-col justify-center">
             <div class="flex items-center justify-between border-b border-white/5 pb-2">
               <span class="text-ror-muted text-sm flex-shrink-0">註冊信箱</span>
               <span class="text-white font-medium break-all text-right">{{ userEmail }}</span>
