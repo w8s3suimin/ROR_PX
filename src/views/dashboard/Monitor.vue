@@ -16,12 +16,13 @@
 
     <!-- Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-      <div v-for="dev in devices" :key="dev.id" class="rounded-xl p-4 flex flex-col gap-3 hover:border-ror-accent transition-all duration-300 group" :class="isOnline(dev) ? 'bg-ror-card border border-ror-border opacity-100 shadow-[0_4px_20px_rgba(0,0,0,0.5)]' : 'bg-black/80 border border-white/5 opacity-50 grayscale-[30%]'">
+      <div v-for="dev in devices" :key="dev.id" class="rounded-xl p-4 flex flex-col gap-3 hover:border-ror-accent transition-all duration-300 group" :class="getDeviceStatus(dev) !== 'offline' ? 'bg-ror-card border border-ror-border opacity-100 shadow-[0_4px_20px_rgba(0,0,0,0.5)]' : 'bg-black/80 border border-white/5 opacity-50 grayscale-[30%]'">
         <!-- Header -->
         <div class="flex justify-between items-center border-b border-ror-border/50 pb-2">
           <div class="flex items-center gap-2">
             <span class="text-white font-bold tracking-wider">設備 #{{ dev.device_index }}</span>
-            <span v-if="isOnline(dev)" class="px-2 py-0.5 rounded text-[10px] font-bold bg-green-500/20 text-green-400 border border-green-500/30">在線</span>
+            <span v-if="getDeviceStatus(dev) === 'online'" class="px-2 py-0.5 rounded text-[10px] font-bold bg-green-500/20 text-green-400 border border-green-500/30">在線</span>
+            <span v-else-if="getDeviceStatus(dev) === 'paused'" class="px-2 py-0.5 rounded text-[10px] font-bold bg-yellow-500/20 text-yellow-400 border border-yellow-500/30">⏸️ 暫停中</span>
             <span v-else class="px-2 py-0.5 rounded text-[10px] font-bold bg-red-500/20 text-red-400 border border-red-500/30">離線</span>
           </div>
         </div>
@@ -31,15 +32,15 @@
 
           <div class="flex items-center">
             <span class="text-white font-bold text-base w-20 flex-shrink-0 tracking-wide">目標帳號</span>
-            <span class="text-gray-400 text-[15px] font-mono truncate ml-2">{{ dev.characters?.game_account || '未知' }}</span>
+            <span class="text-gray-400 text-[15px] font-mono truncate ml-2">{{ getDeviceStatus(dev) !== 'offline' && !dev.character_id ? '單角色模式' : (dev.characters?.game_account || '未知') }}</span>
           </div>
           <div class="flex items-center">
             <span class="text-white font-bold text-base w-20 flex-shrink-0 tracking-wide">目標角色</span>
-            <span class="text-gray-400 text-[15px] truncate ml-2">{{ dev.characters?.server_name || '未知' }}-角{{ dev.characters?.char_slot || '?' }}</span>
+            <span class="text-gray-400 text-[15px] truncate ml-2">{{ getDeviceStatus(dev) !== 'offline' && !dev.character_id ? '-' : (dev.characters ? `${dev.characters.server_name}-角${dev.characters.char_slot}` : '未知') }}</span>
           </div>
           <div class="flex items-center">
             <span class="text-white font-bold text-base w-20 flex-shrink-0 tracking-wide">目前任務</span>
-            <span class="text-ror-accent text-[15px] font-bold truncate ml-2" :title="dev.current_task">{{ isOnline(dev) ? (dev.current_task || '閒置中') : '-' }}</span>
+            <span class="text-ror-accent text-[15px] font-bold truncate ml-2" :title="getTaskDisplay(dev)">{{ getTaskDisplay(dev) }}</span>
           </div>
           <div class="flex justify-end text-xs mt-4 pt-2 border-t border-ror-border/30 text-gray-500 font-mono tracking-wide">
             updated at {{ formatTime24H(dev.updated_at) }}
@@ -72,22 +73,70 @@ const authCode = ref('載入中...')
 const currentTime = ref(Date.now())
 let timer = null
 
-const isOnline = (dev) => {
-  if (!dev || !dev.updated_at) return false
+const getDeviceStatus = (dev) => {
+  if (!dev || !dev.updated_at) return 'offline'
   const lastUpdate = new Date(dev.updated_at).getTime()
-  // 2.5 minutes = 150000 ms
-  return (currentTime.value - lastUpdate) <= 150000
+  // 5 minutes = 300000 ms
+  if (dev.is_offline || (currentTime.value - lastUpdate) > 300000) {
+    return 'offline'
+  }
+  if (dev.is_paused) {
+    return 'paused'
+  }
+  return 'online'
+}
+
+const getDisplayDuration = (dev) => {
+  const status = getDeviceStatus(dev)
+  const baseDuration = dev.task_duration || 0
+  
+  if (status === 'offline' || status === 'paused') {
+    return baseDuration
+  }
+  
+  // Dynamic timer
+  const lastUpdate = new Date(dev.updated_at).getTime()
+  const elapsedSinceUpdate = Math.max(0, Math.floor((currentTime.value - lastUpdate) / 1000))
+  return baseDuration + elapsedSinceUpdate
+}
+
+const pad = (n) => n.toString().padStart(2, '0')
+const formatDuration = (totalSeconds) => {
+  if (!totalSeconds) return ''
+  const h = Math.floor(totalSeconds / 3600)
+  const m = Math.floor((totalSeconds % 3600) / 60)
+  const s = Math.floor(totalSeconds % 60)
+  if (h > 0) return `${h}:${pad(m)}:${pad(s)}`
+  return `${pad(m)}:${pad(s)}`
+}
+
+const getTaskDisplay = (dev) => {
+  const status = getDeviceStatus(dev)
+  const duration = getDisplayDuration(dev)
+  const durationStr = duration > 0 ? ` (${formatDuration(duration)})` : ''
+
+  if (status === 'offline') {
+    return `失去連線`
+  }
+  
+  const baseTask = dev.current_task || '閒置中'
+  
+  if (status === 'paused') {
+    return `${baseTask} (暫停中)${durationStr}`
+  }
+  
+  return `${baseTask}${durationStr}`
 }
 
 const onlineCount = computed(() => {
-  return devices.value.filter(dev => isOnline(dev)).length
+  return devices.value.filter(dev => getDeviceStatus(dev) !== 'offline').length
 })
 
 onMounted(async () => {
-  // Update current time every second to re-evaluate online status dynamically
+  // Update current time every second to re-evaluate online status and live timer dynamically
   timer = setInterval(() => {
     currentTime.value = Date.now()
-  }, 10000) // update every 10 seconds to save performance
+  }, 1000)
 
   // Fetch auth code for the current user
   const { data: { user } } = await supabase.auth.getUser()
@@ -110,6 +159,11 @@ onMounted(async () => {
     .select(`
       id,
       device_index,
+      character_id,
+      is_offline,
+      is_paused,
+      task_start_time,
+      task_duration,
       current_task,
       updated_at,
       characters (

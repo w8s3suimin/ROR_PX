@@ -191,8 +191,8 @@ const updateDeviceStats = () => {
   const now = currentTime.value
 
   fetchedDevices.forEach(dev => {
-    const isOnline = dev.updated_at && (now - new Date(dev.updated_at).getTime() <= 150000)
-    if (isOnline) {
+    const isOffline = dev.is_offline || !dev.updated_at || (now - new Date(dev.updated_at).getTime() > 300000)
+    if (!isOffline) {
       online++
     } else {
       offline++
@@ -248,7 +248,7 @@ onMounted(async () => {
       // Fetch devices to calculate online/offline stats
       const { data: devData } = await supabase
         .from('devices_status')
-        .select('id, updated_at')
+        .select('id, updated_at, is_offline')
       
       if (devData) {
         fetchedDevices = devData
