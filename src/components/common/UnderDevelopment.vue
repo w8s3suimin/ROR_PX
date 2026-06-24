@@ -16,7 +16,7 @@
           playsinline 
           class="w-full h-full object-cover"
         >
-          <source src="/mining-chicken.mp4" type="video/mp4" />
+          <source src="/mining-chicken.webm" type="video/webm" />
         </video>
         <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end justify-center pb-4">
           <div class="flex items-center gap-2 text-white/90 bg-black/50 px-4 py-1.5 rounded-full backdrop-blur-md border border-white/5">
