@@ -27,21 +27,21 @@
         </div>
 
         <!-- Status Details -->
-        <div class="flex-1 space-y-3 mt-2">
+        <div class="flex-1 space-y-3 mt-3">
 
-          <div class="flex items-center text-sm">
-            <span class="text-gray-400 font-bold w-[72px] flex-shrink-0">目標帳號</span>
-            <span class="text-gray-200 font-mono truncate ml-2">{{ dev.characters?.game_account || '未知' }}</span>
+          <div class="flex items-center">
+            <span class="text-white font-bold text-[15px] w-[76px] flex-shrink-0 tracking-wide">目標帳號</span>
+            <span class="text-gray-400 text-sm font-mono truncate ml-2">{{ dev.characters?.game_account || '未知' }}</span>
           </div>
-          <div class="flex items-center text-sm">
-            <span class="text-gray-400 font-bold w-[72px] flex-shrink-0">目標角色</span>
-            <span class="text-gray-200 truncate ml-2">{{ dev.characters?.server_name || '未知' }}-角{{ dev.characters?.char_slot || '?' }}</span>
+          <div class="flex items-center">
+            <span class="text-white font-bold text-[15px] w-[76px] flex-shrink-0 tracking-wide">目標角色</span>
+            <span class="text-gray-400 text-sm truncate ml-2">{{ dev.characters?.server_name || '未知' }}-角{{ dev.characters?.char_slot || '?' }}</span>
           </div>
-          <div class="flex items-center text-sm">
-            <span class="text-gray-400 font-bold w-[72px] flex-shrink-0">目前任務</span>
-            <span class="text-ror-accent font-bold truncate ml-2" :title="dev.current_task">{{ isOnline(dev) ? (dev.current_task || '閒置中') : '-' }}</span>
+          <div class="flex items-center">
+            <span class="text-white font-bold text-[15px] w-[76px] flex-shrink-0 tracking-wide">目前任務</span>
+            <span class="text-ror-accent text-sm font-bold truncate ml-2" :title="dev.current_task">{{ isOnline(dev) ? (dev.current_task || '閒置中') : '-' }}</span>
           </div>
-          <div class="flex items-center text-[11px] mt-4 pt-3 border-t border-ror-border/30 text-gray-500 font-mono tracking-wider" :class="!isOnline(dev) ? 'text-red-400/80' : ''">
+          <div class="flex justify-end text-[10px] mt-4 pt-2 border-t border-ror-border/30 text-gray-600 font-mono tracking-wide" :class="!isOnline(dev) ? 'text-red-900/60' : ''">
             updated at {{ formatTime24H(dev.updated_at) }}
           </div>
         </div>
