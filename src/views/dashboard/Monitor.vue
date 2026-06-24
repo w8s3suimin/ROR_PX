@@ -1,10 +1,10 @@
 <template>
-  <div v-if="viewAsAdmin" class="animate-fade-in">
+  <div class="animate-fade-in">
     <!-- Header -->
     <div class="mb-6 flex justify-between items-center">
       <div>
         <h1 class="text-3xl font-bold text-white tracking-tight">設備監控</h1>
-        <p class="text-ror-muted mt-1">即時同步資源、等級、目前任務與日誌</p>
+        <p class="text-ror-muted mt-1">即時同步設備、目前任務的狀態顯示</p>
       </div>
       <div class="flex gap-4">
         <div class="bg-[#1a1a1a] border border-ror-border rounded px-4 py-2 flex items-center">
@@ -52,21 +52,11 @@
       <div v-if="devices.length === 0" class="col-span-full py-12 text-center border-2 border-dashed border-ror-border rounded-xl">
         <p class="text-ror-muted">目前沒有設備資料</p>
       </div>
-    </div>
-  </div>
-
-  <UnderDevelopment 
-    v-else
-    title="設備監控頁面<span class='text-blue-400'>開發中</span>"
-    description="我們正在努力為您打造視覺化的設備監控頁面。目前正在趕工中，敬請期待！"
-  />
 </template>
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { supabase } from '../../utils/supabase.js'
-import { viewAsAdmin } from '../../utils/adminState'
-import UnderDevelopment from '../../components/common/UnderDevelopment.vue'
 
 const devices = ref([])
 const authCode = ref('載入中...')
