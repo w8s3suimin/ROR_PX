@@ -27,23 +27,22 @@
         </div>
 
         <!-- Status Details -->
-        <div class="flex-1 space-y-2">
+        <div class="flex-1 space-y-3 mt-2">
 
-          <div class="flex justify-between items-center text-sm">
-            <span class="text-ror-muted">目標帳號</span>
-            <span class="text-white font-mono">{{ dev.characters?.game_account || '未知' }}</span>
+          <div class="flex items-center text-sm">
+            <span class="text-gray-400 font-bold w-[72px] flex-shrink-0">目標帳號</span>
+            <span class="text-gray-200 font-mono truncate ml-2">{{ dev.characters?.game_account || '未知' }}</span>
           </div>
-          <div class="flex justify-between items-center text-sm">
-            <span class="text-ror-muted">伺服器/角色序</span>
-            <span class="text-white">{{ dev.characters?.server_name || '未知' }} / {{ dev.characters?.char_slot || '-' }}</span>
+          <div class="flex items-center text-sm">
+            <span class="text-gray-400 font-bold w-[72px] flex-shrink-0">目標角色</span>
+            <span class="text-gray-200 truncate ml-2">{{ dev.characters?.server_name || '未知' }}-角{{ dev.characters?.char_slot || '?' }}</span>
           </div>
-          <div class="flex justify-between items-center text-sm">
-            <span class="text-ror-muted">目前任務</span>
-            <span class="text-ror-accent font-medium text-right line-clamp-1 max-w-[120px]" :title="dev.current_task">{{ isOnline(dev) ? (dev.current_task || '閒置中') : '設備已離線' }}</span>
+          <div class="flex items-center text-sm">
+            <span class="text-gray-400 font-bold w-[72px] flex-shrink-0">目前任務</span>
+            <span class="text-ror-accent font-bold truncate ml-2" :title="dev.current_task">{{ isOnline(dev) ? (dev.current_task || '閒置中') : '-' }}</span>
           </div>
-          <div class="flex justify-between items-center text-sm mt-2 pt-2 border-t border-ror-border/30">
-            <span class="text-ror-muted text-xs">最後更新</span>
-            <span class="text-ror-muted text-xs font-mono" :class="!isOnline(dev) ? 'text-red-400/80' : ''">{{ formatTime(dev.updated_at) }}</span>
+          <div class="flex items-center text-[11px] mt-4 pt-3 border-t border-ror-border/30 text-gray-500 font-mono tracking-wider" :class="!isOnline(dev) ? 'text-red-400/80' : ''">
+            updated at {{ formatTime24H(dev.updated_at) }}
           </div>
         </div>
       </div>
@@ -133,14 +132,10 @@ onUnmounted(() => {
   if (timer) clearInterval(timer)
 })
 
-function formatTime(timestamp) {
+function formatTime24H(timestamp) {
   if (!timestamp) return '未知'
-  return new Date(timestamp).toLocaleString('zh-TW', {
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit'
-  })
+  const d = new Date(timestamp)
+  const pad = (n) => n.toString().padStart(2, '0')
+  return `${pad(d.getMonth() + 1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`
 }
 </script>
