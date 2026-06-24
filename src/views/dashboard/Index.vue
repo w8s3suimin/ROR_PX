@@ -16,22 +16,29 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div class="bg-ror-card border border-ror-border rounded-xl p-6">
         <h2 class="text-xl font-bold text-ror-accent mb-4">帳號資訊</h2>
-        <div class="space-y-4">
-          <div class="flex items-center justify-between border-b border-white/5 pb-3">
-            <span class="text-ror-muted text-sm">註冊信箱</span>
-            <span class="text-white font-medium">{{ userEmail }}</span>
+        <div class="flex gap-5">
+          <div class="flex-shrink-0 w-32 bg-[#1a1a1a] rounded-xl p-4 flex flex-col items-center justify-center border border-white/5 relative overflow-hidden group">
+            <div class="absolute inset-0 bg-ror-accent/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div class="text-3xl font-bold text-ror-accent mb-1">{{ userPxp }}</div>
+            <div class="text-xs text-ror-muted font-bold tracking-wider">PXP 點數</div>
           </div>
-          <div class="flex items-center justify-between border-b border-white/5 pb-3">
-            <span class="text-ror-muted text-sm">權限身份</span>
-            <span class="font-bold flex items-center gap-1.5" :class="isAdminRole ? 'text-green-400' : 'text-blue-400'">
-              <svg v-if="isAdminRole" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-              <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-              {{ isAdminRole ? '系統管理員' : '一般使用者' }}
-            </span>
-          </div>
-          <div class="flex items-center justify-between pb-1">
-            <span class="text-ror-muted text-sm">註冊時間</span>
-            <span class="text-white font-mono text-sm">{{ userCreatedDate }}</span>
+          <div class="flex-1 space-y-4 flex flex-col justify-center">
+            <div class="flex items-center justify-between border-b border-white/5 pb-2">
+              <span class="text-ror-muted text-sm">註冊信箱</span>
+              <span class="text-white font-medium">{{ userEmail }}</span>
+            </div>
+            <div class="flex items-center justify-between border-b border-white/5 pb-2">
+              <span class="text-ror-muted text-sm">權限身份</span>
+              <span class="font-bold flex items-center gap-1.5" :class="isAdminRole ? 'text-green-400' : 'text-blue-400'">
+                <svg v-if="isAdminRole" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                {{ isAdminRole ? '系統管理員' : '一般使用者' }}
+              </span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-ror-muted text-sm">註冊時間</span>
+              <span class="text-white font-mono text-sm">{{ userCreatedDate }}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -135,6 +142,7 @@ import { isAdminRole } from '../../utils/adminState'
 
 const userEmail = ref('載入中...')
 const userCreatedDate = ref('載入中...')
+const userPxp = ref(0)
 
 const selectedTab = ref('monthly')
 const deviceStatusTab = ref('overview')
@@ -190,10 +198,16 @@ const updateDeviceStats = () => {
   let offline = 0
   const now = currentTime.value
 
+  deviceStats.value.byLicense = { daily: 0, weekly: 0, monthly: 0, infinite: 0 }
+
   fetchedDevices.forEach(dev => {
     const isOffline = dev.is_offline || !dev.updated_at || (now - new Date(dev.updated_at).getTime() > 300000)
     if (!isOffline) {
       online++
+      const planType = dev.authorization_codes?.plan_type
+      if (planType && deviceStats.value.byLicense[planType] !== undefined) {
+        deviceStats.value.byLicense[planType]++
+      }
     } else {
       offline++
     }
@@ -201,11 +215,6 @@ const updateDeviceStats = () => {
 
   deviceStats.value.totalOnline = online
   deviceStats.value.totalOffline = offline
-  
-  // Note: 依授權分類 (byLicense) is currently mocked or requires joining with authorization_codes which might be complex.
-  // For now we just put the total online in monthly if that's the only one, or keep it simple.
-  // We can refine this later if we know how devices map to licenses.
-  deviceStats.value.byLicense.monthly = online 
 }
 
 onMounted(async () => {
@@ -223,6 +232,11 @@ onMounted(async () => {
     if (user) {
       userEmail.value = user.email || '未提供'
       userCreatedDate.value = new Date(user.created_at).toLocaleDateString('zh-TW', { year: 'numeric', month: '2-digit', day: '2-digit' })
+      
+      const { data: profile } = await supabase.from('profiles').select('pxp').eq('id', user.id).single()
+      if (profile) {
+        userPxp.value = profile.pxp || 0
+      }
       
       const { data: licenseData } = await supabase
         .from('authorization_codes')
@@ -248,7 +262,12 @@ onMounted(async () => {
       // Fetch devices to calculate online/offline stats
       const { data: devData } = await supabase
         .from('devices_status')
-        .select('id, updated_at, is_offline')
+        .select(`
+          id, 
+          updated_at, 
+          is_offline,
+          authorization_codes ( plan_type )
+        `)
       
       if (devData) {
         fetchedDevices = devData
