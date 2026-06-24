@@ -16,28 +16,28 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div class="bg-ror-card border border-ror-border rounded-xl p-6">
         <h2 class="text-xl font-bold text-ror-accent mb-4">帳號資訊</h2>
-        <div class="flex gap-6">
+        <div class="flex gap-6 relative">
           <div class="flex-shrink-0 w-36 sm:w-40 bg-[#1a1a1a] rounded-xl p-4 flex flex-col items-center justify-center border border-white/5 relative overflow-hidden group">
             <div class="absolute inset-0 bg-ror-accent/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
             <div class="text-3xl font-bold text-ror-accent mb-1">{{ userPxp }}</div>
             <div class="text-xs text-ror-muted font-bold tracking-wider">PX點數</div>
           </div>
-          <div class="flex-1 space-y-4 flex flex-col justify-center">
-            <div class="flex items-center gap-6 border-b border-white/5 pb-2">
-              <span class="text-ror-muted text-sm w-20 flex-shrink-0">註冊信箱</span>
-              <span class="text-white font-medium break-all">{{ userEmail }}</span>
+          <div class="flex-1 space-y-4 flex flex-col justify-center sm:pl-6 lg:pl-[5%]">
+            <div class="flex items-center justify-between border-b border-white/5 pb-2">
+              <span class="text-ror-muted text-sm flex-shrink-0">註冊信箱</span>
+              <span class="text-white font-medium break-all text-right">{{ userEmail }}</span>
             </div>
-            <div class="flex items-center gap-6 border-b border-white/5 pb-2">
-              <span class="text-ror-muted text-sm w-20 flex-shrink-0">權限身份</span>
-              <span class="font-bold flex items-center gap-1.5" :class="isAdminRole ? 'text-green-400' : 'text-blue-400'">
+            <div class="flex items-center justify-between border-b border-white/5 pb-2">
+              <span class="text-ror-muted text-sm flex-shrink-0">權限身份</span>
+              <span class="font-bold flex items-center gap-1.5 justify-end" :class="isAdminRole ? 'text-green-400' : 'text-blue-400'">
                 <svg v-if="isAdminRole" class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
                 <svg v-else class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
                 {{ isAdminRole ? '系統管理員' : '一般使用者' }}
               </span>
             </div>
-            <div class="flex items-center gap-6">
-              <span class="text-ror-muted text-sm w-20 flex-shrink-0">註冊時間</span>
-              <span class="text-white font-mono text-sm">{{ userCreatedDate }}</span>
+            <div class="flex items-center justify-between">
+              <span class="text-ror-muted text-sm flex-shrink-0">註冊時間</span>
+              <span class="text-white font-mono text-sm text-right">{{ userCreatedDate }}</span>
             </div>
           </div>
         </div>
