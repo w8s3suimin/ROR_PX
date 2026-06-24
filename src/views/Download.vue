@@ -145,20 +145,10 @@ const patches = ref([
     date: '2026-06-24',
     isLatest: true,
     features: [
-      { icon: '🎯', color: 'text-blue-400', desc: '<strong>主線任務優化：</strong>新增任務種類選擇功能，支援於設定中指定選擇執行主線、轉職或支線任務。' },
-      { icon: '🌕', color: 'text-blue-400', desc: '<strong>紅月任務優化：</strong>修正獎勵滿溢時會導致卡死的問題，加入連續失敗自動跳出與回城的防呆機制，並限制最大領獎次數為 1~23 次。' },
-      { icon: '🌕', color: 'text-blue-400', desc: '<strong>紅月任務修復：</strong>解決抵達紅月定點時因等待戰鬥圖標超時導致發呆判定誤判並強制回城的問題。' },
-      { icon: '✨', color: 'text-yellow-400', desc: '<strong>授權碼設定：</strong>環境分頁新增授權碼欄位，支援彈窗輸入並自動儲存。' },
-      { icon: '🛠️', color: 'text-gray-400', desc: '<strong>自動更新修復：</strong>修復了自動更新功能。' },
-      { icon: '✨', color: 'text-yellow-400', desc: '<strong>新增功能：</strong>支援商會訂單掃描時自動回傳角色水晶總量。' },
-      { icon: '🐺', color: 'text-purple-400', desc: '<strong>獸王爭霸修復：</strong>新增結算二次驗證與過圖等待防護，避免誤判結算導致任務中斷。' },
-      { icon: '🐾', color: 'text-orange-400', desc: '<strong>寵物派遣修復：</strong>修正活力值讀取範圍，解決 10 萬滿活力被裁切導致誤判跳過任務的問題。' },
-      { icon: '🔄', color: 'text-green-400', desc: '<strong>換角修復：</strong>解決同步角色資訊至雲端時因讀取到舊暫存資料導致寫入錯誤目標角色的問題。' },
-      { icon: '🌕', color: 'text-blue-400', desc: '<strong>紅月任務優化：</strong>領取次數按鈕新增長按快捷功能，長按「+」可直接設為 23，長按「-」可快速設為 3。' },
-      { icon: '✨', color: 'text-yellow-400', desc: '<strong>新增回饋：</strong>寵物派遣任務與商會訂單新增 Supabase 資料同步成功與否的懸浮窗即時日誌反饋。' },
-      { icon: '🐾', color: 'text-orange-400', desc: '<strong>寵物派遣修復：</strong>修正資料雲端同步時可能上傳負數的問題，新增防呆機制確保數量正確。' },
-      { icon: '🛠️', color: 'text-gray-400', desc: '<strong>內存修復：</strong>解決部分任務讀取畫面資訊時引發的內存溢出(OOM)問題，確保長時間掛機更加穩定。' },
-      { icon: '🛠️', color: 'text-gray-400', desc: '<strong>資料庫優化：</strong>優化 Supabase 上傳機制，加入連線超時與自動重試，大幅降低資料遺失問題。' }
+      { icon: '🎯', color: 'text-blue-400', desc: '<strong>主線與紅月優化：</strong>主線新增任務種類選擇；紅月優化防卡死機制與專屬特徵判定，並加入領獎次數長按快捷設定。' },
+      { icon: '✨', color: 'text-yellow-400', desc: '<strong>系統與新功能：</strong>新增授權碼快速設定、自動更新修復，並支援商會訂單掃描時自動回傳水晶總量。' },
+      { icon: '🐾', color: 'text-orange-400', desc: '<strong>任務防呆修復：</strong>修復獸王爭霸結算誤判、寵物派遣活力值裁切與數量防呆，以及換角時的雲端資訊錯亂問題。' },
+      { icon: '🛠️', color: 'text-gray-400', desc: '<strong>穩定度與資料庫升級：</strong>解決介面內存溢出(OOM)問題，優化 Supabase 上傳重試機制防丟包，並加入即時日誌反饋。' }
     ]
   },
   {
