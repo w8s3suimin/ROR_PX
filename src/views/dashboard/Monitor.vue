@@ -22,7 +22,7 @@
           <div class="flex items-center gap-2">
             <span class="text-white font-bold tracking-wider">設備 #{{ dev.device_index }}</span>
             <span v-if="getDeviceStatus(dev) === 'online'" class="px-2 py-0.5 rounded text-[10px] font-bold bg-green-500/20 text-green-400 border border-green-500/30">在線</span>
-            <span v-else-if="getDeviceStatus(dev) === 'paused'" class="px-2 py-0.5 rounded text-[10px] font-bold bg-yellow-500/20 text-yellow-400 border border-yellow-500/30">⏸️ 暫停中</span>
+            <span v-else-if="getDeviceStatus(dev) === 'paused'" class="px-2 py-0.5 rounded text-[10px] font-bold bg-yellow-500/20 text-yellow-400 border border-yellow-500/30">暫停</span>
             <span v-else class="px-2 py-0.5 rounded text-[10px] font-bold bg-red-500/20 text-red-400 border border-red-500/30">離線</span>
           </div>
         </div>
@@ -72,6 +72,7 @@ const devices = ref([])
 const authCode = ref('載入中...')
 const currentTime = ref(Date.now())
 let timer = null
+let fetchTimer = null
 
 const getDeviceStatus = (dev) => {
   if (!dev || !dev.updated_at) return 'offline'
@@ -143,28 +144,7 @@ const sortedDevices = computed(() => {
   })
 })
 
-onMounted(async () => {
-  // Update current time every second to re-evaluate online status and live timer dynamically
-  timer = setInterval(() => {
-    currentTime.value = Date.now()
-  }, 1000)
-
-  // Fetch auth code for the current user
-  const { data: { user } } = await supabase.auth.getUser()
-  if (user) {
-    const { data: codes } = await supabase
-      .from('authorization_codes')
-      .select('code')
-      .eq('user_id', user.id)
-      .limit(1)
-    if (codes && codes.length > 0) {
-      authCode.value = codes[0].code
-    } else {
-      authCode.value = '無授權碼'
-    }
-  }
-
-  // Fetch devices and their linked character info
+const fetchDevices = async () => {
   const { data, error } = await supabase
     .from('devices_status')
     .select(`
@@ -191,10 +171,41 @@ onMounted(async () => {
   if (data) {
     devices.value = data
   }
+}
+
+onMounted(async () => {
+  // Update current time every second to re-evaluate online status and live timer dynamically
+  timer = setInterval(() => {
+    currentTime.value = Date.now()
+  }, 1000)
+
+  // Poll for latest device data every 5 seconds
+  fetchTimer = setInterval(() => {
+    fetchDevices()
+  }, 5000)
+
+  // Fetch auth code for the current user
+  const { data: { user } } = await supabase.auth.getUser()
+  if (user) {
+    const { data: codes } = await supabase
+      .from('authorization_codes')
+      .select('code')
+      .eq('user_id', user.id)
+      .limit(1)
+    if (codes && codes.length > 0) {
+      authCode.value = codes[0].code
+    } else {
+      authCode.value = '無授權碼'
+    }
+  }
+
+  // Initial fetch
+  await fetchDevices()
 })
 
 onUnmounted(() => {
   if (timer) clearInterval(timer)
+  if (fetchTimer) clearInterval(fetchTimer)
 })
 
 function formatTime24H(timestamp) {
