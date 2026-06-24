@@ -16,7 +16,7 @@
 
     <!-- Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-      <div v-for="dev in devices" :key="dev.id" class="rounded-xl p-4 flex flex-col gap-3 hover:border-ror-accent transition-all duration-300 group" :class="getDeviceStatus(dev) !== 'offline' ? 'bg-ror-card border border-ror-border opacity-100 shadow-[0_4px_20px_rgba(0,0,0,0.5)]' : 'bg-black/80 border border-white/5 opacity-50 grayscale-[30%]'">
+      <div v-for="dev in sortedDevices" :key="dev.id" class="rounded-xl p-4 flex flex-col gap-3 hover:border-ror-accent transition-all duration-300 group" :class="getDeviceStatus(dev) !== 'offline' ? 'bg-ror-card border border-ror-border opacity-100 shadow-[0_4px_20px_rgba(0,0,0,0.5)]' : 'bg-black/80 border border-white/5 opacity-50 grayscale-[30%]'">
         <!-- Header -->
         <div class="flex justify-between items-center border-b border-ror-border/50 pb-2">
           <div class="flex items-center gap-2">
@@ -116,7 +116,7 @@ const getTaskDisplay = (dev) => {
   const durationStr = duration > 0 ? ` (${formatDuration(duration)})` : ''
 
   if (status === 'offline') {
-    return `失去連線`
+    return `-`
   }
   
   const baseTask = dev.current_task || '閒置中'
@@ -130,6 +130,17 @@ const getTaskDisplay = (dev) => {
 
 const onlineCount = computed(() => {
   return devices.value.filter(dev => getDeviceStatus(dev) !== 'offline').length
+})
+
+const sortedDevices = computed(() => {
+  return [...devices.value].sort((a, b) => {
+    const isAOnline = getDeviceStatus(a) !== 'offline' ? 1 : 0
+    const isBOnline = getDeviceStatus(b) !== 'offline' ? 1 : 0
+    if (isAOnline !== isBOnline) {
+      return isBOnline - isAOnline // 1 (online) comes before 0 (offline)
+    }
+    return a.device_index - b.device_index
+  })
 })
 
 onMounted(async () => {
