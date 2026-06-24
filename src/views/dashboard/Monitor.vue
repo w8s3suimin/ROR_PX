@@ -21,9 +21,9 @@
         <div class="flex justify-between items-center border-b border-ror-border/50 pb-2">
           <div class="flex items-center gap-2">
             <span class="text-white font-bold tracking-wider">設備 #{{ dev.device_index }}</span>
-            <span v-if="getDeviceStatus(dev) === 'online'" class="px-2 py-0.5 rounded text-[10px] font-bold bg-green-500/20 text-green-400 border border-green-500/30">在線</span>
-            <span v-else-if="getDeviceStatus(dev) === 'paused'" class="px-2 py-0.5 rounded text-[10px] font-bold bg-yellow-500/20 text-yellow-400 border border-yellow-500/30">暫停</span>
-            <span v-else class="px-2 py-0.5 rounded text-[10px] font-bold bg-red-500/20 text-red-400 border border-red-500/30">離線</span>
+            <span v-if="getDeviceStatus(dev) === 'online'" class="px-2 py-0.5 rounded text-[10px] font-bold bg-green-500/20 text-green-400 border border-green-500/30">▷ 在線</span>
+            <span v-else-if="getDeviceStatus(dev) === 'paused'" class="px-2 py-0.5 rounded text-[10px] font-bold bg-yellow-500/20 text-yellow-400 border border-yellow-500/30">∥ 暫停</span>
+            <span v-else class="px-2 py-0.5 rounded text-[10px] font-bold bg-red-500/20 text-red-400 border border-red-500/30">Ⓧ 停止</span>
           </div>
         </div>
 
