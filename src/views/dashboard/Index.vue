@@ -16,8 +16,8 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div class="bg-ror-card border border-ror-border rounded-xl p-6">
         <h2 class="text-xl font-bold text-ror-accent mb-4">帳號資訊</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-[40%_60%] gap-6 sm:gap-0">
-          <div>
+        <div class="grid grid-cols-1 sm:grid-cols-[40%_60%] gap-6 sm:gap-0 h-full">
+          <div class="flex items-center justify-center h-full sm:pr-8">
             <div class="w-36 sm:w-40 bg-[#1a1a1a] rounded-xl p-4 flex flex-col items-center justify-center border border-white/5 relative overflow-hidden group">
               <div class="absolute inset-0 bg-ror-accent/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
               <div class="text-3xl font-bold text-ror-accent mb-1">{{ userPxp }}</div>
