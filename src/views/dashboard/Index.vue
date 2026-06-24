@@ -97,9 +97,9 @@
       <div class="bg-ror-card border border-ror-border rounded-xl p-6">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3">
           <h2 class="text-xl font-bold text-ror-accent">設備狀態</h2>
-          <div class="flex space-x-1 bg-black/20 p-1 rounded-lg border border-white/5">
-            <button @click="deviceStatusTab = 'overview'" :class="deviceStatusTab === 'overview' ? 'bg-ror-surface text-white shadow-sm' : 'text-ror-muted hover:text-white'" class="px-3 py-1.5 text-xs rounded-md transition-colors whitespace-nowrap">總覽</button>
-            <button @click="deviceStatusTab = 'by_license'" :class="deviceStatusTab === 'by_license' ? 'bg-ror-surface text-white shadow-sm' : 'text-ror-muted hover:text-white'" class="px-3 py-1.5 text-xs rounded-md transition-colors whitespace-nowrap">依授權分類</button>
+          <div class="flex w-full sm:w-auto space-x-1 bg-black/20 p-1 rounded-lg border border-white/5">
+            <button @click="deviceStatusTab = 'overview'" :class="deviceStatusTab === 'overview' ? 'bg-ror-surface text-white shadow-sm' : 'text-ror-muted hover:text-white'" class="flex-1 sm:flex-none px-3 py-1.5 text-xs rounded-md transition-colors whitespace-nowrap text-center">總覽</button>
+            <button @click="deviceStatusTab = 'by_license'" :class="deviceStatusTab === 'by_license' ? 'bg-ror-surface text-white shadow-sm' : 'text-ror-muted hover:text-white'" class="flex-1 sm:flex-none px-3 py-1.5 text-xs rounded-md transition-colors whitespace-nowrap text-center">依授權分類</button>
           </div>
         </div>
 
