@@ -52,6 +52,8 @@
       <div v-if="devices.length === 0" class="col-span-full py-12 text-center border-2 border-dashed border-ror-border rounded-xl">
         <p class="text-ror-muted">目前沒有設備資料</p>
       </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
