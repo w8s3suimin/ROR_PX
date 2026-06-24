@@ -1,6 +1,27 @@
 <template>
+  <!-- Real Admin Deploy View -->
+  <div v-if="viewAsAdmin" class="p-4 md:p-6 w-full animate-fade-in">
+    <div class="mb-8">
+      <h2 class="text-3xl font-bold text-white tracking-tight flex items-center gap-3">
+        <svg class="w-8 h-8 text-ror-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path></svg>
+        任務部署
+      </h2>
+      <p class="text-ror-muted mt-2 text-lg">設定並部署無人雞的自動化作業排程。</p>
+    </div>
+    
+    <div class="bg-ror-dark/50 border border-ror-border rounded-xl p-8 shadow-xl backdrop-blur-sm">
+      <div class="flex flex-col items-center justify-center py-20 border-2 border-dashed border-ror-border/50 rounded-xl bg-white/5">
+        <svg class="w-16 h-16 text-ror-muted mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+        <p class="text-xl text-ror-muted font-medium mb-2">真實的任務部署設定介面</p>
+        <p class="text-sm text-ror-muted/70 max-w-md text-center leading-relaxed">這裡將會實作建立新任務、選擇目標設備與腳本參數等完整功能。<br>（目前僅在管理員檢視模式下可見）</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Normal User / Dev Placeholder View -->
   <div 
-    class="relative min-h-[calc(100vh-8rem)] rounded-xl overflow-hidden flex flex-col items-center justify-center p-8 bg-cover bg-center"
+    v-else
+    class="relative min-h-[calc(100vh-8rem)] rounded-xl overflow-hidden flex flex-col items-center justify-center p-8 bg-cover bg-center animate-fade-in"
     style="background-image: url('/mining-bg.png');"
   >
     <!-- Overlay for the background image to make text readable and blend the video -->
@@ -49,5 +70,5 @@
 </template>
 
 <script setup>
-// Deploy placeholder page using centered video and generated background image
+import { viewAsAdmin } from '../../utils/adminState'
 </script>
