@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="viewAsAdmin" class="animate-fade-in">
     <!-- Header -->
     <div class="mb-6 flex justify-between items-center">
       <div>
@@ -53,11 +53,19 @@
       </div>
     </div>
   </div>
+
+  <UnderDevelopment 
+    v-else
+    title="設備監控頁面<span class='text-blue-400'>開發中</span>"
+    description="我們正在努力為您打造視覺化的設備監控頁面。目前正在趕工中，敬請期待！"
+  />
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
 import { supabase } from '../../utils/supabase.js'
+import { viewAsAdmin } from '../../utils/adminState'
+import UnderDevelopment from '../../components/common/UnderDevelopment.vue'
 
 const devices = ref([])
 const authCode = ref('載入中...')
