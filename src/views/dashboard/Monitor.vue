@@ -41,7 +41,7 @@
             <span class="text-white font-bold text-base w-20 flex-shrink-0 tracking-wide">目前任務</span>
             <span class="text-ror-accent text-[15px] font-bold truncate ml-2" :title="dev.current_task">{{ isOnline(dev) ? (dev.current_task || '閒置中') : '-' }}</span>
           </div>
-          <div class="flex justify-end text-xs mt-4 pt-2 border-t border-ror-border/30 text-gray-500 font-mono tracking-wide" :class="!isOnline(dev) ? 'text-red-900/60' : ''">
+          <div class="flex justify-end text-xs mt-4 pt-2 border-t border-ror-border/30 text-gray-500 font-mono tracking-wide">
             updated at {{ formatTime24H(dev.updated_at) }}
           </div>
         </div>
