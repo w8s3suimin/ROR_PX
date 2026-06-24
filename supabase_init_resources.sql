@@ -179,17 +179,17 @@ CREATE POLICY "Auth codes insert policy" ON public.authorization_codes FOR INSER
 CREATE POLICY "Auth codes update policy" ON public.authorization_codes FOR UPDATE USING (public.is_admin());
 CREATE POLICY "Auth codes delete policy" ON public.authorization_codes FOR DELETE USING (public.is_admin());
 
--- Characters: 用戶只能看/改自己的，管理員可看全部
+-- Characters: 用戶只能看自己的，管理員可看全部。寫入權限僅限管理員或系統腳本 (RPC)
 CREATE POLICY "Characters view policy" ON public.characters FOR SELECT USING (auth.uid() = user_id OR public.is_admin());
-CREATE POLICY "Characters insert policy" ON public.characters FOR INSERT WITH CHECK (auth.uid() = user_id OR public.is_admin());
-CREATE POLICY "Characters update policy" ON public.characters FOR UPDATE USING (auth.uid() = user_id OR public.is_admin());
-CREATE POLICY "Characters delete policy" ON public.characters FOR DELETE USING (auth.uid() = user_id OR public.is_admin());
+CREATE POLICY "Characters insert policy" ON public.characters FOR INSERT WITH CHECK (public.is_admin());
+CREATE POLICY "Characters update policy" ON public.characters FOR UPDATE USING (public.is_admin());
+CREATE POLICY "Characters delete policy" ON public.characters FOR DELETE USING (public.is_admin());
 
--- Devices Status: 用戶只能看/改自己的設備
+-- Devices Status: 用戶只能看自己的設備。寫入權限僅限管理員或系統腳本 (RPC)
 CREATE POLICY "Devices view policy" ON public.devices_status FOR SELECT USING (auth.uid() = user_id OR public.is_admin());
-CREATE POLICY "Devices insert policy" ON public.devices_status FOR INSERT WITH CHECK (auth.uid() = user_id OR public.is_admin());
-CREATE POLICY "Devices update policy" ON public.devices_status FOR UPDATE USING (auth.uid() = user_id OR public.is_admin());
-CREATE POLICY "Devices delete policy" ON public.devices_status FOR DELETE USING (auth.uid() = user_id OR public.is_admin());
+CREATE POLICY "Devices insert policy" ON public.devices_status FOR INSERT WITH CHECK (public.is_admin());
+CREATE POLICY "Devices update policy" ON public.devices_status FOR UPDATE USING (public.is_admin());
+CREATE POLICY "Devices delete policy" ON public.devices_status FOR DELETE USING (public.is_admin());
 
 -- Task Queue: 用戶只能管理屬於自己設備的任務
 CREATE POLICY "Tasks view policy" ON public.task_queue FOR SELECT USING (
