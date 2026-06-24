@@ -46,15 +46,15 @@
       </div>
 
       <div class="bg-ror-card border border-ror-border rounded-xl p-6">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3">
+        <div class="flex flex-col mb-4 gap-3">
           <h2 class="text-xl font-bold text-ror-accent">授權資訊</h2>
           
           <!-- 授權種類切換 Tabs -->
-          <div class="flex space-x-1 bg-black/20 p-1 rounded-lg border border-white/5 overflow-x-auto hide-scrollbar">
-            <button @click="selectedTab = 'daily'" :class="selectedTab === 'daily' ? 'bg-ror-accent/20 text-ror-accent shadow-sm ring-1 ring-ror-accent/30' : 'text-ror-muted hover:text-ror-accent'" class="px-3 py-1.5 text-xs rounded-md transition-colors whitespace-nowrap focus:outline-none">日卡</button>
-            <button @click="selectedTab = 'weekly'" :class="selectedTab === 'weekly' ? 'bg-ror-accent/20 text-ror-accent shadow-sm ring-1 ring-ror-accent/30' : 'text-ror-muted hover:text-ror-accent'" class="px-3 py-1.5 text-xs rounded-md transition-colors whitespace-nowrap focus:outline-none">周卡</button>
-            <button @click="selectedTab = 'monthly'" :class="selectedTab === 'monthly' ? 'bg-ror-accent/20 text-ror-accent shadow-sm ring-1 ring-ror-accent/30' : 'text-ror-muted hover:text-ror-accent'" class="px-3 py-1.5 text-xs rounded-md transition-colors whitespace-nowrap focus:outline-none">月卡</button>
-            <button v-if="isAdminRole" @click="selectedTab = 'infinite'" :class="selectedTab === 'infinite' ? 'bg-ror-accent/20 text-ror-accent shadow-sm ring-1 ring-ror-accent/30' : 'text-ror-muted hover:text-ror-accent'" class="px-3 py-1.5 text-xs rounded-md transition-colors font-bold whitespace-nowrap focus:outline-none">尊榮 ∞ 卡</button>
+          <div class="flex w-full space-x-1 bg-black/20 p-1 rounded-lg border border-white/5">
+            <button @click="selectedTab = 'daily'" :class="selectedTab === 'daily' ? 'bg-ror-accent/20 text-ror-accent shadow-sm ring-1 ring-ror-accent/30' : 'text-ror-muted hover:text-ror-accent'" class="flex-1 px-3 py-1.5 text-xs rounded-md transition-colors whitespace-nowrap focus:outline-none text-center">日卡</button>
+            <button @click="selectedTab = 'weekly'" :class="selectedTab === 'weekly' ? 'bg-ror-accent/20 text-ror-accent shadow-sm ring-1 ring-ror-accent/30' : 'text-ror-muted hover:text-ror-accent'" class="flex-1 px-3 py-1.5 text-xs rounded-md transition-colors whitespace-nowrap focus:outline-none text-center">周卡</button>
+            <button @click="selectedTab = 'monthly'" :class="selectedTab === 'monthly' ? 'bg-ror-accent/20 text-ror-accent shadow-sm ring-1 ring-ror-accent/30' : 'text-ror-muted hover:text-ror-accent'" class="flex-1 px-3 py-1.5 text-xs rounded-md transition-colors whitespace-nowrap focus:outline-none text-center">月卡</button>
+            <button v-if="isAdminRole" @click="selectedTab = 'infinite'" :class="selectedTab === 'infinite' ? 'bg-ror-accent/20 text-ror-accent shadow-sm ring-1 ring-ror-accent/30' : 'text-ror-muted hover:text-ror-accent'" class="flex-1 px-3 py-1.5 text-xs rounded-md transition-colors font-bold whitespace-nowrap focus:outline-none text-center">尊榮 ∞ 卡</button>
           </div>
         </div>
 
