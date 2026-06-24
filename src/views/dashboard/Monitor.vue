@@ -9,19 +9,20 @@
       <div class="flex gap-4">
         <div class="bg-[#1a1a1a] border border-ror-border rounded px-4 py-2 flex items-center">
           <div class="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
-          <span class="text-sm font-medium">在線: {{ devices.length }}</span>
+          <span class="text-sm font-medium">在線: {{ onlineCount }} / {{ devices.length }}</span>
         </div>
       </div>
     </div>
 
     <!-- Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-      <div v-for="dev in devices" :key="dev.id" class="bg-ror-card border border-ror-border rounded-xl p-4 flex flex-col gap-3 hover:border-ror-accent transition-colors group">
+      <div v-for="dev in devices" :key="dev.id" class="bg-ror-card border border-ror-border rounded-xl p-4 flex flex-col gap-3 hover:border-ror-accent transition-colors group" :class="!isOnline(dev) ? 'opacity-70' : ''">
         <!-- Header -->
         <div class="flex justify-between items-center border-b border-ror-border/50 pb-2">
           <div class="flex items-center gap-2">
             <span class="text-white font-bold tracking-wider">設備 #{{ dev.device_index }}</span>
-            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-green-500/20 text-green-400 border border-green-500/30">運行中</span>
+            <span v-if="isOnline(dev)" class="px-2 py-0.5 rounded text-[10px] font-bold bg-green-500/20 text-green-400 border border-green-500/30">在線</span>
+            <span v-else class="px-2 py-0.5 rounded text-[10px] font-bold bg-red-500/20 text-red-400 border border-red-500/30">離線</span>
           </div>
         </div>
 
@@ -38,11 +39,11 @@
           </div>
           <div class="flex justify-between items-center text-sm">
             <span class="text-ror-muted">目前任務</span>
-            <span class="text-ror-accent font-medium text-right line-clamp-1 max-w-[120px]" :title="dev.current_task">{{ dev.current_task || '閒置中' }}</span>
+            <span class="text-ror-accent font-medium text-right line-clamp-1 max-w-[120px]" :title="dev.current_task">{{ isOnline(dev) ? (dev.current_task || '閒置中') : '設備已離線' }}</span>
           </div>
           <div class="flex justify-between items-center text-sm mt-2 pt-2 border-t border-ror-border/30">
-            <span class="text-ror-muted text-xs">更新時間</span>
-            <span class="text-ror-muted text-xs font-mono">{{ formatTime(dev.updated_at) }}</span>
+            <span class="text-ror-muted text-xs">最後更新</span>
+            <span class="text-ror-muted text-xs font-mono" :class="!isOnline(dev) ? 'text-red-400/80' : ''">{{ formatTime(dev.updated_at) }}</span>
           </div>
         </div>
       </div>
@@ -62,15 +63,33 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { supabase } from '../../utils/supabase.js'
 import { viewAsAdmin } from '../../utils/adminState'
 import UnderDevelopment from '../../components/common/UnderDevelopment.vue'
 
 const devices = ref([])
 const authCode = ref('載入中...')
+const currentTime = ref(Date.now())
+let timer = null
+
+const isOnline = (dev) => {
+  if (!dev || !dev.updated_at) return false
+  const lastUpdate = new Date(dev.updated_at).getTime()
+  // 2.5 minutes = 150000 ms
+  return (currentTime.value - lastUpdate) <= 150000
+}
+
+const onlineCount = computed(() => {
+  return devices.value.filter(dev => isOnline(dev)).length
+})
 
 onMounted(async () => {
+  // Update current time every second to re-evaluate online status dynamically
+  timer = setInterval(() => {
+    currentTime.value = Date.now()
+  }, 10000) // update every 10 seconds to save performance
+
   // Fetch auth code for the current user
   const { data: { user } } = await supabase.auth.getUser()
   if (user) {
@@ -108,6 +127,10 @@ onMounted(async () => {
   if (data) {
     devices.value = data
   }
+})
+
+onUnmounted(() => {
+  if (timer) clearInterval(timer)
 })
 
 function formatTime(timestamp) {

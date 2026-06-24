@@ -96,30 +96,30 @@
 
         <div v-if="deviceStatusTab === 'overview'" class="flex gap-4 items-center">
           <div class="flex-1 bg-[#1a1a1a] rounded-lg p-5 text-center border border-white/5">
-            <div class="text-3xl font-bold text-green-500 mb-1">{{ mockDeviceStats.totalOnline }}</div>
+            <div class="text-3xl font-bold text-green-500 mb-1">{{ deviceStats.totalOnline }}</div>
             <div class="text-sm text-ror-muted">總計在線數量</div>
           </div>
           <div class="flex-1 bg-[#1a1a1a] rounded-lg p-5 text-center border border-white/5">
-            <div class="text-3xl font-bold text-red-500 mb-1">{{ mockDeviceStats.totalOffline }}</div>
+            <div class="text-3xl font-bold text-red-500 mb-1">{{ deviceStats.totalOffline }}</div>
             <div class="text-sm text-ror-muted">總計離線數量</div>
           </div>
         </div>
 
         <div v-else class="grid grid-cols-4 gap-3">
           <div class="bg-[#1a1a1a] rounded-lg p-3 text-center border border-white/5 flex flex-col justify-center">
-            <div class="text-2xl font-bold text-green-500 mb-0.5">{{ mockDeviceStats.byLicense.daily }}</div>
+            <div class="text-2xl font-bold text-green-500 mb-0.5">{{ deviceStats.byLicense.daily }}</div>
             <div class="text-xs text-ror-muted">日卡 (在線)</div>
           </div>
           <div class="bg-[#1a1a1a] rounded-lg p-3 text-center border border-white/5 flex flex-col justify-center">
-            <div class="text-2xl font-bold text-green-500 mb-0.5">{{ mockDeviceStats.byLicense.weekly }}</div>
+            <div class="text-2xl font-bold text-green-500 mb-0.5">{{ deviceStats.byLicense.weekly }}</div>
             <div class="text-xs text-ror-muted">周卡 (在線)</div>
           </div>
           <div class="bg-[#1a1a1a] rounded-lg p-3 text-center border border-white/5 flex flex-col justify-center">
-            <div class="text-2xl font-bold text-green-500 mb-0.5">{{ mockDeviceStats.byLicense.monthly }}</div>
+            <div class="text-2xl font-bold text-green-500 mb-0.5">{{ deviceStats.byLicense.monthly }}</div>
             <div class="text-xs text-ror-muted">月卡 (在線)</div>
           </div>
           <div class="bg-[#1a1a1a] rounded-lg p-3 text-center border border-white/5 flex flex-col justify-center">
-            <div class="text-2xl font-bold text-red-500 mb-0.5">{{ mockDeviceStats.totalOffline }}</div>
+            <div class="text-2xl font-bold text-red-500 mb-0.5">{{ deviceStats.totalOffline }}</div>
             <div class="text-xs text-ror-muted">總離線</div>
           </div>
         </div>
@@ -129,7 +129,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, watch, onUnmounted } from 'vue'
 import { supabase } from '../../utils/supabase'
 import { isAdminRole } from '../../utils/adminState'
 
@@ -159,14 +159,13 @@ const licenses = ref({
   infinite: { days: '∞', limit: '∞', code: '尚未配發', autoRenew: true }
 })
 
-// 假的設備狀態數據 (未來從後端抓)
-const mockDeviceStats = ref({
-  totalOnline: 5,
-  totalOffline: 2,
+const deviceStats = ref({
+  totalOnline: 0,
+  totalOffline: 0,
   byLicense: {
-    daily: 1,
+    daily: 0,
     weekly: 0,
-    monthly: 4,
+    monthly: 0,
     infinite: 0
   }
 })
@@ -182,10 +181,42 @@ watch(isAdminRole, (newVal) => {
   }
 })
 
+const currentTime = ref(Date.now())
+let timer = null
+let fetchedDevices = []
+
+const updateDeviceStats = () => {
+  let online = 0
+  let offline = 0
+  const now = currentTime.value
+
+  fetchedDevices.forEach(dev => {
+    const isOnline = dev.updated_at && (now - new Date(dev.updated_at).getTime() <= 150000)
+    if (isOnline) {
+      online++
+    } else {
+      offline++
+    }
+  })
+
+  deviceStats.value.totalOnline = online
+  deviceStats.value.totalOffline = offline
+  
+  // Note: 依授權分類 (byLicense) is currently mocked or requires joining with authorization_codes which might be complex.
+  // For now we just put the total online in monthly if that's the only one, or keep it simple.
+  // We can refine this later if we know how devices map to licenses.
+  deviceStats.value.byLicense.monthly = online 
+}
+
 onMounted(async () => {
   if (isAdminRole.value) {
     selectedTab.value = 'infinite'
   }
+
+  timer = setInterval(() => {
+    currentTime.value = Date.now()
+    updateDeviceStats()
+  }, 10000) // 10 seconds
 
   try {
     const { data: { user } } = await supabase.auth.getUser()
@@ -193,13 +224,13 @@ onMounted(async () => {
       userEmail.value = user.email || '未提供'
       userCreatedDate.value = new Date(user.created_at).toLocaleDateString('zh-TW', { year: 'numeric', month: '2-digit', day: '2-digit' })
       
-      const { data, error } = await supabase
+      const { data: licenseData } = await supabase
         .from('authorization_codes')
         .select('code, allowed_devices, plan_type')
         .eq('user_id', user.id)
       
-      if (data && data.length > 0) {
-        data.forEach(item => {
+      if (licenseData && licenseData.length > 0) {
+        licenseData.forEach(item => {
           const type = item.plan_type
           if (licenses.value[type]) {
             licenses.value[type].code = item.code
@@ -213,10 +244,24 @@ onMounted(async () => {
           }
         })
       }
+
+      // Fetch devices to calculate online/offline stats
+      const { data: devData } = await supabase
+        .from('devices_status')
+        .select('id, updated_at')
+      
+      if (devData) {
+        fetchedDevices = devData
+        updateDeviceStats()
+      }
     }
   } catch (e) {
     console.error('Failed to load user or license info', e)
   }
+})
+
+onUnmounted(() => {
+  if (timer) clearInterval(timer)
 })
 </script>
 
