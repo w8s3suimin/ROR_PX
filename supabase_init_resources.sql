@@ -56,6 +56,7 @@ CREATE TABLE public.devices_status (
     user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
     character_id UUID REFERENCES public.characters(id) ON DELETE SET NULL,
     device_index INTEGER NOT NULL,
+    auth_code TEXT REFERENCES public.authorization_codes(code) ON DELETE SET NULL,
     current_task TEXT DEFAULT '閒置中',
     logs TEXT,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now())
