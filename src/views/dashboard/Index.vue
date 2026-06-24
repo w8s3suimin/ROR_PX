@@ -51,10 +51,10 @@
           
           <!-- 授權種類切換 Tabs -->
           <div class="flex w-full sm:w-auto space-x-1 bg-black/20 p-1 rounded-lg border border-white/5 overflow-x-auto hide-scrollbar">
-            <button @click="selectedTab = 'daily'" :class="selectedTab === 'daily' ? 'bg-ror-accent/20 text-ror-accent shadow-sm ring-1 ring-ror-accent/30' : 'text-ror-muted hover:text-ror-accent'" class="flex-1 sm:flex-none px-3 py-1.5 text-xs rounded-md transition-colors whitespace-nowrap focus:outline-none text-center">日卡</button>
-            <button @click="selectedTab = 'weekly'" :class="selectedTab === 'weekly' ? 'bg-ror-accent/20 text-ror-accent shadow-sm ring-1 ring-ror-accent/30' : 'text-ror-muted hover:text-ror-accent'" class="flex-1 sm:flex-none px-3 py-1.5 text-xs rounded-md transition-colors whitespace-nowrap focus:outline-none text-center">周卡</button>
-            <button @click="selectedTab = 'monthly'" :class="selectedTab === 'monthly' ? 'bg-ror-accent/20 text-ror-accent shadow-sm ring-1 ring-ror-accent/30' : 'text-ror-muted hover:text-ror-accent'" class="flex-1 sm:flex-none px-3 py-1.5 text-xs rounded-md transition-colors whitespace-nowrap focus:outline-none text-center">月卡</button>
-            <button v-if="isAdminRole" @click="selectedTab = 'infinite'" :class="selectedTab === 'infinite' ? 'bg-ror-accent/20 text-ror-accent shadow-sm ring-1 ring-ror-accent/30' : 'text-ror-muted hover:text-ror-accent'" class="flex-1 sm:flex-none px-3 py-1.5 text-xs rounded-md transition-colors font-bold whitespace-nowrap focus:outline-none text-center">尊榮 ∞ 卡</button>
+            <button @click="selectedTab = 'daily'" :class="selectedTab === 'daily' ? 'bg-ror-accent/20 text-white font-bold shadow-sm ring-1 ring-ror-accent/30' : 'text-ror-muted hover:text-white'" class="flex-1 sm:flex-none px-3 py-1.5 text-xs rounded-md transition-colors whitespace-nowrap focus:outline-none text-center">日卡</button>
+            <button @click="selectedTab = 'weekly'" :class="selectedTab === 'weekly' ? 'bg-ror-accent/20 text-white font-bold shadow-sm ring-1 ring-ror-accent/30' : 'text-ror-muted hover:text-white'" class="flex-1 sm:flex-none px-3 py-1.5 text-xs rounded-md transition-colors whitespace-nowrap focus:outline-none text-center">周卡</button>
+            <button @click="selectedTab = 'monthly'" :class="selectedTab === 'monthly' ? 'bg-ror-accent/20 text-white font-bold shadow-sm ring-1 ring-ror-accent/30' : 'text-ror-muted hover:text-white'" class="flex-1 sm:flex-none px-3 py-1.5 text-xs rounded-md transition-colors whitespace-nowrap focus:outline-none text-center">月卡</button>
+            <button v-if="isAdminRole" @click="selectedTab = 'infinite'" :class="selectedTab === 'infinite' ? 'bg-ror-accent/20 text-white font-bold shadow-sm ring-1 ring-ror-accent/30' : 'text-ror-muted hover:text-white'" class="flex-1 sm:flex-none px-3 py-1.5 text-xs rounded-md transition-colors font-bold whitespace-nowrap focus:outline-none text-center">尊榮 ∞ 卡</button>
           </div>
         </div>
 
@@ -98,8 +98,8 @@
         <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3">
           <h2 class="text-xl font-bold text-ror-accent">設備狀態</h2>
           <div class="flex w-full sm:w-auto space-x-1 bg-black/20 p-1 rounded-lg border border-white/5">
-            <button @click="deviceStatusTab = 'overview'" :class="deviceStatusTab === 'overview' ? 'bg-ror-surface text-white shadow-sm' : 'text-ror-muted hover:text-white'" class="flex-1 sm:flex-none px-3 py-1.5 text-xs rounded-md transition-colors whitespace-nowrap text-center">總覽</button>
-            <button @click="deviceStatusTab = 'by_license'" :class="deviceStatusTab === 'by_license' ? 'bg-ror-surface text-white shadow-sm' : 'text-ror-muted hover:text-white'" class="flex-1 sm:flex-none px-3 py-1.5 text-xs rounded-md transition-colors whitespace-nowrap text-center">依授權分類</button>
+            <button @click="deviceStatusTab = 'overview'" :class="deviceStatusTab === 'overview' ? 'bg-ror-accent/20 text-white font-bold shadow-sm ring-1 ring-ror-accent/30' : 'text-ror-muted hover:text-white'" class="flex-1 sm:flex-none px-3 py-1.5 text-xs rounded-md transition-colors whitespace-nowrap text-center focus:outline-none">總覽</button>
+            <button @click="deviceStatusTab = 'by_license'" :class="deviceStatusTab === 'by_license' ? 'bg-ror-accent/20 text-white font-bold shadow-sm ring-1 ring-ror-accent/30' : 'text-ror-muted hover:text-white'" class="flex-1 sm:flex-none px-3 py-1.5 text-xs rounded-md transition-colors whitespace-nowrap text-center focus:outline-none">依授權分類</button>
           </div>
         </div>
 
