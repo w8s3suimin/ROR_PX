@@ -31,18 +31,18 @@
       
       <!-- Text Content -->
       <h2 class="text-3xl md:text-4xl font-bold text-white mb-4 tracking-tight drop-shadow-lg text-center">
-        任務部屬功能<span class="text-blue-400">開發中</span>
+        任務部署功能<span class="text-blue-400">開發中</span>
       </h2>
       
       <p class="text-base md:text-lg text-gray-300 text-center max-w-2xl mb-8 leading-relaxed drop-shadow-md">
-        我們正在努力為您打造最強大的自動化任務部屬系統。目前<span class="font-bold text-white bg-blue-600/30 px-2 py-0.5 rounded mx-1">靠北雞</span>正在加緊趕工挖礦中，敬請期待即將推出的全新功能！
+        我們正在努力為您打造最強大的自動化任務部署系統。目前正在趕工中，敬請期待！
       </p>
       
       <button @click="$router.push('/dashboard')" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-lg transition-all duration-300 shadow-lg shadow-blue-500/30 flex items-center gap-2 hover:-translate-y-1">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
           <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
         </svg>
-        返回儀表板
+        返回管理總覽
       </button>
     </div>
   </div>
