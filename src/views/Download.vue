@@ -16,10 +16,10 @@
           <div class="space-y-3 flex-1 text-center md:text-left">
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-sm font-medium border border-blue-500/20">
               <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
-              最新版本 v0.3.002
+              最新版本 v0.3.003
             </div>
             <h2 class="text-2xl font-bold">ROR_JS 掛機框架</h2>
-            <p class="text-ror-muted">發布日期：2026-06-20</p>
+            <p class="text-ror-muted">發布日期：2026-06-24</p>
           </div>
           <div class="flex flex-col gap-3 w-full md:w-auto">
             <a href="#" class="flex items-center justify-center gap-2 bg-ror-accent text-black px-8 py-4 rounded-xl font-bold hover:bg-ror-accent-hover transition-all shadow-[0_0_20px_rgba(255,204,0,0.3)] hover:shadow-[0_0_30px_rgba(255,204,0,0.5)] transform hover:-translate-y-1">
@@ -141,9 +141,29 @@ const setItemRef = (el, idx) => {
 
 const patches = ref([
   {
+    version: 'v0.3.003',
+    date: '2026-06-24',
+    isLatest: true,
+    features: [
+      { icon: '🎯', color: 'text-blue-400', desc: '<strong>主線任務優化：</strong>新增任務種類選擇功能，支援於設定中指定選擇執行主線、轉職或支線任務。' },
+      { icon: '🌕', color: 'text-blue-400', desc: '<strong>紅月任務優化：</strong>修正獎勵滿溢時會導致卡死的問題，加入連續失敗自動跳出與回城的防呆機制，並限制最大領獎次數為 1~23 次。' },
+      { icon: '🌕', color: 'text-blue-400', desc: '<strong>紅月任務修復：</strong>解決抵達紅月定點時因等待戰鬥圖標超時導致發呆判定誤判並強制回城的問題。' },
+      { icon: '✨', color: 'text-yellow-400', desc: '<strong>授權碼設定：</strong>環境分頁新增授權碼欄位，支援彈窗輸入並自動儲存。' },
+      { icon: '🛠️', color: 'text-gray-400', desc: '<strong>自動更新修復：</strong>修復了自動更新功能。' },
+      { icon: '✨', color: 'text-yellow-400', desc: '<strong>新增功能：</strong>支援商會訂單掃描時自動回傳角色水晶總量。' },
+      { icon: '🐺', color: 'text-purple-400', desc: '<strong>獸王爭霸修復：</strong>新增結算二次驗證與過圖等待防護，避免誤判結算導致任務中斷。' },
+      { icon: '🐾', color: 'text-orange-400', desc: '<strong>寵物派遣修復：</strong>修正活力值讀取範圍，解決 10 萬滿活力被裁切導致誤判跳過任務的問題。' },
+      { icon: '🔄', color: 'text-green-400', desc: '<strong>換角修復：</strong>解決同步角色資訊至雲端時因讀取到舊暫存資料導致寫入錯誤目標角色的問題。' },
+      { icon: '🌕', color: 'text-blue-400', desc: '<strong>紅月任務優化：</strong>領取次數按鈕新增長按快捷功能，長按「+」可直接設為 23，長按「-」可快速設為 3。' },
+      { icon: '✨', color: 'text-yellow-400', desc: '<strong>新增回饋：</strong>寵物派遣任務與商會訂單新增 Supabase 資料同步成功與否的懸浮窗即時日誌反饋。' },
+      { icon: '🐾', color: 'text-orange-400', desc: '<strong>寵物派遣修復：</strong>修正資料雲端同步時可能上傳負數的問題，新增防呆機制確保數量正確。' },
+      { icon: '🛠️', color: 'text-gray-400', desc: '<strong>內存修復：</strong>解決部分任務讀取畫面資訊時引發的內存溢出(OOM)問題，確保長時間掛機更加穩定。' },
+      { icon: '🛠️', color: 'text-gray-400', desc: '<strong>資料庫優化：</strong>優化 Supabase 上傳機制，加入連線超時與自動重試，大幅降低資料遺失問題。' }
+    ]
+  },
+  {
     version: 'v0.3.002',
     date: '2026-06-20',
-    isLatest: true,
     features: [
       { icon: '🗺️', color: 'text-blue-400', desc: '<strong>尋寶任務優化：</strong>修正找圖區域限制，優化運算速度並避免因圖標超出螢幕導致的點擊錯誤。' },
       { icon: '🌕', color: 'text-blue-400', desc: '<strong>紅月任務優化：</strong>新增「BOSS出現」的區域特徵點判定，並修復了介面等待秒數的顯示錯誤，使日誌等待時間正確顯示為真實秒數。' }
