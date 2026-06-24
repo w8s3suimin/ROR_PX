@@ -4,7 +4,7 @@
     style="background-image: url('/mining-bg.png');"
   >
     <!-- Overlay for the background image to make text readable and blend the video -->
-    <div class="absolute inset-0 bg-gray-900/80 backdrop-blur-sm"></div>
+    <div class="absolute inset-0 bg-black/85 backdrop-blur-sm"></div>
 
     <div class="relative z-10 flex flex-col items-center w-full">
       <!-- Centered Video Box -->
