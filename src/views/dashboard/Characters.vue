@@ -373,7 +373,9 @@ onMounted(async () => {
     loading.value = true
     
     // Fetch characters and join with profiles to get the email
-    const { data, error: err } = await supabase
+    const { data: authData } = await supabase.auth.getUser()
+    
+    let query = supabase
       .from('characters')
       .select(`
         *,
@@ -381,8 +383,12 @@ onMounted(async () => {
           email
         )
       `)
+      
+    if (!viewAsAdmin.value && authData?.user) {
+      query = query.eq('user_id', authData.user.id)
+    }
 
-    if (err) throw err
+    const { data, error: err } = await query
     
     characters.value = data || []
     
