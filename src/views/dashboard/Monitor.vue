@@ -69,6 +69,7 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { supabase } from '../../utils/supabase.js'
 
+const currentUser = ref(null)
 const devices = ref([])
 const authCode = ref('載入中...')
 const currentTime = ref(Date.now())
@@ -146,6 +147,8 @@ const sortedDevices = computed(() => {
 })
 
 const fetchDevices = async () => {
+  if (!currentUser.value) return // 確保有使用者才查詢
+  
   const { data, error } = await supabase
     .from('devices_status')
     .select(`
@@ -167,6 +170,7 @@ const fetchDevices = async () => {
         crystal
       )
     `)
+    .eq('user_id', currentUser.value.id)
     .order('device_index', { ascending: true })
 
   if (data) {
@@ -188,6 +192,7 @@ onMounted(async () => {
   // Fetch auth code for the current user
   const { data: { user } } = await supabase.auth.getUser()
   if (user) {
+    currentUser.value = user
     const { data: codes } = await supabase
       .from('authorization_codes')
       .select('code')

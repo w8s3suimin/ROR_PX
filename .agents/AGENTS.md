@@ -5,7 +5,7 @@
 
 Before making any structural or destructive changes to a Supabase or Postgres database:
 1. You MUST explicitly ask the user if they have a backup.
-2. If they do not, you MUST help them export a backup using `supabase db dump` or `pg_dump` and save it to the local filesystem.
+2. If they do not, you MUST help them export a backup by running the project's official backup script `.\backup.ps1` to save it to the local `db_backups/` directory.
 3. Only proceed with the destructive SQL execution AFTER the backup is confirmed to be safely saved.
 
 ## Postgres Function / RPC Updates

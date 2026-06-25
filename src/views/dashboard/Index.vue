@@ -270,6 +270,7 @@ onMounted(async () => {
           is_offline,
           authorization_codes ( plan_type )
         `)
+        .eq('user_id', user.id)
       
       if (devData) {
         fetchedDevices = devData
