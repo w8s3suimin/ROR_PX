@@ -147,21 +147,21 @@
           <div class="col-span-2 text-center text-white font-mono relative group">
             <span class="text-sm cursor-pointer hover:text-ror-accent transition-colors" @click.stop="openNumericFilter('level')">Lv.{{ char.level }}</span>
             <div class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden md:group-hover:block whitespace-nowrap bg-black text-gray-300 text-xs px-2 py-1 rounded border border-ror-border z-10 pointer-events-none shadow-lg">
-              最後更新: {{ formatTime(char.profile_updated_at || char.updated_at) }}
+              最後更新: {{ formatTime(char.updated_at) }}
             </div>
           </div>
           
           <div class="col-span-2 text-center text-white text-sm relative group">
             {{ char.profession || '未知' }}
             <div class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden md:group-hover:block whitespace-nowrap bg-black text-gray-300 text-xs px-2 py-1 rounded border border-ror-border z-10 pointer-events-none shadow-lg">
-              最後更新: {{ formatTime(char.profile_updated_at || char.updated_at) }}
+              最後更新: {{ formatTime(char.updated_at) }}
             </div>
           </div>
           
           <div class="col-span-3 text-right font-mono text-[#ff93d3] relative group">
             <span class="cursor-pointer hover:opacity-80 transition-opacity" @click.stop="openNumericFilter('crystal')">{{ formatNumber(char.crystal) }}</span>
             <div class="absolute right-0 bottom-full mb-2 hidden md:group-hover:block whitespace-nowrap bg-black text-gray-300 text-xs px-2 py-1 rounded border border-ror-border z-10 pointer-events-none shadow-lg">
-              最後更新: {{ formatTime(char.crystal_updated_at || char.updated_at) }}
+              最後更新: {{ formatTime(char.updated_at) }}
             </div>
           </div>
           
@@ -170,14 +170,14 @@
               {{ char.dispatch_current }} / {{ char.dispatch_max }}
             </span>
             <div class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden md:group-hover:block whitespace-nowrap bg-black text-gray-300 text-xs px-2 py-1 rounded border border-ror-border z-10 pointer-events-none shadow-lg">
-              最後更新: {{ formatTime(char.vitality_dispatch_updated_at || char.updated_at) }}
+              最後更新: {{ formatTime(char.updated_at) }}
             </div>
           </div>
 
           <div class="col-span-2 text-right font-mono text-[#4dabf7] relative group">
             <span class="cursor-pointer hover:opacity-80 transition-opacity" @click.stop="openNumericFilter('vitality')">{{ formatNumber(char.vitality) }}</span>
             <div class="absolute right-0 bottom-full mb-2 hidden md:group-hover:block whitespace-nowrap bg-black text-gray-300 text-xs px-2 py-1 rounded border border-ror-border z-10 pointer-events-none shadow-lg">
-              最後更新: {{ formatTime(char.vitality_dispatch_updated_at || char.updated_at) }}
+              最後更新: {{ formatTime(char.updated_at) }}
             </div>
           </div>
           
