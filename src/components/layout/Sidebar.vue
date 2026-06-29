@@ -39,6 +39,7 @@
             <svg v-else-if="item.icon === 'device-mobile'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
             <svg v-else-if="item.icon === 'user'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
             <svg v-else-if="item.icon === 'cloud'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path></svg>
+            <svg v-else-if="item.icon === 'book'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
           </div>
           <span class="font-medium tracking-wide">{{ item.name }}</span>
         </router-link>
@@ -76,19 +77,47 @@ const route = useRoute()
 const router = useRouter()
 const isLoggedIn = ref(false)
 
-const navItems = [
+const navItems = ref([
   { name: '管理總覽', path: '/dashboard', icon: 'home' },
   { name: '設備監控', path: '/dashboard/monitor', icon: 'device-mobile' },
   { name: '角色管理', path: '/dashboard/characters', icon: 'user' },
   { name: '任務部署', path: '/dashboard/deploy', icon: 'cloud' },
-]
+])
 
 onMounted(async () => {
   const { data: { session } } = await supabase.auth.getSession()
   isLoggedIn.value = !!session
 
-  supabase.auth.onAuthStateChange((event, session) => {
+  if (session) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('Exchange_Member, is_admin')
+      .eq('id', session.user.id)
+      .single()
+
+    if (profile && (profile.Exchange_Member || profile.is_admin)) {
+      if (!navItems.value.find(item => item.path === '/dashboard/exchange')) {
+        navItems.value.push({ name: '交易所操作', path: '/dashboard/exchange', icon: 'book' })
+      }
+    }
+  }
+
+  supabase.auth.onAuthStateChange(async (event, session) => {
     isLoggedIn.value = !!session
+    if (session) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('Exchange_Member, is_admin')
+        .eq('id', session.user.id)
+        .single()
+      if (profile && (profile.Exchange_Member || profile.is_admin)) {
+        if (!navItems.value.find(item => item.path === '/dashboard/exchange')) {
+          navItems.value.push({ name: '交易所操作', path: '/dashboard/exchange', icon: 'book' })
+        }
+      }
+    } else {
+      navItems.value = navItems.value.filter(item => item.path !== '/dashboard/exchange')
+    }
   })
 })
 

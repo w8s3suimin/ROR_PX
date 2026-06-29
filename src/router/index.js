@@ -53,6 +53,11 @@ const router = createRouter({
           path: 'deploy',
           name: 'deploy',
           component: () => import('../views/dashboard/Deploy.vue')
+        },
+        {
+          path: 'exchange',
+          name: 'exchange',
+          component: () => import('../views/dashboard/Exchange.vue')
         }
       ]
     }
