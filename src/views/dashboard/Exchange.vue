@@ -8,14 +8,14 @@
       </div>
 
       <div class="flex items-center gap-3">
-        <!-- Settings Gear Icon -->
-        <button @click="showSettings = true" class="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-ror-muted hover:text-white transition-all duration-300">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-        </button>
-
         <button v-if="isAdmin" @click="showAddTarget = true" class="flex items-center px-4 py-2 bg-ror-accent/10 text-ror-accent hover:bg-ror-accent/20 rounded-xl transition-all duration-300 font-medium">
           <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
           新增標的
+        </button>
+
+        <!-- Settings Gear Icon -->
+        <button @click="showSettings = true" class="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-ror-muted hover:text-white transition-all duration-300">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
         </button>
       </div>
     </div>
@@ -67,7 +67,7 @@
 
             <!-- Admin Toggle (Power button) -->
             <button v-if="isAdmin" @click="toggleTarget(target)" class="p-2 rounded-xl bg-black/40 hover:bg-white/10 transition-colors ml-4 border border-ror-border/50" title="啟用/停用標的">
-              <svg v-if="target.is_active" class="w-5 h-5 text-ror-muted hover:text-red-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.36 6.64a9 9 0 1 1-12.73 0M12 2v10"></path></svg>
+              <svg v-if="target.is_active" class="w-5 h-5 text-ror-accent hover:text-red-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.36 6.64a9 9 0 1 1-12.73 0M12 2v10"></path></svg>
               <svg v-else class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.36 6.64a9 9 0 1 1-12.73 0M12 2v10"></path></svg>
             </button>
           </div>
@@ -79,7 +79,7 @@
             <div v-for="slot in getTargetSlots(target.id)" :key="slot.key" class="flex items-stretch p-0 hover:bg-white/5 transition-colors group">
               
               <!-- Left: Time -->
-              <div class="w-1/4 py-1.5 px-3 flex items-center text-white font-mono text-[13px] tracking-tighter">{{ slot.display }}</div>
+              <div class="w-1/4 py-1.5 px-3 flex items-center text-white font-mono text-sm tracking-tighter">{{ slot.display }}</div>
               
               <!-- Middle: Personnel -->
               <div class="flex-1 py-1.5 px-3 flex items-center justify-between border-l border-r border-white/5">
