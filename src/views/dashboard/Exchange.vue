@@ -43,7 +43,7 @@
     </div>
 
     <!-- Cards Grid -->
-    <div v-else class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+    <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
       <div v-for="target in targets" :key="target.id" 
            class="relative rounded-2xl border transition-all duration-300 overflow-hidden flex flex-col"
            :class="target.is_active ? 'bg-ror-card border-ror-border hover:border-ror-accent/30 shadow-lg' : 'bg-black/60 border-black/80 opacity-70 grayscale'">
@@ -71,37 +71,22 @@
           </div>
         </div>
 
-        <!-- Slots Table -->
-        <div class="p-0 overflow-x-auto flex-1">
-          <table class="w-full text-left text-sm text-ror-muted">
-            <thead class="text-xs uppercase bg-white/5 border-b border-ror-border/50">
-              <tr>
-                <th class="px-4 py-3 font-medium">時段</th>
-                <th class="px-4 py-3 font-medium">負責人</th>
-                <th class="px-4 py-3 font-medium">狀態</th>
-                <th class="px-4 py-3 font-medium text-right">操作</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="slot in timeSlots" :key="slot" class="border-b border-ror-border/30 hover:bg-white/5 transition-colors">
-                <td class="px-4 py-3 font-medium text-white">{{ slot }}</td>
-                <td class="px-4 py-3">
-                  <span v-if="getSlotData(target.id, slot)?.user_id" class="text-ror-accent">
-                    {{ getUserName(getSlotData(target.id, slot).user_id) }}
-                  </span>
-                  <span v-else class="text-gray-500">-</span>
-                </td>
-                <td class="px-4 py-3 text-lg">
-                  {{ getSlotData(target.id, slot)?.status || '-' }}
-                </td>
-                <td class="px-4 py-3 text-right">
-                  <button v-if="target.is_active" @click="updateSlot(target.id, slot)" class="px-3 py-1 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-colors text-xs">
-                    登記
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+        <!-- Slots Grid -->
+        <div class="p-4 grid grid-cols-2 gap-3 flex-1">
+          <div v-for="slot in timeSlots" :key="slot" class="flex flex-col p-2 rounded-lg bg-black/40 border border-ror-border/30 hover:border-ror-accent/50 transition-colors group relative justify-between">
+            <div class="flex justify-between items-center text-xs mb-1">
+              <span class="text-white font-bold tracking-wide">{{ slot }}</span>
+              <span class="text-ror-muted">{{ getSlotData(target.id, slot)?.status || '-' }}</span>
+            </div>
+            <div class="flex justify-between items-end">
+              <span class="text-sm font-medium truncate max-w-[4.5rem]" :class="getSlotData(target.id, slot)?.user_id ? 'text-ror-accent' : 'text-gray-500'">
+                {{ getSlotData(target.id, slot)?.user_id ? getUserName(getSlotData(target.id, slot).user_id) : '未登記' }}
+              </span>
+              <button v-if="target.is_active" @click="updateSlot(target.id, slot)" class="md:opacity-0 group-hover:opacity-100 text-xs px-2 py-0.5 bg-ror-accent/20 hover:bg-ror-accent/40 rounded text-ror-accent transition-all">
+                登記
+              </button>
+            </div>
+          </div>
         </div>
       </div>
       
