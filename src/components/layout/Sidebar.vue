@@ -40,6 +40,7 @@
             <svg v-else-if="item.icon === 'user'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
             <svg v-else-if="item.icon === 'cloud'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path></svg>
             <svg v-else-if="item.icon === 'book'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+            <svg v-else-if="item.icon === 'scale'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"></path></svg>
           </div>
           <span class="font-medium tracking-wide">{{ item.name }}</span>
         </router-link>
@@ -97,7 +98,7 @@ onMounted(async () => {
 
     if (profile && (profile.exchange_member || profile.is_admin)) {
       if (!navItems.value.find(item => item.path === '/dashboard/exchange')) {
-        navItems.value.push({ name: '交易所操作', path: '/dashboard/exchange', icon: 'book' })
+        navItems.value.push({ name: '交易所操作', path: '/dashboard/exchange', icon: 'scale' })
       }
     }
   }
@@ -112,7 +113,7 @@ onMounted(async () => {
         .single()
       if (profile && (profile.exchange_member || profile.is_admin)) {
         if (!navItems.value.find(item => item.path === '/dashboard/exchange')) {
-          navItems.value.push({ name: '交易所操作', path: '/dashboard/exchange', icon: 'book' })
+          navItems.value.push({ name: '交易所操作', path: '/dashboard/exchange', icon: 'scale' })
         }
       }
     } else {
