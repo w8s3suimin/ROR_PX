@@ -32,57 +32,71 @@
            :class="target.is_active ? 'bg-ror-card border-ror-border hover:border-ror-accent/30 shadow-lg' : 'bg-black/60 border-black/80 opacity-70 grayscale'">
         
         <!-- Card Header with Independent Date Switcher -->
-        <div class="p-3 border-b border-ror-border/50 flex flex-col gap-2" :class="target.is_active ? 'bg-white/5' : 'bg-black/40'">
-          <div class="flex justify-between items-center">
-            <h2 class="text-lg font-bold text-white flex items-center gap-2">
-              {{ target.name }}
-              <span v-if="isAdmin" class="text-[10px] px-1.5 py-0.5 rounded-full" :class="target.is_active ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'">
-                {{ target.is_active ? '啟用' : '停用' }}
-              </span>
-            </h2>
-            <div class="flex items-center gap-1">
-              <button @click="changeTargetDate(target.id, -1)" class="p-1 rounded bg-white/5 hover:bg-white/10 text-ror-muted transition-colors">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-              </button>
-              <span class="text-white text-xs font-medium w-10 text-center">{{ getTargetDateLabel(target.id) }}</span>
-              <button @click="changeTargetDate(target.id, 1)" :disabled="getTargetOffset(target.id) === 0" class="p-1 rounded bg-white/5 hover:bg-white/10 text-ror-muted transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-              </button>
+        <div class="p-4 border-b border-ror-border/50 flex flex-col gap-3" :class="target.is_active ? 'bg-white/5' : 'bg-black/40'">
+          
+          <!-- Top Row: Title + Date Switcher + Toggle -->
+          <div class="flex justify-between items-start">
+            <div class="flex flex-col gap-2 flex-1">
+              <div class="flex items-center gap-3">
+                <h2 class="text-xl font-bold text-white">{{ target.name }}</h2>
+                <div class="flex items-center gap-1 bg-black/40 border border-ror-border/50 rounded-lg px-2 py-1">
+                  <button @click="changeTargetDate(target.id, -1)" class="p-1 rounded hover:bg-white/10 text-ror-muted transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                  </button>
+                  <span class="text-white text-xs font-medium w-10 text-center">{{ getTargetDateLabel(target.id) }}</span>
+                  <button @click="changeTargetDate(target.id, 1)" :disabled="getTargetOffset(target.id) === 0" class="p-1 rounded hover:bg-white/10 text-ror-muted transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                  </button>
+                </div>
+              </div>
+              
+              <!-- Duty Officer Row -->
+              <div class="flex items-center gap-2 mt-1">
+                <span class="text-sm text-ror-muted font-medium">值班人員</span>
+                <select v-if="isAdmin" :value="getDutyOfficer(target.id)" @change="updateDutyOfficer(target.id, $event.target.value)" class="bg-black/50 border border-ror-border rounded px-2 py-1 text-sm text-white focus:outline-none focus:border-ror-accent">
+                  <option value="">未指派</option>
+                  <option v-for="(name, id) in userProfiles" :key="id" :value="id">{{ name }}</option>
+                </select>
+                <span v-else class="text-white text-sm font-medium">{{ getDutyOfficerName(target.id) || '未指派' }}</span>
+              </div>
             </div>
-          </div>
-          <!-- Admin Toggle -->
-          <div v-if="isAdmin" class="flex justify-end">
-             <button @click="toggleTarget(target)" class="p-1 rounded bg-white/5 hover:bg-white/10 text-ror-muted transition-colors" title="啟用/停用標的">
-                <svg v-if="target.is_active" class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path></svg>
-                <svg v-else class="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-             </button>
+
+            <!-- Admin Toggle (Power button) -->
+            <button v-if="isAdmin" @click="toggleTarget(target)" class="p-2 rounded-xl bg-black/40 hover:bg-white/10 transition-colors ml-4 border border-ror-border/50" title="啟用/停用標的">
+              <svg v-if="target.is_active" class="w-5 h-5 text-ror-muted hover:text-red-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.36 6.64a9 9 0 1 1-12.73 0M12 2v10"></path></svg>
+              <svg v-else class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.36 6.64a9 9 0 1 1-12.73 0M12 2v10"></path></svg>
+            </button>
           </div>
         </div>
 
-        <!-- Duty Officer -->
-        <div v-if="target.is_active" class="px-4 py-2 bg-black/20 flex items-center justify-between border-b border-ror-border/50">
-          <span class="text-sm text-ror-muted font-medium">值班人員</span>
-          <div class="flex items-center gap-2">
-            <input v-if="isAdmin" :value="getDutyOfficer(target.id)" @change="updateDutyOfficer(target.id, $event.target.value)" class="bg-black/50 border border-ror-border rounded px-2 py-1 text-sm text-white focus:outline-none focus:border-ror-accent" placeholder="未指派" />
-            <span v-else class="text-white text-sm font-medium">{{ getDutyOfficer(target.id) || '未指派' }}</span>
-          </div>
-        </div>
-
-        <!-- Slots Grid -->
-        <div class="p-4 grid grid-cols-2 gap-3 flex-1">
-          <div v-for="slot in getTargetSlots(target.id)" :key="slot.key" class="flex flex-col p-2 rounded-lg bg-black/40 border border-ror-border/30 hover:border-ror-accent/50 transition-colors group relative justify-between">
-            <div class="flex justify-between items-center text-[11px] mb-1">
-              <span class="text-white font-mono tracking-tighter whitespace-nowrap">{{ slot.display }}</span>
-              <span class="text-ror-muted ml-1">{{ getSlotData(target.id, slot.key)?.status || '-' }}</span>
-            </div>
-            <div class="flex justify-between items-end">
-              <span class="text-sm font-medium truncate max-w-[4.5rem]" :class="getSlotData(target.id, slot.key)?.user_id ? 'text-ror-accent' : 'text-gray-500'">
-                {{ getSlotData(target.id, slot.key)?.user_id ? getUserName(getSlotData(target.id, slot.key).user_id) : '未登記' }}
+        <!-- Slots List (1 column layout) -->
+        <div class="p-4 flex flex-col gap-2 flex-1 overflow-y-auto">
+          <div v-for="slot in getTargetSlots(target.id)" :key="slot.key" class="flex items-center justify-between p-3 rounded-xl bg-black/40 border border-ror-border/30 hover:border-ror-accent/50 transition-colors group">
+            
+            <!-- Left: Time -->
+            <div class="w-1/3 text-white font-mono text-sm tracking-tighter">{{ slot.display }}</div>
+            
+            <!-- Middle: Personnel -->
+            <div class="w-1/3 text-center">
+              <span v-if="getSlotData(target.id, slot.key)?.user_id" class="text-ror-accent text-sm font-medium truncate inline-block w-full">
+                {{ getUserName(getSlotData(target.id, slot.key).user_id) }}
               </span>
-              <button v-if="target.is_active" @click="updateSlot(target.id, slot.key)" class="md:opacity-0 group-hover:opacity-100 text-[10px] px-1.5 py-0.5 bg-ror-accent/20 hover:bg-ror-accent/40 rounded text-ror-accent transition-all flex-shrink-0">
+              <button v-else-if="target.is_active" @click="updateSlot(target.id, slot.key)" class="md:opacity-0 group-hover:opacity-100 text-xs px-3 py-1 bg-ror-accent/20 hover:bg-ror-accent/40 rounded text-ror-accent transition-all">
                 登記
               </button>
+              <span v-else class="text-gray-500 text-sm">未登記</span>
             </div>
+
+            <!-- Right: Checkbox -->
+            <div class="w-1/3 flex justify-end items-center">
+              <input type="checkbox" 
+                     :checked="getSlotData(target.id, slot.key)?.completed" 
+                     @change="toggleSlotStatus(target.id, slot.key, $event.target.checked)" 
+                     :disabled="!canEditStatus(target.id, slot.key)" 
+                     class="w-5 h-5 text-ror-accent bg-black/50 border-gray-600 rounded focus:ring-ror-accent focus:ring-offset-black transition-colors"
+                     :class="{ 'opacity-30 cursor-not-allowed': !canEditStatus(target.id, slot.key), 'cursor-pointer hover:border-ror-accent': canEditStatus(target.id, slot.key) }" />
+            </div>
+
           </div>
         </div>
       </div>
@@ -350,13 +364,20 @@ const toggleTarget = async (target) => {
 }
 
 const getDutyOfficer = (targetId) => {
-  const schedule = schedules.value.find(s => s.target_id === targetId)
+  const bDate = getBaseDateStringForTarget(targetId)
+  const schedule = schedules.value.find(s => s.target_id === targetId && s.base_date === bDate)
   return schedule?.duty_officer || ''
+}
+
+const getDutyOfficerName = (targetId) => {
+  const id = getDutyOfficer(targetId)
+  if (!id) return ''
+  return userProfiles.value[id] || id // fallback to id if name not found (for legacy text data)
 }
 
 const updateDutyOfficer = async (targetId, value) => {
   const bDate = getBaseDateStringForTarget(targetId)
-  let scheduleIndex = schedules.value.findIndex(s => s.target_id === targetId)
+  let scheduleIndex = schedules.value.findIndex(s => s.target_id === targetId && s.base_date === bDate)
   let schedule = scheduleIndex >= 0 ? schedules.value[scheduleIndex] : null
   
   if (schedule) {
@@ -388,13 +409,53 @@ const updateDutyOfficer = async (targetId, value) => {
 }
 
 const getSlotData = (targetId, slotName) => {
-  const schedule = schedules.value.find(s => s.target_id === targetId)
+  const bDate = getBaseDateStringForTarget(targetId)
+  const schedule = schedules.value.find(s => s.target_id === targetId && s.base_date === bDate)
   if (!schedule) return null
   return schedule.slots_data[slotName] || null
 }
 
 const getUserName = (userId) => {
   return userProfiles.value[userId] || '未知用戶'
+}
+
+const canEditStatus = (targetId, slotKey) => {
+  if (isAdmin.value) return true
+  const dutyOfficerId = getDutyOfficer(targetId)
+  if (currentUser.value?.id === dutyOfficerId) return true
+  const slotData = getSlotData(targetId, slotKey)
+  if (slotData && slotData.user_id === currentUser.value?.id) return true
+  return false
+}
+
+const toggleSlotStatus = async (targetId, slotKey, isCompleted) => {
+  if (!canEditStatus(targetId, slotKey)) return
+
+  const bDate = getBaseDateStringForTarget(targetId)
+  let scheduleIndex = schedules.value.findIndex(s => s.target_id === targetId && s.base_date === bDate)
+  let schedule = scheduleIndex >= 0 ? schedules.value[scheduleIndex] : null
+  
+  if (!schedule || !schedule.slots_data[slotKey]) return // Cant toggle a slot that isn't registered
+
+  let newSlotsData = { ...schedule.slots_data }
+  newSlotsData[slotKey] = {
+    ...newSlotsData[slotKey],
+    completed: isCompleted,
+    status: isCompleted ? 'completed' : '📈',
+    updated_at: new Date().toISOString()
+  }
+  
+  schedule.slots_data = newSlotsData // Optimistic
+
+  const { error } = await supabase
+    .from('exchange_schedules')
+    .update({ slots_data: newSlotsData })
+    .eq('target_id', targetId)
+    .eq('base_date', bDate)
+
+  if (error) {
+    alert("狀態更新失敗: " + error.message)
+  }
 }
 
 const updateSlot = async (targetId, slotName) => {
@@ -407,13 +468,14 @@ const updateSlot = async (targetId, slotName) => {
 
   const bDate = getBaseDateStringForTarget(targetId)
   // Find or create schedule in local state
-  let scheduleIndex = schedules.value.findIndex(s => s.target_id === targetId)
+  let scheduleIndex = schedules.value.findIndex(s => s.target_id === targetId && s.base_date === bDate)
   let schedule = scheduleIndex >= 0 ? schedules.value[scheduleIndex] : null
   
   let newSlotsData = schedule ? { ...schedule.slots_data } : {}
   newSlotsData[slotName] = {
     user_id: currentUser.value.id,
     status: '📈',
+    completed: false,
     updated_at: new Date().toISOString()
   }
 
@@ -424,7 +486,8 @@ const updateSlot = async (targetId, slotName) => {
     schedule = {
       target_id: targetId,
       base_date: bDate,
-      slots_data: newSlotsData
+      slots_data: newSlotsData,
+      duty_officer: ''
     }
     schedules.value.push(schedule)
   }
@@ -436,6 +499,7 @@ const updateSlot = async (targetId, slotName) => {
       target_id: targetId,
       base_date: bDate,
       slots_data: newSlotsData,
+      duty_officer: schedule ? schedule.duty_officer : '',
       updated_at: new Date().toISOString()
     }, { onConflict: 'target_id,base_date' })
 
