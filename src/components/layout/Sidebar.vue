@@ -91,11 +91,11 @@ onMounted(async () => {
   if (session) {
       const { data: profile } = await supabase
         .from('profiles')
-        .select('"Exchange_Member", is_admin')
+        .select('exchange_member, is_admin')
         .eq('id', session.user.id)
         .single()
 
-    if (profile && (profile.Exchange_Member || profile.is_admin)) {
+    if (profile && (profile.exchange_member || profile.is_admin)) {
       if (!navItems.value.find(item => item.path === '/dashboard/exchange')) {
         navItems.value.push({ name: '交易所操作', path: '/dashboard/exchange', icon: 'book' })
       }
@@ -107,10 +107,10 @@ onMounted(async () => {
     if (session) {
       const { data: profile } = await supabase
         .from('profiles')
-        .select('"Exchange_Member", is_admin')
+        .select('exchange_member, is_admin')
         .eq('id', session.user.id)
         .single()
-      if (profile && (profile.Exchange_Member || profile.is_admin)) {
+      if (profile && (profile.exchange_member || profile.is_admin)) {
         if (!navItems.value.find(item => item.path === '/dashboard/exchange')) {
           navItems.value.push({ name: '交易所操作', path: '/dashboard/exchange', icon: 'book' })
         }

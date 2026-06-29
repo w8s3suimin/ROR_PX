@@ -1,5 +1,5 @@
--- 1. 確保 profiles 有 Exchange_Name 欄位
-ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS "Exchange_Name" TEXT;
+-- 1. 確保 profiles 有 exchange_name 欄位
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS exchange_name TEXT;
 
 -- 2. 建立交易所標的表 (Targets)
 CREATE TABLE public.exchange_targets (
@@ -34,7 +34,7 @@ CREATE TABLE public.exchange_schedules (
 CREATE OR REPLACE FUNCTION public.is_exchange_member_or_admin()
 RETURNS BOOLEAN AS $$
   SELECT COALESCE(
-    (SELECT "Exchange_Member" OR is_admin FROM public.profiles WHERE id = auth.uid()),
+    (SELECT exchange_member OR is_admin FROM public.profiles WHERE id = auth.uid()),
     false
   );
 $$ LANGUAGE sql SECURITY DEFINER;
