@@ -35,39 +35,40 @@
         <div class="p-4 border-b border-ror-border/50 flex flex-col gap-3" :class="target.is_active ? 'bg-white/5' : 'bg-black/40'">
           
           <!-- Top Row: Title + Controls -->
-          <div class="flex justify-between items-start gap-4">
-            <div class="flex flex-col gap-1 flex-1 overflow-hidden">
-              <h2 class="text-xl font-bold text-white truncate max-w-full" :title="target.name">{{ target.name }}</h2>
+          <div class="flex justify-between items-start gap-4 w-full">
+            <div class="flex flex-col gap-2 flex-1 overflow-hidden">
+              <div class="flex items-center justify-between w-full">
+                <h2 class="text-xl font-bold text-white truncate max-w-full" :title="target.name">{{ target.name }}</h2>
+                <!-- Admin Toggle (Power button) -->
+                <button v-if="isAdmin" @click="toggleTarget(target)" class="p-2 rounded-xl bg-black/40 hover:bg-white/10 transition-colors flex-shrink-0 border border-ror-border/50" title="啟用/停用標的">
+                  <svg v-if="target.is_active" class="w-5 h-5 text-ror-accent hover:text-red-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.36 6.64a9 9 0 1 1-12.73 0M12 2v10"></path></svg>
+                  <svg v-else class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.36 6.64a9 9 0 1 1-12.73 0M12 2v10"></path></svg>
+                </button>
+              </div>
               
-              <!-- Duty Officer Row -->
-              <div class="flex items-center gap-2 mt-1">
-                <span class="text-sm text-ror-muted font-medium flex-shrink-0">值班人員</span>
-                <select v-if="isAdmin" :value="getDutyOfficer(target.id)" @change="updateDutyOfficer(target.id, $event.target.value)" class="bg-black/50 border border-ror-border rounded px-2 py-1 text-sm text-white focus:outline-none focus:border-ror-accent">
-                  <option value="">未指派</option>
-                  <option v-for="(name, id) in userProfiles" :key="id" :value="id">{{ name }}</option>
-                </select>
-                <span v-else class="text-white text-sm font-medium truncate max-w-[100px]">{{ getDutyOfficerName(target.id) || '未指派' }}</span>
-              </div>
-            </div>
+              <!-- Duty Officer Row & Date Switcher -->
+              <div class="flex items-center gap-4 mt-1 w-full">
+                <!-- Duty Officer Row -->
+                <div class="flex items-center gap-2">
+                  <span class="text-sm text-ror-muted font-medium flex-shrink-0">值班人員</span>
+                  <select v-if="isAdmin" :value="getDutyOfficer(target.id)" @change="updateDutyOfficer(target.id, $event.target.value)" class="bg-black/50 border border-ror-border rounded px-2 py-1 text-sm text-white focus:outline-none focus:border-ror-accent">
+                    <option value="">未指派</option>
+                    <option v-for="(name, id) in userProfiles" :key="id" :value="id">{{ name }}</option>
+                  </select>
+                  <span v-else class="text-white text-sm font-medium truncate max-w-[100px]">{{ getDutyOfficerName(target.id) || '未指派' }}</span>
+                </div>
 
-            <!-- Right Controls: Date Switcher + Admin Toggle -->
-            <div class="flex items-center gap-2 flex-shrink-0">
-              <!-- Date Switcher -->
-              <div class="flex items-center gap-1 bg-black/40 border border-ror-border/50 rounded-lg px-2 py-1">
-                <button @click="changeTargetDate(target.id, -1)" class="p-1 rounded hover:bg-white/10 text-ror-accent transition-colors">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-                </button>
-                <span class="text-white text-xs font-medium w-10 text-center">{{ getTargetDateLabel(target.id) }}</span>
-                <button @click="changeTargetDate(target.id, 1)" :disabled="getTargetOffset(target.id) === 0" class="p-1 rounded hover:bg-white/10 text-ror-accent transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                </button>
+                <!-- Date Switcher (Forced Right) -->
+                <div class="flex items-center gap-1 bg-black/40 border border-ror-border/50 rounded-lg px-2 py-1 ml-auto flex-shrink-0">
+                  <button @click="changeTargetDate(target.id, -1)" class="p-1 rounded hover:bg-white/10 text-ror-accent transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                  </button>
+                  <span class="text-white text-xs font-medium w-10 text-center">{{ getTargetDateLabel(target.id) }}</span>
+                  <button @click="changeTargetDate(target.id, 1)" :disabled="getTargetOffset(target.id) === 0" class="p-1 rounded hover:bg-white/10 text-ror-accent transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                  </button>
+                </div>
               </div>
-
-              <!-- Admin Toggle (Power button) -->
-              <button v-if="isAdmin" @click="toggleTarget(target)" class="p-2 rounded-xl bg-black/40 hover:bg-white/10 transition-colors border border-ror-border/50" title="啟用/停用標的">
-                <svg v-if="target.is_active" class="w-5 h-5 text-ror-accent hover:text-red-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.36 6.64a9 9 0 1 1-12.73 0M12 2v10"></path></svg>
-                <svg v-else class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.36 6.64a9 9 0 1 1-12.73 0M12 2v10"></path></svg>
-              </button>
             </div>
           </div>
         </div>
