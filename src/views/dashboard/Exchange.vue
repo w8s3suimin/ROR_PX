@@ -176,11 +176,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { supabase } from '../../utils/supabase'
+import { viewAsAdmin as isAdmin } from '../../utils/adminState'
 
 const loading = ref(true)
-const isAdmin = ref(false)
 const currentUser = ref(null)
 const targets = ref([])
 const schedules = ref([])
@@ -271,7 +271,6 @@ const fetchData = async () => {
       .single()
       
     if (profile) {
-      isAdmin.value = profile.is_admin
       settingsName.value = profile.exchange_name || ''
       if (!profile.exchange_name) {
         showSettings.value = true // Prompt to set name first time
@@ -298,21 +297,25 @@ const fetchData = async () => {
 }
 
 const fetchAllSchedulesAtOffsetZero = async () => {
-  const d = new Date()
-  d.setDate(d.getDate() - 1) // Base date for offset 0
-  const defaultBaseDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
-  
-  const { data: sData } = await supabase
+  const baseDates = targets.value.map(t => getBaseDateStringForTarget(t.id))
+  if (baseDates.length === 0) return
+
+  const { data } = await supabase
     .from('exchange_schedules')
     .select('*')
-    .eq('base_date', defaultBaseDate)
-    
-  if (sData) {
-    schedules.value = sData
-  } else {
-    schedules.value = []
+    .in('target_id', targets.value.map(t => t.id))
+    .in('base_date', baseDates)
+
+  if (data) {
+    schedules.value = data
   }
 }
+
+watch(isAdmin, () => {
+  if (!loading.value) {
+    fetchData()
+  }
+})
 
 const fetchSchedulesForTarget = async (targetId) => {
   const bDate = getBaseDateStringForTarget(targetId)
