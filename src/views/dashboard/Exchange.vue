@@ -206,7 +206,7 @@ const changeDate = (delta) => {
 }
 
 const fetchProfiles = async () => {
-  const { data } = await supabase.from('profiles').select('id, Exchange_Name')
+  const { data } = await supabase.from('profiles').select('id, "Exchange_Name"')
   if (data) {
     const map = {}
     data.forEach(p => {
@@ -227,7 +227,7 @@ const fetchData = async () => {
     // Check if admin and get current name
     const { data: profile } = await supabase
       .from('profiles')
-      .select('is_admin, Exchange_Name')
+      .select('is_admin, "Exchange_Name"')
       .eq('id', session.user.id)
       .single()
       
@@ -277,7 +277,7 @@ const saveSettings = async () => {
   
   const { error } = await supabase
     .from('profiles')
-    .update({ Exchange_Name: settingsName.value })
+    .update({ "Exchange_Name": settingsName.value })
     .eq('id', currentUser.value.id)
     
   if (!error) {

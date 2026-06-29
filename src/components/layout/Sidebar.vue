@@ -89,11 +89,11 @@ onMounted(async () => {
   isLoggedIn.value = !!session
 
   if (session) {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('Exchange_Member, is_admin')
-      .eq('id', session.user.id)
-      .single()
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('"Exchange_Member", is_admin')
+        .eq('id', session.user.id)
+        .single()
 
     if (profile && (profile.Exchange_Member || profile.is_admin)) {
       if (!navItems.value.find(item => item.path === '/dashboard/exchange')) {
@@ -107,7 +107,7 @@ onMounted(async () => {
     if (session) {
       const { data: profile } = await supabase
         .from('profiles')
-        .select('Exchange_Member, is_admin')
+        .select('"Exchange_Member", is_admin')
         .eq('id', session.user.id)
         .single()
       if (profile && (profile.Exchange_Member || profile.is_admin)) {
