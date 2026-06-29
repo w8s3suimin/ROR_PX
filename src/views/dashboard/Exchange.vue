@@ -79,10 +79,10 @@
             <div v-for="slot in getTargetSlots(target.id)" :key="slot.key" class="flex items-stretch p-0 hover:bg-white/5 transition-colors group">
               
               <!-- Left: Time -->
-              <div class="w-1/3 p-3 flex items-center text-white font-mono text-[13px] tracking-tighter">{{ slot.display }}</div>
+              <div class="w-1/3 py-1.5 px-3 flex items-center text-white font-mono text-[13px] tracking-tighter">{{ slot.display }}</div>
               
               <!-- Middle: Personnel -->
-              <div class="w-1/3 p-3 flex items-center justify-between border-l border-r border-white/5">
+              <div class="w-1/3 py-1.5 px-3 flex items-center justify-between border-l border-r border-white/5">
                 <div class="flex-1 text-center truncate">
                   <span v-if="getSlotData(target.id, slot.key)?.user_id" class="text-ror-accent text-sm font-medium">
                     {{ getUserName(getSlotData(target.id, slot.key).user_id) }}
@@ -109,7 +109,7 @@
               </div>
 
               <!-- Right: Checkbox -->
-              <div class="w-1/3 p-3 flex justify-end items-center">
+              <div class="w-1/3 py-1.5 px-3 flex justify-end items-center">
                 <input type="checkbox" 
                        :checked="getSlotData(target.id, slot.key)?.completed" 
                        @change="toggleSlotStatus(target.id, slot.key, $event.target.checked)" 
