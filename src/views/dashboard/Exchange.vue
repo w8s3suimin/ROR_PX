@@ -42,7 +42,7 @@
               </div>
               
               <!-- Duty Officer Row & Date Switcher -->
-              <div class="flex items-center flex-wrap gap-4 mt-1">
+              <div class="flex items-center justify-between flex-wrap gap-4 mt-1 w-full">
                 <div class="flex items-center gap-2">
                   <span class="text-sm text-ror-muted font-medium flex-shrink-0">值班人員</span>
                   <select v-if="isAdmin" :value="getDutyOfficer(target.id)" @change="updateDutyOfficer(target.id, $event.target.value)" class="bg-black/50 border border-ror-border rounded px-2 py-1 text-sm text-white focus:outline-none focus:border-ror-accent">
@@ -79,10 +79,10 @@
             <div v-for="slot in getTargetSlots(target.id)" :key="slot.key" class="flex items-stretch p-0 hover:bg-white/5 transition-colors group">
               
               <!-- Left: Time -->
-              <div class="w-1/3 py-1.5 px-3 flex items-center text-white font-mono text-[13px] tracking-tighter">{{ slot.display }}</div>
+              <div class="w-1/4 py-1.5 px-3 flex items-center text-white font-mono text-[13px] tracking-tighter">{{ slot.display }}</div>
               
               <!-- Middle: Personnel -->
-              <div class="w-1/3 py-1.5 px-3 flex items-center justify-between border-l border-r border-white/5">
+              <div class="flex-1 py-1.5 px-3 flex items-center justify-between border-l border-r border-white/5">
                 <div class="flex-1 text-center truncate">
                   <span v-if="getSlotData(target.id, slot.key)?.user_id" class="text-ror-accent text-sm font-medium">
                     {{ getUserName(getSlotData(target.id, slot.key).user_id) }}
@@ -97,25 +97,27 @@
                           @click="updateSlot(target.id, slot.key)" 
                           :disabled="isSlotLocked(target.id, slot.key)"
                           class="text-ror-accent hover:text-white transition-colors disabled:opacity-30 disabled:cursor-not-allowed" title="登記">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                   </button>
                   <button v-else-if="canEditStatus(target.id, slot.key)" 
                           @click="cancelSlot(target.id, slot.key)"
                           :disabled="isSlotLocked(target.id, slot.key)"
                           class="text-ror-accent hover:text-white transition-colors disabled:opacity-30 disabled:cursor-not-allowed" title="取消登記">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path></svg>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                   </button>
                 </div>
               </div>
 
               <!-- Right: Checkbox -->
-              <div class="w-1/3 py-1.5 px-3 flex justify-end items-center">
-                <input type="checkbox" 
-                       :checked="getSlotData(target.id, slot.key)?.completed" 
-                       @change="toggleSlotStatus(target.id, slot.key, $event.target.checked)" 
-                       :disabled="!canEditStatus(target.id, slot.key)" 
-                       class="w-5 h-5 accent-ror-accent bg-black border-2 rounded focus:ring-0 transition-colors"
-                       :class="{ 'opacity-30 cursor-not-allowed border-gray-600': !canEditStatus(target.id, slot.key), 'cursor-pointer hover:bg-ror-accent/20 border-ror-accent': canEditStatus(target.id, slot.key) }" />
+              <div class="w-12 py-1.5 flex justify-center items-center">
+                <div @click="canEditStatus(target.id, slot.key) ? toggleSlotStatus(target.id, slot.key, !getSlotData(target.id, slot.key)?.completed) : null"
+                     class="w-5 h-5 border-2 rounded transition-colors flex items-center justify-center bg-black"
+                     :class="{ 
+                       'opacity-30 cursor-not-allowed border-gray-600': !canEditStatus(target.id, slot.key), 
+                       'cursor-pointer hover:bg-ror-accent/20 border-ror-accent': canEditStatus(target.id, slot.key) 
+                     }">
+                  <svg v-if="getSlotData(target.id, slot.key)?.completed" class="w-3.5 h-3.5 text-ror-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                </div>
               </div>
 
             </div>
