@@ -79,7 +79,7 @@
             <div v-for="slot in getTargetSlots(target.id)" :key="slot.key" class="flex items-stretch p-0 hover:bg-white/5 transition-colors group">
               
               <!-- Left: Time -->
-              <div class="w-1/4 py-1.5 px-3 flex items-center text-white font-mono text-sm tracking-tighter">{{ slot.display }}</div>
+              <div class="w-[95px] flex-shrink-0 py-1.5 px-3 flex items-center text-white font-mono text-sm tracking-tighter whitespace-nowrap">{{ slot.display }}</div>
               
               <!-- Middle: Personnel -->
               <div class="flex-1 py-1.5 px-3 flex items-center justify-between border-l border-r border-white/5">
