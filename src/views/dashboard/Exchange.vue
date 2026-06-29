@@ -34,6 +34,7 @@
         <button @click="changeDate(1)" :disabled="dateOffset === 0" class="p-1 rounded bg-white/5 hover:bg-white/10 text-ror-muted transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
         </button>
+      </div>
     </div>
 
     <!-- Loading State -->
