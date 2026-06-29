@@ -64,7 +64,7 @@
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                   </button>
                   <span class="text-white text-xs font-medium w-10 text-center">{{ getTargetDateLabel(target.id) }}</span>
-                  <button @click="changeTargetDate(target.id, 1)" :disabled="getTargetOffset(target.id) === 0" class="p-1 rounded hover:bg-white/10 text-ror-accent transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
+                  <button @click="changeTargetDate(target.id, 1)" :disabled="getTargetOffset(target.id) >= 1" class="p-1 rounded hover:bg-white/10 text-ror-accent transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                   </button>
                 </div>
@@ -204,7 +204,7 @@ const getTargetOffset = (targetId) => targetDates.value[targetId] || 0
 
 const changeTargetDate = (targetId, delta) => {
   const current = getTargetOffset(targetId)
-  if (current + delta > 0) return
+  if (current + delta > 1) return // Allow up to 1 (Tomorrow)
   targetDates.value[targetId] = current + delta
   fetchSchedulesForTarget(targetId)
 }
@@ -222,7 +222,9 @@ const getBaseDateStringForTarget = (targetId) => {
 
 const getTargetDateLabel = (targetId) => {
   const offset = getTargetOffset(targetId)
-  return offset === 0 ? '今日' : `${Math.abs(offset)}天前`
+  if (offset === 0) return '今日'
+  if (offset === 1) return '明日'
+  return `${Math.abs(offset)}天前`
 }
 
 const getTargetSlots = (targetId) => {
