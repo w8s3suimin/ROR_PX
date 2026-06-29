@@ -69,34 +69,49 @@
           </div>
         </div>
 
-        <!-- Slots List (1 column layout) -->
-        <div class="p-4 flex flex-col gap-2 flex-1 overflow-y-auto">
-          <div v-for="slot in getTargetSlots(target.id)" :key="slot.key" class="flex items-center justify-between p-3 rounded-xl bg-black/40 border border-ror-border/30 hover:border-ror-accent/50 transition-colors group">
-            
-            <!-- Left: Time -->
-            <div class="w-1/3 text-white font-mono text-sm tracking-tighter">{{ slot.display }}</div>
-            
-            <!-- Middle: Personnel -->
-            <div class="w-1/3 text-center">
-              <span v-if="getSlotData(target.id, slot.key)?.user_id" class="text-ror-accent text-sm font-medium truncate inline-block w-full">
-                {{ getUserName(getSlotData(target.id, slot.key).user_id) }}
-              </span>
-              <button v-else-if="target.is_active" @click="updateSlot(target.id, slot.key)" class="md:opacity-0 group-hover:opacity-100 text-xs px-3 py-1 bg-ror-accent/20 hover:bg-ror-accent/40 rounded text-ror-accent transition-all">
-                登記
-              </button>
-              <span v-else class="text-gray-500 text-sm">未登記</span>
-            </div>
+        <!-- Slots List (1 big box layout) -->
+        <div class="p-4 flex-1 overflow-y-auto">
+          <div class="flex flex-col rounded-xl border border-ror-border/30 bg-black/20 overflow-hidden divide-y divide-white/5">
+            <div v-for="slot in getTargetSlots(target.id)" :key="slot.key" class="flex items-center justify-between p-3 hover:bg-white/5 transition-colors group">
+              
+              <!-- Left: Time -->
+              <div class="w-1/3 text-white font-mono text-sm tracking-tighter">{{ slot.display }}</div>
+              
+              <!-- Middle: Personnel -->
+              <div class="w-1/3 flex items-center justify-center gap-2">
+                <span v-if="getSlotData(target.id, slot.key)?.user_id" class="text-ror-accent text-sm font-medium truncate max-w-[80px]">
+                  {{ getUserName(getSlotData(target.id, slot.key).user_id) }}
+                </span>
+                
+                <!-- Action Buttons -->
+                <div v-if="target.is_active" class="flex items-center">
+                  <button v-if="!getSlotData(target.id, slot.key)?.user_id" 
+                          @click="updateSlot(target.id, slot.key)" 
+                          :disabled="isSlotLocked(target.id, slot.key)"
+                          class="p-1 text-ror-accent hover:bg-ror-accent/20 rounded transition-colors disabled:opacity-30 disabled:cursor-not-allowed" title="登記">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                  </button>
+                  <button v-else-if="canEditStatus(target.id, slot.key)" 
+                          @click="cancelSlot(target.id, slot.key)"
+                          :disabled="isSlotLocked(target.id, slot.key)"
+                          class="p-1 text-ror-accent hover:bg-ror-accent/20 rounded transition-colors disabled:opacity-30 disabled:cursor-not-allowed" title="取消登記">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path></svg>
+                  </button>
+                </div>
+                <span v-else-if="!getSlotData(target.id, slot.key)?.user_id" class="text-gray-500 text-sm">未登記</span>
+              </div>
 
-            <!-- Right: Checkbox -->
-            <div class="w-1/3 flex justify-end items-center">
-              <input type="checkbox" 
-                     :checked="getSlotData(target.id, slot.key)?.completed" 
-                     @change="toggleSlotStatus(target.id, slot.key, $event.target.checked)" 
-                     :disabled="!canEditStatus(target.id, slot.key)" 
-                     class="w-5 h-5 text-ror-accent bg-black/50 border-gray-600 rounded focus:ring-ror-accent focus:ring-offset-black transition-colors"
-                     :class="{ 'opacity-30 cursor-not-allowed': !canEditStatus(target.id, slot.key), 'cursor-pointer hover:border-ror-accent': canEditStatus(target.id, slot.key) }" />
-            </div>
+              <!-- Right: Checkbox -->
+              <div class="w-1/3 flex justify-end items-center">
+                <input type="checkbox" 
+                       :checked="getSlotData(target.id, slot.key)?.completed" 
+                       @change="toggleSlotStatus(target.id, slot.key, $event.target.checked)" 
+                       :disabled="!canEditStatus(target.id, slot.key)" 
+                       class="w-5 h-5 accent-ror-accent bg-black border-2 rounded focus:ring-0 transition-colors"
+                       :class="{ 'opacity-30 cursor-not-allowed border-gray-600': !canEditStatus(target.id, slot.key), 'cursor-pointer hover:bg-ror-accent/20 border-ror-accent': canEditStatus(target.id, slot.key) }" />
+              </div>
 
+            </div>
           </div>
         </div>
       </div>
@@ -458,11 +473,62 @@ const toggleSlotStatus = async (targetId, slotKey, isCompleted) => {
   }
 }
 
+const isSlotLocked = (targetId, slotKey) => {
+  if (isAdmin.value) return false // Admin can always edit
+  
+  const d = getBaseDateObjForTarget(targetId)
+  const isA = slotKey.startsWith('A')
+  if (!isA) {
+    d.setDate(d.getDate() + 1)
+  }
+  
+  // parse end hour from slotKey e.g. A21-24 -> 24
+  const endHour = parseInt(slotKey.split('-')[1])
+  d.setHours(endHour, 0, 0, 0)
+  
+  // If current time is past the end hour, it's locked
+  return new Date() > d
+}
+
+const cancelSlot = async (targetId, slotKey) => {
+  if (!canEditStatus(targetId, slotKey)) return
+  if (isSlotLocked(targetId, slotKey)) {
+    alert("該班次時間已過，無法取消登記。")
+    return
+  }
+
+  const bDate = getBaseDateStringForTarget(targetId)
+  let scheduleIndex = schedules.value.findIndex(s => s.target_id === targetId && s.base_date === bDate)
+  let schedule = scheduleIndex >= 0 ? schedules.value[scheduleIndex] : null
+  
+  if (!schedule || !schedule.slots_data[slotKey]) return
+
+  let newSlotsData = { ...schedule.slots_data }
+  delete newSlotsData[slotKey] // Remove registration entirely
+  
+  schedule.slots_data = newSlotsData // Optimistic
+
+  const { error } = await supabase
+    .from('exchange_schedules')
+    .update({ slots_data: newSlotsData })
+    .eq('target_id', targetId)
+    .eq('base_date', bDate)
+
+  if (error) {
+    alert("取消更新失敗: " + error.message)
+  }
+}
+
 const updateSlot = async (targetId, slotName) => {
   if (!currentUser.value) return
   if (!userProfiles.value[currentUser.value.id]) {
     alert("請先點擊右上角齒輪設定您的交易所名稱！")
     showSettings.value = true
+    return
+  }
+
+  if (isSlotLocked(targetId, slotName)) {
+    alert("該班次時間已過，無法登記。")
     return
   }
 
