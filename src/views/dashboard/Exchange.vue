@@ -83,8 +83,11 @@
               
               <!-- Middle: Personnel -->
               <div class="flex-1 py-1.5 px-3 flex items-center justify-between border-l border-r border-white/5">
-                <div class="flex-1 text-center truncate">
-                  <span v-if="getSlotData(target.id, slot.key)?.user_id" class="text-ror-accent text-sm font-medium">
+                <div class="flex-1 text-center truncate relative group/name">
+                  <span v-if="getSlotData(target.id, slot.key)?.user_id" 
+                        @click="isAdmin ? editSlotName(target.id, slot.key) : null"
+                        :class="['text-sm font-medium', isAdmin ? 'cursor-pointer hover:text-white text-ror-accent' : 'text-ror-accent']"
+                        :title="isAdmin ? '點擊修改名稱' : ''">
                     {{ getUserName(getSlotData(target.id, slot.key).user_id) }}
                   </span>
                   <span v-else-if="!target.is_active || isSlotLocked(target.id, slot.key)" class="text-gray-500 text-sm">未登記</span>
@@ -443,7 +446,7 @@ const getSlotData = (targetId, slotName) => {
 }
 
 const getUserName = (userId) => {
-  return userProfiles.value[userId] || '未知用戶'
+  return userProfiles.value[userId] || userId
 }
 
 const canEditStatus = (targetId, slotKey) => {
@@ -544,46 +547,86 @@ const updateSlot = async (targetId, slotName) => {
     return
   }
 
+  // Admin can input a custom name directly when registering
+  let assignId = currentUser.value.id;
+  if (isAdmin.value) {
+    const customName = window.prompt("管理員登記：請輸入要指派的人員名稱 (留空則預設登記自己)");
+    if (customName !== null && customName.trim() !== "") {
+      assignId = customName.trim();
+    } else if (customName === null) {
+      return; // Cancelled
+    }
+  }
+
   const bDate = getBaseDateStringForTarget(targetId)
   // Find or create schedule in local state
   let scheduleIndex = schedules.value.findIndex(s => s.target_id === targetId && s.base_date === bDate)
   let schedule = scheduleIndex >= 0 ? schedules.value[scheduleIndex] : null
   
-  let newSlotsData = schedule ? { ...schedule.slots_data } : {}
-  newSlotsData[slotName] = {
-    user_id: currentUser.value.id,
-    status: '📈',
-    completed: false,
-    updated_at: new Date().toISOString()
-  }
-
-  // Optimistic UI update
-  if (schedule) {
-    schedule.slots_data = newSlotsData
-  } else {
+  if (!schedule) {
     schedule = {
       target_id: targetId,
       base_date: bDate,
-      slots_data: newSlotsData,
+      slots_data: {},
       duty_officer: ''
     }
     schedules.value.push(schedule)
   }
 
-  // Upsert to Supabase
+  let newSlotsData = { ...schedule.slots_data }
+  newSlotsData[slotName] = {
+    user_id: assignId,
+    status: '📈',
+    completed: false,
+    updated_at: new Date().toISOString()
+  }
+  schedule.slots_data = newSlotsData // Optimistic UI update
+
   const { error } = await supabase
     .from('exchange_schedules')
     .upsert({
       target_id: targetId,
       base_date: bDate,
       slots_data: newSlotsData,
-      duty_officer: schedule ? schedule.duty_officer : '',
+      duty_officer: schedule.duty_officer,
       updated_at: new Date().toISOString()
     }, { onConflict: 'target_id,base_date' })
 
   if (error) {
-    console.error("更新失敗", error)
-    alert("紀錄更新失敗: " + error.message)
+    alert("登記失敗: " + error.message)
+    // Revert would go here in a robust app
+  }
+}
+
+const editSlotName = async (targetId, slotKey) => {
+  if (!isAdmin.value) return;
+  
+  const bDate = getBaseDateStringForTarget(targetId);
+  const schedule = schedules.value.find(s => s.target_id === targetId && s.base_date === bDate);
+  if (!schedule || !schedule.slots_data[slotKey]) return;
+  
+  const currentName = getUserName(schedule.slots_data[slotKey].user_id);
+  const newName = window.prompt("修改班次人員名稱：", currentName);
+  
+  if (newName !== null && newName.trim() !== "" && newName !== currentName) {
+    let newSlotsData = { ...schedule.slots_data };
+    newSlotsData[slotKey] = {
+      ...newSlotsData[slotKey],
+      user_id: newName.trim(),
+      updated_at: new Date().toISOString()
+    };
+    
+    schedule.slots_data = newSlotsData; // Optimistic
+    
+    const { error } = await supabase
+      .from('exchange_schedules')
+      .update({ slots_data: newSlotsData })
+      .eq('target_id', targetId)
+      .eq('base_date', bDate);
+      
+    if (error) {
+      alert("修改名稱失敗: " + error.message);
+    }
   }
 }
 
