@@ -36,28 +36,32 @@
           
           <!-- Top Row: Title + Date Switcher + Toggle -->
           <div class="flex justify-between items-start">
-            <div class="flex flex-col gap-2 flex-1">
+            <div class="flex flex-col gap-2 flex-1 overflow-hidden">
               <div class="flex items-center gap-3">
-                <h2 class="text-xl font-bold text-white">{{ target.name }}</h2>
+                <h2 class="text-xl font-bold text-white truncate max-w-full" :title="target.name">{{ target.name }}</h2>
+              </div>
+              
+              <!-- Duty Officer Row & Date Switcher -->
+              <div class="flex items-center flex-wrap gap-4 mt-1">
+                <div class="flex items-center gap-2">
+                  <span class="text-sm text-ror-muted font-medium flex-shrink-0">值班人員</span>
+                  <select v-if="isAdmin" :value="getDutyOfficer(target.id)" @change="updateDutyOfficer(target.id, $event.target.value)" class="bg-black/50 border border-ror-border rounded px-2 py-1 text-sm text-white focus:outline-none focus:border-ror-accent">
+                    <option value="">未指派</option>
+                    <option v-for="(name, id) in userProfiles" :key="id" :value="id">{{ name }}</option>
+                  </select>
+                  <span v-else class="text-white text-sm font-medium truncate max-w-[100px]">{{ getDutyOfficerName(target.id) || '未指派' }}</span>
+                </div>
+                
+                <!-- Date Switcher -->
                 <div class="flex items-center gap-1 bg-black/40 border border-ror-border/50 rounded-lg px-2 py-1">
-                  <button @click="changeTargetDate(target.id, -1)" class="p-1 rounded hover:bg-white/10 text-ror-muted transition-colors">
+                  <button @click="changeTargetDate(target.id, -1)" class="p-1 rounded hover:bg-white/10 text-ror-accent transition-colors">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                   </button>
                   <span class="text-white text-xs font-medium w-10 text-center">{{ getTargetDateLabel(target.id) }}</span>
-                  <button @click="changeTargetDate(target.id, 1)" :disabled="getTargetOffset(target.id) === 0" class="p-1 rounded hover:bg-white/10 text-ror-muted transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
+                  <button @click="changeTargetDate(target.id, 1)" :disabled="getTargetOffset(target.id) === 0" class="p-1 rounded hover:bg-white/10 text-ror-accent transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                   </button>
                 </div>
-              </div>
-              
-              <!-- Duty Officer Row -->
-              <div class="flex items-center gap-2 mt-1">
-                <span class="text-sm text-ror-muted font-medium">值班人員</span>
-                <select v-if="isAdmin" :value="getDutyOfficer(target.id)" @change="updateDutyOfficer(target.id, $event.target.value)" class="bg-black/50 border border-ror-border rounded px-2 py-1 text-sm text-white focus:outline-none focus:border-ror-accent">
-                  <option value="">未指派</option>
-                  <option v-for="(name, id) in userProfiles" :key="id" :value="id">{{ name }}</option>
-                </select>
-                <span v-else class="text-white text-sm font-medium">{{ getDutyOfficerName(target.id) || '未指派' }}</span>
               </div>
             </div>
 
@@ -72,37 +76,40 @@
         <!-- Slots List (1 big box layout) -->
         <div class="p-4 flex-1 overflow-y-auto">
           <div class="flex flex-col rounded-xl border border-ror-border/30 bg-black/20 overflow-hidden divide-y divide-white/5">
-            <div v-for="slot in getTargetSlots(target.id)" :key="slot.key" class="flex items-center justify-between p-3 hover:bg-white/5 transition-colors group">
+            <div v-for="slot in getTargetSlots(target.id)" :key="slot.key" class="flex items-stretch p-0 hover:bg-white/5 transition-colors group">
               
               <!-- Left: Time -->
-              <div class="w-1/3 text-white font-mono text-sm tracking-tighter">{{ slot.display }}</div>
+              <div class="w-1/3 p-3 flex items-center text-white font-mono text-[13px] tracking-tighter">{{ slot.display }}</div>
               
               <!-- Middle: Personnel -->
-              <div class="w-1/3 flex items-center justify-center gap-2">
-                <span v-if="getSlotData(target.id, slot.key)?.user_id" class="text-ror-accent text-sm font-medium truncate max-w-[80px]">
-                  {{ getUserName(getSlotData(target.id, slot.key).user_id) }}
-                </span>
+              <div class="w-1/3 p-3 flex items-center justify-between border-l border-r border-white/5">
+                <div class="flex-1 text-center truncate">
+                  <span v-if="getSlotData(target.id, slot.key)?.user_id" class="text-ror-accent text-sm font-medium">
+                    {{ getUserName(getSlotData(target.id, slot.key).user_id) }}
+                  </span>
+                  <span v-else-if="!target.is_active || isSlotLocked(target.id, slot.key)" class="text-gray-500 text-sm">未登記</span>
+                  <span v-else class="text-gray-500 text-sm invisible">未登記</span> <!-- Space preservation -->
+                </div>
                 
                 <!-- Action Buttons -->
-                <div v-if="target.is_active" class="flex items-center">
+                <div v-if="target.is_active" class="flex-shrink-0 flex items-center ml-1 w-6 justify-center">
                   <button v-if="!getSlotData(target.id, slot.key)?.user_id" 
                           @click="updateSlot(target.id, slot.key)" 
                           :disabled="isSlotLocked(target.id, slot.key)"
-                          class="p-1 text-ror-accent hover:bg-ror-accent/20 rounded transition-colors disabled:opacity-30 disabled:cursor-not-allowed" title="登記">
+                          class="text-ror-accent hover:text-white transition-colors disabled:opacity-30 disabled:cursor-not-allowed" title="登記">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                   </button>
                   <button v-else-if="canEditStatus(target.id, slot.key)" 
                           @click="cancelSlot(target.id, slot.key)"
                           :disabled="isSlotLocked(target.id, slot.key)"
-                          class="p-1 text-ror-accent hover:bg-ror-accent/20 rounded transition-colors disabled:opacity-30 disabled:cursor-not-allowed" title="取消登記">
+                          class="text-ror-accent hover:text-white transition-colors disabled:opacity-30 disabled:cursor-not-allowed" title="取消登記">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path></svg>
                   </button>
                 </div>
-                <span v-else-if="!getSlotData(target.id, slot.key)?.user_id" class="text-gray-500 text-sm">未登記</span>
               </div>
 
               <!-- Right: Checkbox -->
-              <div class="w-1/3 flex justify-end items-center">
+              <div class="w-1/3 p-3 flex justify-end items-center">
                 <input type="checkbox" 
                        :checked="getSlotData(target.id, slot.key)?.completed" 
                        @change="toggleSlotStatus(target.id, slot.key, $event.target.checked)" 
