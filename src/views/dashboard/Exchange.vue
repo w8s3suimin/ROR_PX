@@ -20,23 +20,6 @@
       </div>
     </div>
 
-    <!-- Date Info -->
-    <div class="bg-white/5 border border-ror-border rounded-xl p-4 flex items-center justify-between">
-      <div class="text-sm">
-        <span class="text-ror-muted">A: </span><span class="text-white font-medium mr-4">{{ dateAFormatted }}</span>
-        <span class="text-ror-muted">B: </span><span class="text-white font-medium">{{ dateBFormatted }}</span>
-      </div>
-      <div class="flex items-center gap-2">
-        <button @click="changeDate(-1)" class="p-1 rounded bg-white/5 hover:bg-white/10 text-ror-muted transition-colors">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-        </button>
-        <span class="text-white font-medium min-w-[3rem] text-center">{{ dateOffset === 0 ? '今日' : `${Math.abs(dateOffset)}天前` }}</span>
-        <button @click="changeDate(1)" :disabled="dateOffset === 0" class="p-1 rounded bg-white/5 hover:bg-white/10 text-ror-muted transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-        </button>
-      </div>
-    </div>
-
     <!-- Loading State -->
     <div v-if="loading" class="flex justify-center py-12">
       <div class="w-10 h-10 border-4 border-ror-accent/30 border-t-ror-accent rounded-full animate-spin"></div>
@@ -48,17 +31,31 @@
            class="relative rounded-2xl border transition-all duration-300 overflow-hidden flex flex-col"
            :class="target.is_active ? 'bg-ror-card border-ror-border hover:border-ror-accent/30 shadow-lg' : 'bg-black/60 border-black/80 opacity-70 grayscale'">
         
-        <!-- Card Header -->
-        <div class="p-4 border-b border-ror-border/50 flex justify-between items-center" :class="target.is_active ? 'bg-white/5' : 'bg-black/40'">
-          <h2 class="text-xl font-bold text-white">{{ target.name }}</h2>
-          <div class="flex items-center gap-2">
-            <span class="text-sm px-3 py-1 rounded-full" :class="target.is_active ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'">
-              {{ target.is_active ? '啟用中' : '已停用' }}
-            </span>
-            <button v-if="isAdmin" @click="toggleTarget(target)" class="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-ror-muted transition-colors">
-              <svg v-if="target.is_active" class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path></svg>
-              <svg v-else class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-            </button>
+        <!-- Card Header with Independent Date Switcher -->
+        <div class="p-3 border-b border-ror-border/50 flex flex-col gap-2" :class="target.is_active ? 'bg-white/5' : 'bg-black/40'">
+          <div class="flex justify-between items-center">
+            <h2 class="text-lg font-bold text-white flex items-center gap-2">
+              {{ target.name }}
+              <span v-if="isAdmin" class="text-[10px] px-1.5 py-0.5 rounded-full" :class="target.is_active ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'">
+                {{ target.is_active ? '啟用' : '停用' }}
+              </span>
+            </h2>
+            <div class="flex items-center gap-1">
+              <button @click="changeTargetDate(target.id, -1)" class="p-1 rounded bg-white/5 hover:bg-white/10 text-ror-muted transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+              </button>
+              <span class="text-white text-xs font-medium w-10 text-center">{{ getTargetDateLabel(target.id) }}</span>
+              <button @click="changeTargetDate(target.id, 1)" :disabled="getTargetOffset(target.id) === 0" class="p-1 rounded bg-white/5 hover:bg-white/10 text-ror-muted transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+              </button>
+            </div>
+          </div>
+          <!-- Admin Toggle -->
+          <div v-if="isAdmin" class="flex justify-end">
+             <button @click="toggleTarget(target)" class="p-1 rounded bg-white/5 hover:bg-white/10 text-ror-muted transition-colors" title="啟用/停用標的">
+                <svg v-if="target.is_active" class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path></svg>
+                <svg v-else class="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+             </button>
           </div>
         </div>
 
@@ -73,16 +70,16 @@
 
         <!-- Slots Grid -->
         <div class="p-4 grid grid-cols-2 gap-3 flex-1">
-          <div v-for="slot in timeSlots" :key="slot" class="flex flex-col p-2 rounded-lg bg-black/40 border border-ror-border/30 hover:border-ror-accent/50 transition-colors group relative justify-between">
-            <div class="flex justify-between items-center text-xs mb-1">
-              <span class="text-white font-bold tracking-wide">{{ slot }}</span>
-              <span class="text-ror-muted">{{ getSlotData(target.id, slot)?.status || '-' }}</span>
+          <div v-for="slot in getTargetSlots(target.id)" :key="slot.key" class="flex flex-col p-2 rounded-lg bg-black/40 border border-ror-border/30 hover:border-ror-accent/50 transition-colors group relative justify-between">
+            <div class="flex justify-between items-center text-[11px] mb-1">
+              <span class="text-white font-mono tracking-tighter whitespace-nowrap">{{ slot.display }}</span>
+              <span class="text-ror-muted ml-1">{{ getSlotData(target.id, slot.key)?.status || '-' }}</span>
             </div>
             <div class="flex justify-between items-end">
-              <span class="text-sm font-medium truncate max-w-[4.5rem]" :class="getSlotData(target.id, slot)?.user_id ? 'text-ror-accent' : 'text-gray-500'">
-                {{ getSlotData(target.id, slot)?.user_id ? getUserName(getSlotData(target.id, slot).user_id) : '未登記' }}
+              <span class="text-sm font-medium truncate max-w-[4.5rem]" :class="getSlotData(target.id, slot.key)?.user_id ? 'text-ror-accent' : 'text-gray-500'">
+                {{ getSlotData(target.id, slot.key)?.user_id ? getUserName(getSlotData(target.id, slot.key).user_id) : '未登記' }}
               </span>
-              <button v-if="target.is_active" @click="updateSlot(target.id, slot)" class="md:opacity-0 group-hover:opacity-100 text-xs px-2 py-0.5 bg-ror-accent/20 hover:bg-ror-accent/40 rounded text-ror-accent transition-all">
+              <button v-if="target.is_active" @click="updateSlot(target.id, slot.key)" class="md:opacity-0 group-hover:opacity-100 text-[10px] px-1.5 py-0.5 bg-ror-accent/20 hover:bg-ror-accent/40 rounded text-ror-accent transition-all flex-shrink-0">
                 登記
               </button>
             </div>
@@ -141,7 +138,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted } from 'vue'
 import { supabase } from '../../utils/supabase'
 
 const loading = ref(true)
@@ -159,36 +156,54 @@ const showAddTarget = ref(false)
 const newTargetName = ref('')
 const savingTarget = ref(false)
 
-const dateOffset = ref(0) // 0 = current cycle (Yesterday/Today), -1 = previous cycle, etc.
+// Independent date tracking per target
+const targetDates = ref({}) // { target_id: offset_integer }
 
-const getBaseDateObj = () => {
+const getTargetOffset = (targetId) => targetDates.value[targetId] || 0
+
+const changeTargetDate = (targetId, delta) => {
+  const current = getTargetOffset(targetId)
+  if (current + delta > 0) return
+  targetDates.value[targetId] = current + delta
+  fetchSchedulesForTarget(targetId)
+}
+
+const getBaseDateObjForTarget = (targetId) => {
   const d = new Date()
-  d.setDate(d.getDate() - 1 + dateOffset.value)
+  d.setDate(d.getDate() - 1 + getTargetOffset(targetId))
   return d
 }
 
-const getBaseDateString = () => {
-  const d = getBaseDateObj()
+const getBaseDateStringForTarget = (targetId) => {
+  const d = getBaseDateObjForTarget(targetId)
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 }
 
-const dateAFormatted = computed(() => {
-  const d = getBaseDateObj()
-  return `${d.getMonth() + 1}/${d.getDate()}`
-})
+const getTargetDateLabel = (targetId) => {
+  const offset = getTargetOffset(targetId)
+  return offset === 0 ? '今日' : `${Math.abs(offset)}天前`
+}
 
-const dateBFormatted = computed(() => {
-  const d = getBaseDateObj()
-  d.setDate(d.getDate() + 1)
-  return `${d.getMonth() + 1}/${d.getDate()}`
-})
-
-const baseDate = computed(() => getBaseDateString())
-
-const changeDate = (delta) => {
-  if (dateOffset.value + delta > 0) return // Don't go into the future
-  dateOffset.value += delta
-  fetchSchedules() // refetch schedules for new date
+const getTargetSlots = (targetId) => {
+  const d = getBaseDateObjForTarget(targetId)
+  const monthA = d.getMonth() + 1
+  const dateA = d.getDate()
+  
+  const dB = new Date(d)
+  dB.setDate(dB.getDate() + 1)
+  const monthB = dB.getMonth() + 1
+  const dateB = dB.getDate()
+  
+  return [
+    { key: 'A21-24', display: `${monthA}/${dateA} 21-24` },
+    { key: 'B00-06', display: `${monthB}/${dateB} 00-06` },
+    { key: 'B06-09', display: `${monthB}/${dateB} 06-09` },
+    { key: 'B09-12', display: `${monthB}/${dateB} 09-12` },
+    { key: 'B12-15', display: `${monthB}/${dateB} 12-15` },
+    { key: 'B15-18', display: `${monthB}/${dateB} 15-18` },
+    { key: 'B18-21', display: `${monthB}/${dateB} 18-21` },
+    { key: 'B21-24', display: `${monthB}/${dateB} 21-24` }
+  ]
 }
 
 const fetchProfiles = async () => {
@@ -234,22 +249,46 @@ const fetchData = async () => {
     targetQuery = targetQuery.eq('is_active', true)
   }
   const { data: tData } = await targetQuery
-  if (tData) targets.value = tData
+  if (tData) {
+    targets.value = tData
+  }
 
-  await fetchSchedules()
+  // Fetch schedules for all targets at offset 0
+  await fetchAllSchedulesAtOffsetZero()
+  
   loading.value = false
 }
 
-const fetchSchedules = async () => {
+const fetchAllSchedulesAtOffsetZero = async () => {
+  const d = new Date()
+  d.setDate(d.getDate() - 1) // Base date for offset 0
+  const defaultBaseDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+  
   const { data: sData } = await supabase
     .from('exchange_schedules')
     .select('*')
-    .eq('base_date', baseDate.value)
+    .eq('base_date', defaultBaseDate)
     
   if (sData) {
     schedules.value = sData
   } else {
     schedules.value = []
+  }
+}
+
+const fetchSchedulesForTarget = async (targetId) => {
+  const bDate = getBaseDateStringForTarget(targetId)
+  const { data } = await supabase
+    .from('exchange_schedules')
+    .select('*')
+    .eq('target_id', targetId)
+    .eq('base_date', bDate)
+    .maybeSingle()
+    
+  // Remove existing schedule for this target from local state
+  schedules.value = schedules.value.filter(s => s.target_id !== targetId)
+  if (data) {
+    schedules.value.push(data)
   }
 }
 
@@ -288,6 +327,7 @@ const addTarget = async () => {
     targets.value.push(data[0])
     showAddTarget.value = false
     newTargetName.value = ''
+    targetDates.value[data[0].id] = 0
   } else if (error) {
     alert('新增失敗: ' + error.message)
   }
@@ -315,6 +355,7 @@ const getDutyOfficer = (targetId) => {
 }
 
 const updateDutyOfficer = async (targetId, value) => {
+  const bDate = getBaseDateStringForTarget(targetId)
   let scheduleIndex = schedules.value.findIndex(s => s.target_id === targetId)
   let schedule = scheduleIndex >= 0 ? schedules.value[scheduleIndex] : null
   
@@ -323,7 +364,7 @@ const updateDutyOfficer = async (targetId, value) => {
   } else {
     schedule = {
       target_id: targetId,
-      base_date: baseDate.value,
+      base_date: bDate,
       slots_data: {},
       duty_officer: value
     }
@@ -334,7 +375,7 @@ const updateDutyOfficer = async (targetId, value) => {
     .from('exchange_schedules')
     .upsert({
       target_id: targetId,
-      base_date: baseDate.value,
+      base_date: bDate,
       slots_data: schedule.slots_data,
       duty_officer: value,
       updated_at: new Date().toISOString()
@@ -364,6 +405,7 @@ const updateSlot = async (targetId, slotName) => {
     return
   }
 
+  const bDate = getBaseDateStringForTarget(targetId)
   // Find or create schedule in local state
   let scheduleIndex = schedules.value.findIndex(s => s.target_id === targetId)
   let schedule = scheduleIndex >= 0 ? schedules.value[scheduleIndex] : null
@@ -381,7 +423,7 @@ const updateSlot = async (targetId, slotName) => {
   } else {
     schedule = {
       target_id: targetId,
-      base_date: baseDate.value,
+      base_date: bDate,
       slots_data: newSlotsData
     }
     schedules.value.push(schedule)
@@ -392,7 +434,7 @@ const updateSlot = async (targetId, slotName) => {
     .from('exchange_schedules')
     .upsert({
       target_id: targetId,
-      base_date: baseDate.value,
+      base_date: bDate,
       slots_data: newSlotsData,
       updated_at: new Date().toISOString()
     }, { onConflict: 'target_id,base_date' })
@@ -400,7 +442,6 @@ const updateSlot = async (targetId, slotName) => {
   if (error) {
     console.error("更新失敗", error)
     alert("紀錄更新失敗: " + error.message)
-    // Real app might want to revert the optimistic update here
   }
 }
 
