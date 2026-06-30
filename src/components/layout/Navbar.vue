@@ -42,6 +42,7 @@
           <span class="text-yellow-400 font-bold text-sm ml-1">{{ userPxp }} PXP</span>
         </div>
 
+        <!-- Dashboard Only Mobile Sidebar Toggle (Left Sidebar) -->
         <button 
           v-if="$route.path.startsWith('/dashboard')"
           @click="toggleMobileSidebar"
@@ -51,14 +52,6 @@
           管理中心
         </button>
         <router-link 
-          v-if="!$route.path.startsWith('/dashboard')"
-          to="/dashboard" 
-          class="bg-ror-accent text-black px-4 py-2 rounded-lg text-sm font-bold hover:bg-ror-accent-hover transition-colors shadow-[0_0_15px_rgba(255,204,0,0.3)]"
-        >
-          管理中心
-        </router-link>
-        <router-link 
-          v-if="$route.path.startsWith('/dashboard')"
           to="/dashboard" 
           class="hidden md:flex bg-ror-accent text-black px-4 py-2 rounded-lg text-sm font-bold hover:bg-ror-accent-hover transition-colors shadow-[0_0_15px_rgba(255,204,0,0.3)]"
         >
@@ -68,12 +61,76 @@
       <router-link 
         v-else 
         to="/login" 
-        class="border border-ror-border text-white px-4 py-2 rounded-lg text-sm font-bold hover:border-ror-accent hover:text-ror-accent transition-colors"
+        class="hidden md:flex border border-ror-border text-white px-4 py-2 rounded-lg text-sm font-bold hover:border-ror-accent hover:text-ror-accent transition-colors"
       >
         登入系統
       </router-link>
+
+      <!-- Right Sidebar Toggle for Mobile Navigation -->
+      <button 
+        @click="mobileRightSidebarOpen = true"
+        class="md:hidden p-2 bg-black border border-white text-white rounded-lg flex items-center justify-center transition-colors hover:bg-gray-800"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+      </button>
     </div>
   </header>
+
+  <!-- Mobile Right Sidebar Backdrop -->
+  <div 
+    v-if="mobileRightSidebarOpen" 
+    class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] md:hidden"
+    @click="mobileRightSidebarOpen = false"
+  ></div>
+
+  <!-- Mobile Right Sidebar -->
+  <div 
+    class="fixed top-0 right-0 h-full w-64 bg-black border-l border-ror-border z-[101] transform transition-transform duration-300 md:hidden flex flex-col"
+    :class="mobileRightSidebarOpen ? 'translate-x-0' : 'translate-x-full'"
+  >
+    <!-- Sidebar Header -->
+    <div class="h-16 flex items-center justify-between px-4 border-b border-ror-border">
+      <span class="font-bold text-white">選單</span>
+      <button @click="mobileRightSidebarOpen = false" class="p-2 text-white hover:text-gray-300">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+      </button>
+    </div>
+
+    <!-- Navigation Links -->
+    <nav class="flex-1 overflow-y-auto py-6 px-4 flex flex-col gap-6">
+      <router-link to="/" @click="mobileRightSidebarOpen = false" class="text-white hover:text-ror-accent transition-colors font-medium text-lg">首頁</router-link>
+      <router-link to="/docs" @click="mobileRightSidebarOpen = false" class="text-white hover:text-ror-accent transition-colors font-medium text-lg">互動說明書</router-link>
+      <router-link to="/pricing" @click="mobileRightSidebarOpen = false" class="text-white hover:text-ror-accent transition-colors font-medium text-lg">方案定價</router-link>
+      <router-link to="/download" @click="mobileRightSidebarOpen = false" class="text-white hover:text-ror-accent transition-colors font-medium text-lg">下載與更新</router-link>
+      
+      <div v-if="isLoggedIn" class="mt-4 pt-4 border-t border-gray-800 flex flex-col gap-2">
+        <span class="text-white text-sm font-medium">帳戶: {{ userEmail }}</span>
+        <span class="text-yellow-400 font-bold text-sm">點數: {{ userPxp }} PXP</span>
+      </div>
+    </nav>
+
+    <!-- Bottom Actions -->
+    <div class="p-4 border-t border-ror-border">
+      <template v-if="isLoggedIn">
+        <router-link 
+          to="/dashboard" 
+          @click="mobileRightSidebarOpen = false"
+          class="w-full flex justify-center bg-ror-accent text-black px-4 py-3 rounded-lg text-sm font-bold hover:bg-ror-accent-hover transition-colors shadow-[0_0_15px_rgba(255,204,0,0.3)]"
+        >
+          管理中心
+        </router-link>
+      </template>
+      <template v-else>
+        <router-link 
+          to="/login" 
+          @click="mobileRightSidebarOpen = false"
+          class="w-full flex justify-center border border-ror-border text-white px-4 py-3 rounded-lg text-sm font-bold hover:border-ror-accent hover:text-ror-accent transition-colors"
+        >
+          登入系統
+        </router-link>
+      </template>
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -91,6 +148,7 @@ const viewAsAdmin = computed({
 const isLoggedIn = ref(false)
 const userEmail = ref('')
 const userPxp = ref(0)
+const mobileRightSidebarOpen = ref(false)
 const route = useRoute()
 
 const toggleMobileSidebar = () => {
