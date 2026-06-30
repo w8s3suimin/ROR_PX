@@ -228,8 +228,9 @@
           <button @click="extendModal.show = false" class="px-4 py-2 rounded-lg border border-white/10 text-ror-muted hover:text-white hover:bg-white/5 transition-colors text-sm font-medium">
             取消
           </button>
-          <button class="px-4 py-2 rounded-lg bg-blue-500 text-white font-bold hover:bg-blue-400 transition-colors disabled:opacity-50 text-sm flex items-center justify-center min-w-[100px]" :disabled="userPxp < calculatedCost || (extendModal.addCycles === 0 && extendModal.targetDevices === extendModal.currentDevices)">
-            確認扣款並展延
+          <button @click="confirmExtend" :disabled="isExtending || userPxp < calculatedCost || (extendModal.addCycles === 0 && extendModal.targetDevices === extendModal.currentDevices)" class="px-4 py-2 rounded-lg bg-blue-500 text-white font-bold hover:bg-blue-400 transition-colors disabled:opacity-50 text-sm flex items-center justify-center min-w-[100px]">
+            <svg v-if="isExtending" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+            {{ isExtending ? '處理中...' : '確認扣款並展延' }}
           </button>
         </div>
       </div>
@@ -314,6 +315,42 @@ const extendModal = ref({
   currentExpiration: null,
   currentExpirationFormatted: '',
 })
+const isExtending = ref(false)
+
+const confirmExtend = async () => {
+  if (isExtending.value) return
+  isExtending.value = true
+
+  try {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
+      alert('請先登入')
+      return
+    }
+
+    const { data, error } = await supabase.rpc('user_extend_license', {
+      p_code: licenses.value[extendModal.value.planType].code,
+      p_add_cycles: extendModal.value.addCycles,
+      p_add_devices: extendModal.value.targetDevices - extendModal.value.currentDevices
+    })
+
+    if (error) {
+      alert('擴充失敗：' + error.message)
+    } else if (data && data.success) {
+      // 擴充成功，更新本地狀態
+      alert('擴充成功！')
+      extendModal.value.show = false
+      await fetchUserData() // 重新獲取資料與點數
+    } else {
+      alert('擴充失敗：' + (data?.message || '未知錯誤'))
+    }
+  } catch (e) {
+    console.error('Error extending license:', e)
+    alert('發生錯誤，請稍後再試')
+  } finally {
+    isExtending.value = false
+  }
+}
 
 const openExtendModal = () => {
   const planType = selectedTab.value
