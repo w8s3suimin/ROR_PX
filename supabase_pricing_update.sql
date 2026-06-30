@@ -131,8 +131,7 @@ CREATE OR REPLACE FUNCTION public.admin_update_license(
     p_code TEXT,
     p_user_email TEXT, -- 若有值則嘗試綁定到該信箱的帳戶
     p_expires_at TIMESTAMP WITH TIME ZONE,
-    p_allowed_devices INTEGER,
-    p_add_days INTEGER DEFAULT NULL
+    p_allowed_devices INTEGER
 ) RETURNS jsonb
 LANGUAGE plpgsql
 SECURITY DEFINER
@@ -140,7 +139,6 @@ AS $$
 DECLARE
     v_target_user_id UUID := NULL;
     v_license_record RECORD;
-    v_new_expires_at TIMESTAMP WITH TIME ZONE;
 BEGIN
     IF NOT public.is_admin() THEN
         RETURN json_build_object('success', false, 'message', '權限不足');
@@ -162,24 +160,10 @@ BEGIN
         v_target_user_id := v_license_record.user_id;
     END IF;
 
-    -- 計算到期日
-    IF p_add_days IS NOT NULL THEN
-        IF v_license_record.expires_at > now() THEN
-            -- 尚未到期，從原到期日往後加
-            v_new_expires_at := v_license_record.expires_at + (p_add_days || ' days')::interval;
-        ELSE
-            -- 已到期或原本沒有到期日，從現在起算
-            v_new_expires_at := now() + (p_add_days || ' days')::interval;
-        END IF;
-    ELSE
-        -- 若沒有指定增加天數，則套用指定絕對時間，或者保留原本時間
-        v_new_expires_at := COALESCE(p_expires_at, v_license_record.expires_at);
-    END IF;
-
     UPDATE public.authorization_codes 
     SET 
         user_id = v_target_user_id,
-        expires_at = v_new_expires_at,
+        expires_at = COALESCE(p_expires_at, expires_at),
         allowed_devices = COALESCE(p_allowed_devices, allowed_devices),
         updated_at = now()
     WHERE code = p_code;

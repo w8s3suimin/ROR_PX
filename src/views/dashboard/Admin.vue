@@ -54,7 +54,12 @@
           <div class="space-y-4">
             <div>
               <label class="block text-sm text-ror-muted mb-1">授權碼 (必填)</label>
-              <input type="text" v-model="updateCode" placeholder="請輸入欲修改的授權碼..." class="w-full bg-[#1a1a1a] border border-white/10 rounded-lg px-3 py-2 text-white font-mono focus:outline-none focus:border-ror-accent">
+              <div class="flex gap-2">
+                <input type="text" v-model="updateCode" placeholder="請輸入欲修改的授權碼..." class="flex-1 w-full bg-[#1a1a1a] border border-white/10 rounded-lg px-3 py-2 text-white font-mono focus:outline-none focus:border-ror-accent">
+                <button @click="verifyCode" :disabled="isValidating" class="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg transition-colors whitespace-nowrap disabled:opacity-50">
+                  {{ isValidating ? '驗證中...' : '驗證' }}
+                </button>
+              </div>
             </div>
             <div>
               <label class="block text-sm text-ror-muted mb-1">綁定至使用者信箱 (選填)</label>
@@ -64,7 +69,7 @@
               <div>
                 <label class="block text-sm text-ror-muted mb-1">重新指定到期日 (選填)</label>
                 <div class="flex flex-col gap-2">
-                  <input type="date" v-model="updateExpireDate" class="w-full bg-[#1a1a1a] border border-white/10 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-ror-accent">
+                  <input type="datetime-local" step="1" v-model="updateExpireDate" class="w-full bg-[#1a1a1a] border border-white/10 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-ror-accent">
                   <div class="flex gap-2">
                     <button @click="quickAddDays(30)" class="flex-1 bg-white/10 hover:bg-white/20 text-xs py-1 rounded transition-colors">+月</button>
                     <button @click="quickAddDays(7)" class="flex-1 bg-white/10 hover:bg-white/20 text-xs py-1 rounded transition-colors">+周</button>
@@ -172,38 +177,73 @@ const updateEmail = ref('')
 const updateExpireDate = ref('')
 const updateDevices = ref('')
 const isUpdating = ref(false)
+const isValidating = ref(false)
 
-const quickAddDays = async (days) => {
+const formatDatetimeLocal = (date) => {
+  const pad = (n) => n.toString().padStart(2, '0')
+  const YYYY = date.getFullYear()
+  const MM = pad(date.getMonth() + 1)
+  const DD = pad(date.getDate())
+  const hh = pad(date.getHours())
+  const mm = pad(date.getMinutes())
+  const ss = pad(date.getSeconds())
+  return `${YYYY}-${MM}-${DD}T${hh}:${mm}:${ss}`
+}
+
+const verifyCode = async () => {
   if (!updateCode.value) {
-    alert('請先輸入欲展延的授權碼');
-    return;
+    alert('請輸入授權碼'); return;
   }
-  isUpdating.value = true;
+  isValidating.value = true;
   try {
-    const { data, error } = await supabase.rpc('admin_update_license', {
-      p_code: updateCode.value,
-      p_user_email: updateEmail.value || null,
-      p_expires_at: null,
-      p_allowed_devices: updateDevices.value ? parseInt(updateDevices.value) : null,
-      p_add_days: days
-    });
-    
-    if (error) throw error;
-    if (!data.success) {
-      alert(data.message);
-    } else {
-      alert(`成功展延 ${days} 天！`);
-      updateCode.value = '';
-      updateEmail.value = '';
-      updateExpireDate.value = '';
-      updateDevices.value = '';
+    const { data: license, error } = await supabase
+      .from('authorization_codes')
+      .select(`
+        *,
+        profiles ( email )
+      `)
+      .eq('code', updateCode.value)
+      .single()
+      
+    if (error || !license) {
+      alert('找不到該授權碼');
+      return;
     }
-  } catch (err) {
-    console.error(err);
-    alert('更新失敗');
+    
+    updateEmail.value = license.profiles ? license.profiles.email : '';
+    updateDevices.value = license.allowed_devices;
+    
+    if (license.expires_at) {
+      updateExpireDate.value = formatDatetimeLocal(new Date(license.expires_at));
+    } else {
+      updateExpireDate.value = '';
+    }
+  } catch(e) {
+    console.error(e)
+    alert('驗證發生錯誤')
   } finally {
-    isUpdating.value = false;
+    isValidating.value = false;
   }
+}
+
+const quickAddDays = (days) => {
+  let baseDate;
+  if (updateExpireDate.value) {
+    baseDate = new Date(updateExpireDate.value);
+    // 如果已經到期，改由當前時間起算
+    if (baseDate.getTime() < Date.now()) {
+      baseDate = new Date();
+    }
+  } else {
+    // 若沒有到期日，從現在起算
+    baseDate = new Date();
+  }
+  
+  // 加上天數
+  baseDate.setDate(baseDate.getDate() + days);
+  
+  // 更新前端的輸入框，精準到秒
+  updateExpireDate.value = formatDatetimeLocal(baseDate);
 }
 
 const updateAdminLicense = async () => {
@@ -216,7 +256,6 @@ const updateAdminLicense = async () => {
   try {
     let expiresAtStr = null;
     if (updateExpireDate.value) {
-      // 轉成 ISO 時間字串
       expiresAtStr = new Date(updateExpireDate.value).toISOString();
     }
     
@@ -224,8 +263,7 @@ const updateAdminLicense = async () => {
       p_code: updateCode.value,
       p_user_email: updateEmail.value || null,
       p_expires_at: expiresAtStr,
-      p_allowed_devices: updateDevices.value ? parseInt(updateDevices.value) : null,
-      p_add_days: null
+      p_allowed_devices: updateDevices.value ? parseInt(updateDevices.value) : null
     });
     
     if (error) throw error;
