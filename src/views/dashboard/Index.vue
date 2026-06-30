@@ -78,14 +78,14 @@
                 <span v-if="copied" class="text-green-400 text-[10px] animate-pulse">已複製!</span>
               </p>
               <div @click="copyCode(currentLicense.code)" :class="currentLicense.code === '尚未配發' ? 'cursor-default' : 'cursor-pointer hover:border-ror-accent/50'" class="bg-black/30 px-3 py-2 rounded border border-white/5 text-white select-all text-sm font-mono break-all font-semibold flex items-center justify-between group transition-colors">
+                <div>{{ currentLicense.code }}</div>
                 <div class="flex items-center">
-                  <button v-if="currentLicense.code !== '尚未配發' && selectedTab !== 'infinite'" @click.stop="openExtendModal" class="p-1 mr-2 rounded-full hover:bg-white/10 text-ror-muted hover:text-white transition-colors" title="自助展延 / 擴充機台">
+                  <button v-if="currentLicense.code !== '尚未配發' && selectedTab !== 'infinite'" @click.stop="openExtendModal" class="p-1 mr-1 rounded-full hover:bg-white/10 text-ror-muted hover:text-white transition-colors" title="自助展延 / 擴充機台">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                   </button>
-                  {{ currentLicense.code }}
+                  <svg v-if="currentLicense.code !== '尚未配發'" class="w-4 h-4 text-ror-muted group-hover:text-ror-accent transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                  <button v-else-if="selectedTab !== 'infinite'" @click.stop="openPurchaseModal" class="px-3 py-1 bg-ror-accent text-black font-bold rounded hover:bg-ror-accent/90 transition-colors text-xs whitespace-nowrap shadow-[0_0_10px_rgba(255,204,0,0.2)]">前往開通</button>
                 </div>
-                <svg v-if="currentLicense.code !== '尚未配發'" class="w-4 h-4 text-ror-muted group-hover:text-ror-accent transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
-                <button v-else-if="selectedTab !== 'infinite'" @click.stop="openPurchaseModal" class="px-3 py-1 bg-ror-accent text-black font-bold rounded hover:bg-ror-accent/90 transition-colors text-xs whitespace-nowrap shadow-[0_0_10px_rgba(255,204,0,0.2)]">前往開通</button>
               </div>
             </div>
             <div class="flex items-center justify-between border-t border-white/5 pt-2">
@@ -203,10 +203,10 @@
             </div>
             
             <div>
-              <label class="block text-sm text-ror-muted mb-1">展延時間 (一次增加一週期)</label>
+              <label class="block text-sm text-ror-muted mb-1">展延時間</label>
               <div class="flex items-center gap-2">
                 <button @click="extendModal.addCycles > 0 ? extendModal.addCycles-- : null" class="w-8 h-8 rounded bg-white/5 hover:bg-white/10 flex items-center justify-center text-white" :disabled="extendModal.addCycles <= 0">-</button>
-                <input type="text" :value="`+ ${extendModal.addCycles} 週期`" readonly class="w-24 bg-black border border-white/10 rounded px-2 py-1 text-center text-white font-bold" />
+                <input type="text" :value="`+ ${extendModal.addCycles} ${extendModal.planType === 'daily' ? '日' : extendModal.planType === 'weekly' ? '周' : '個月'}`" readonly class="w-24 bg-black border border-white/10 rounded px-2 py-1 text-center text-white font-bold" />
                 <button @click="extendModal.addCycles++" class="w-8 h-8 rounded bg-white/5 hover:bg-white/10 flex items-center justify-center text-white">+</button>
               </div>
               <p class="text-xs text-yellow-500 mt-1">預計展延至：{{ targetExpirationFormatted }}</p>
@@ -342,7 +342,7 @@ const calculatedCost = computed(() => {
   }
 
   const addDevices = Math.max(0, extendModal.value.targetDevices - extendModal.value.currentDevices)
-  const costAddDevice = Math.floor((remainingDays / cycleDays)) * addDevices * basePrice
+  const costAddDevice = Math.floor((remainingDays / cycleDays) * addDevices * basePrice)
   const costExtend = extendModal.value.addCycles * basePrice * extendModal.value.targetDevices
 
   return Math.max(0, costAddDevice) + costExtend
