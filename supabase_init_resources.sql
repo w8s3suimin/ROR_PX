@@ -59,7 +59,8 @@ CREATE TABLE public.devices_status (
     auth_code TEXT REFERENCES public.authorization_codes(code) ON DELETE SET NULL,
     current_task TEXT DEFAULT '閒置中',
     logs TEXT,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now())
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()),
+    UNIQUE(user_id, device_index)
 );
 
 -- 5. Task Queue (任務佇列)
