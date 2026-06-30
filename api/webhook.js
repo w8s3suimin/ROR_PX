@@ -433,23 +433,15 @@ async function sendFlexScheduleReply(replyToken, targetName, schedule, profiles)
        statusIcon = sData.completed ? "☑" : "📈";
     }
     
-    const rowContents = [
-      { type: "text", text: slot.display, size: "md", color: "#DDDDDD", flex: 5 }
-    ];
-    
-    if (sData && sData.user_id) {
-      rowContents.push({ type: "text", text: userName, size: "md", color: userColor, flex: 3, align: "start", weight: "bold" });
-      rowContents.push({ type: "text", text: statusIcon, size: "md", color: "#FBBF24", flex: 2, align: "start", weight: "bold" });
-    } else {
-      // 未登記時，讓名字跨越整個剩下的 50% 寬度並置中
-      rowContents.push({ type: "text", text: userName, size: "md", color: userColor, flex: 5, align: "center", weight: "regular" });
-    }
-
     contents.push({
       type: "box",
       layout: "horizontal",
       margin: "md",
-      contents: rowContents
+      contents: [
+        { type: "text", text: slot.display, size: "md", color: "#DDDDDD", flex: 5 },
+        { type: "text", text: userName, size: "md", color: userColor, flex: 3, align: "center", weight: (sData && sData.user_id) ? "bold" : "regular" },
+        { type: "text", text: statusIcon, size: "md", color: "#FBBF24", flex: 2, align: "start", weight: "bold" }
+      ]
     });
     
     contents.push({ type: "separator", margin: "md", color: "#222222" });
