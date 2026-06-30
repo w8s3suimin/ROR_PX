@@ -430,7 +430,7 @@ async function sendFlexScheduleReply(replyToken, targetName, schedule, profiles)
          userName = sData.user_id;
        }
        userColor = "#FBBF24"; // yellow
-       statusIcon = sData.completed ? "✔" : "📈";
+       statusIcon = sData.completed ? "☑" : "📈";
     }
     
     let displayUser = userName;
