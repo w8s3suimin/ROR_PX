@@ -462,16 +462,7 @@ const updateDeviceStats = () => {
   deviceStats.value.totalOffline = offline
 }
 
-onMounted(async () => {
-  if (isAdminRole.value) {
-    selectedTab.value = 'infinite'
-  }
-
-  timer = setInterval(() => {
-    currentTime.value = Date.now()
-    updateDeviceStats()
-  }, 10000)
-
+const fetchUserData = async () => {
   try {
     const { data: { user } } = await supabase.auth.getUser()
     if (user) {
@@ -529,6 +520,19 @@ onMounted(async () => {
   } catch (e) {
     console.error('Failed to load user or license info', e)
   }
+}
+
+onMounted(async () => {
+  if (isAdminRole.value) {
+    selectedTab.value = 'infinite'
+  }
+
+  timer = setInterval(() => {
+    currentTime.value = Date.now()
+    updateDeviceStats()
+  }, 10000)
+
+  await fetchUserData()
 })
 
 onUnmounted(() => {
