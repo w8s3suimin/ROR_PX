@@ -235,22 +235,29 @@ async function handleGetScheduleCommand(message, targets) {
     targetName = matched.name;
   }
   
-  let schedule = null;
+  let schedulePromise = null;
   if (targetId) {
-    schedule = await getLatestScheduleForTarget(targetId);
-    if (!schedule) {
-      return { success: false, message: `【${targetName}】目前沒有任何班表資料。` };
-    }
+    schedulePromise = getLatestScheduleForTarget(targetId);
   } else {
-    schedule = await getLatestScheduleOverall();
-    if (!schedule) {
-       return { success: false, message: "系統中目前沒有任何班表資料。" };
-    }
+    schedulePromise = getLatestScheduleOverall();
+  }
+  
+  // 平行發出請求以節省時間 (同時去拉班表跟拉使用者名單)
+  const [schedule, profiles] = await Promise.all([
+    schedulePromise,
+    getSupabaseProfiles()
+  ]);
+
+  if (!schedule) {
+    if (targetId) return { success: false, message: `【${targetName}】目前沒有任何班表資料。` };
+    else return { success: false, message: "系統中目前沒有任何班表資料。" };
+  }
+
+  if (!targetId) {
     const matched = targets.find(t => t.id === schedule.target_id);
     targetName = matched ? matched.name : '未知標的';
   }
   
-  const profiles = await getSupabaseProfiles();
   return { success: true, targetName: targetName, schedule: schedule, profiles: profiles };
 }
 
