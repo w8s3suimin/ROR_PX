@@ -438,9 +438,9 @@ async function sendFlexScheduleReply(replyToken, targetName, schedule, profiles)
       layout: "horizontal",
       margin: "md",
       contents: [
-        { type: "text", text: slot.display, size: "md", color: "#DDDDDD", flex: 4 },
-        { type: "text", text: userName, size: "md", color: userColor, flex: 4, align: "center", weight: (sData && sData.user_id) ? "bold" : "regular" },
-        { type: "text", text: statusIcon, size: "md", color: "#FBBF24", flex: 2, align: "start", weight: "bold" }
+        { type: "text", text: slot.display, size: "md", color: "#DDDDDD", flex: 35 },
+        { type: "text", text: userName, size: "md", color: userColor, flex: 40, align: "center", weight: (sData && sData.user_id) ? "bold" : "regular" },
+        { type: "text", text: statusIcon, size: "md", color: "#FBBF24", flex: 25, align: "start", weight: "bold" }
       ]
     });
     
