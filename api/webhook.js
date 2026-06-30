@@ -444,7 +444,7 @@ async function sendFlexScheduleReply(replyToken, targetName, schedule, profiles)
       margin: "md",
       contents: [
         { type: "text", text: slot.display, size: "sm", color: "#DDDDDD", flex: 4 },
-        { type: "text", text: displayUser, size: "sm", color: userColor, flex: 6, align: "center", weight: (sData && sData.user_id) ? "bold" : "regular" }
+        { type: "text", text: displayUser, size: "sm", color: userColor, flex: 6, align: "start", weight: (sData && sData.user_id) ? "bold" : "regular" }
       ]
     });
     
@@ -464,9 +464,9 @@ async function sendFlexScheduleReply(replyToken, targetName, schedule, profiles)
         type: "box",
         layout: "vertical",
         paddingAll: "xl",
-        borderWidth: "normal",
+        borderWidth: "bold",
         borderColor: "#FBBF24",
-        cornerRadius: "lg",
+        cornerRadius: "xl",
         contents: contents
       }
     }
