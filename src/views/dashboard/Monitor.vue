@@ -2,17 +2,15 @@
   <div class="animate-fade-in">
     <!-- Header -->
     <div class="mb-6 flex flex-col gap-4">
-      <div class="flex justify-between items-start">
-        <div>
-          <h1 class="text-3xl font-bold text-white tracking-tight">設備監控</h1>
-          <p class="text-ror-muted mt-1">即時同步設備、目前任務的狀態顯示</p>
-        </div>
+      <div class="flex items-baseline gap-3 overflow-hidden">
+        <h1 class="text-2xl md:text-3xl font-bold text-white tracking-tight shrink-0">設備監控</h1>
+        <p class="text-xs text-ror-muted truncate">即時同步設備、目前任務的狀態顯示</p>
+      </div>
+      <div class="flex justify-between items-center w-full">
         <div class="bg-[#1a1a1a] border border-ror-border rounded px-4 py-2 flex items-center shrink-0">
           <div class="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
           <span class="text-sm font-medium">在線: {{ onlineCount }} / {{ filteredDevicesList.length }}</span>
         </div>
-      </div>
-      <div class="flex justify-end">
         <select v-if="viewAsAdmin" v-model="selectedPlatform" class="bg-[#1a1a1a] border border-ror-border rounded px-3 py-1.5 text-sm text-white focus:outline-none focus:border-ror-accent">
           <option value="">全部平台</option>
           <option v-for="email in uniquePlatforms" :key="email" :value="email">{{ email }}</option>
