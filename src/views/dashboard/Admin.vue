@@ -69,11 +69,16 @@
               <div>
                 <label class="block text-sm text-ror-muted mb-1">重新指定到期日 (選填)</label>
                 <div class="flex flex-col gap-2">
-                  <input type="datetime-local" step="1" v-model="updateExpireDate" class="w-full bg-[#1a1a1a] border border-white/10 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-ror-accent">
+                  <input v-if="!pendingExtensionText" type="datetime-local" step="1" v-model="updateExpireDate" class="w-full bg-[#1a1a1a] border border-white/10 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-ror-accent">
+                  <div v-else class="w-full bg-[#1a1a1a] border border-yellow-500/50 rounded-lg px-3 py-2 text-yellow-500 font-bold flex items-center justify-between">
+                    <span>{{ pendingExtensionText }}</span>
+                    <button @click="cancelPending" class="text-xs text-ror-muted hover:text-white underline">取消</button>
+                  </div>
+                  
                   <div class="flex gap-2">
-                    <button @click="quickAddDays(30)" class="flex-1 bg-white/10 hover:bg-white/20 text-xs py-1 rounded transition-colors">+月</button>
-                    <button @click="quickAddDays(7)" class="flex-1 bg-white/10 hover:bg-white/20 text-xs py-1 rounded transition-colors">+周</button>
-                    <button @click="quickAddDays(1)" class="flex-1 bg-white/10 hover:bg-white/20 text-xs py-1 rounded transition-colors">+日</button>
+                    <button @click="quickAddDays(30, 'monthly')" :disabled="!canExtend('monthly')" :class="canExtend('monthly') ? 'bg-yellow-500 text-black hover:bg-yellow-400 font-bold' : 'bg-white/5 text-white/30 cursor-not-allowed'" class="flex-1 text-xs py-1.5 rounded transition-colors">+月</button>
+                    <button @click="quickAddDays(7, 'weekly')" :disabled="!canExtend('weekly')" :class="canExtend('weekly') ? 'bg-yellow-500 text-black hover:bg-yellow-400 font-bold' : 'bg-white/5 text-white/30 cursor-not-allowed'" class="flex-1 text-xs py-1.5 rounded transition-colors">+周</button>
+                    <button @click="quickAddDays(1, 'daily')" :disabled="!canExtend('daily')" :class="canExtend('daily') ? 'bg-yellow-500 text-black hover:bg-yellow-400 font-bold' : 'bg-white/5 text-white/30 cursor-not-allowed'" class="flex-1 text-xs py-1.5 rounded transition-colors">+日</button>
                   </div>
                 </div>
               </div>
@@ -176,8 +181,22 @@ const updateCode = ref('')
 const updateEmail = ref('')
 const updateExpireDate = ref('')
 const updateDevices = ref('')
+const updatePlanType = ref('')
 const isUpdating = ref(false)
 const isValidating = ref(false)
+const pendingExtensionText = ref('')
+const pendingDaysToAdd = ref(0)
+
+const canExtend = (targetPlan) => {
+  if (!updatePlanType.value) return false;
+  return updatePlanType.value === targetPlan;
+}
+
+const cancelPending = () => {
+  pendingExtensionText.value = '';
+  pendingDaysToAdd.value = 0;
+  // 嘗試恢復先前的到期日（如果有存在 updateExpireDate 內）
+}
 
 const formatDatetimeLocal = (date) => {
   const pad = (n) => n.toString().padStart(2, '0')
@@ -210,8 +229,11 @@ const verifyCode = async () => {
       return;
     }
     
+    updatePlanType.value = license.plan_type;
     updateEmail.value = license.profiles ? license.profiles.email : '';
     updateDevices.value = license.allowed_devices;
+    pendingExtensionText.value = '';
+    pendingDaysToAdd.value = 0;
     
     if (license.expires_at) {
       updateExpireDate.value = formatDatetimeLocal(new Date(license.expires_at));
@@ -226,24 +248,30 @@ const verifyCode = async () => {
   }
 }
 
-const quickAddDays = (days) => {
+const quickAddDays = (days, plan) => {
+  if (updatePlanType.value !== plan) return;
+  
   let baseDate;
   if (updateExpireDate.value) {
     baseDate = new Date(updateExpireDate.value);
-    // 如果已經到期，改由當前時間起算
+    // 如果已經到期
     if (baseDate.getTime() < Date.now()) {
-      baseDate = new Date();
+      pendingExtensionText.value = `下次執行起 +${days} 天`;
+      pendingDaysToAdd.value = days;
+      return;
     }
   } else {
-    // 若沒有到期日，從現在起算
-    baseDate = new Date();
+    // 若原本沒有到期日
+    pendingExtensionText.value = `下次執行起 +${days} 天`;
+    pendingDaysToAdd.value = days;
+    return;
   }
   
-  // 加上天數
+  // 尚未到期的情況，直接往後加
   baseDate.setDate(baseDate.getDate() + days);
-  
-  // 更新前端的輸入框，精準到秒
   updateExpireDate.value = formatDatetimeLocal(baseDate);
+  pendingExtensionText.value = '';
+  pendingDaysToAdd.value = 0;
 }
 
 const updateAdminLicense = async () => {
@@ -255,7 +283,14 @@ const updateAdminLicense = async () => {
   
   try {
     let expiresAtStr = null;
-    if (updateExpireDate.value) {
+    
+    // 如果是「下次執行起 +N 天」的模式
+    if (pendingExtensionText.value && pendingDaysToAdd.value > 0) {
+      // 由於目前資料庫無法記錄「等待下次腳本執行」，我們只能在此刻直接將到期日設為 Now() + N天
+      const now = new Date();
+      now.setDate(now.getDate() + pendingDaysToAdd.value);
+      expiresAtStr = now.toISOString();
+    } else if (updateExpireDate.value) {
       expiresAtStr = new Date(updateExpireDate.value).toISOString();
     }
     
@@ -270,11 +305,14 @@ const updateAdminLicense = async () => {
     if (!data.success) {
       alert(data.message);
     } else {
-      alert('更新成功');
+      alert('更新成功！');
       updateCode.value = '';
       updateEmail.value = '';
       updateExpireDate.value = '';
       updateDevices.value = '';
+      updatePlanType.value = '';
+      pendingExtensionText.value = '';
+      pendingDaysToAdd.value = 0;
     }
   } catch (err) {
     console.error(err);
