@@ -226,7 +226,12 @@ async function handleGetScheduleCommand(message, targets) {
   let targetName = null;
   
   if (targetNameInput) {
-    const matched = activeTargets.find(t => t.name.includes(targetNameInput) || targetNameInput.includes(t.name));
+    const normalize = (name) => name.replace(/[.．\s]/g, '');
+    const normalizedInput = normalize(targetNameInput);
+    const matched = activeTargets.find(t => {
+      const normalizedTarget = normalize(t.name);
+      return normalizedTarget.includes(normalizedInput) || normalizedInput.includes(normalizedTarget);
+    });
     if (!matched) {
       const names = activeTargets.map(t => `- ${t.name}`).join('\n');
       return { success: false, message: `找不到指定的標的「${targetNameInput}」。\n\n可用的標的名稱有：\n${names}` };
