@@ -101,6 +101,11 @@ onMounted(async () => {
         navItems.value.push({ name: '交易所操作', path: '/dashboard/exchange', icon: 'scale' })
       }
     }
+    if (profile && profile.is_admin) {
+      if (!navItems.value.find(item => item.path === '/dashboard/admin')) {
+        navItems.value.push({ name: '後台管理', path: '/dashboard/admin', icon: 'scale' })
+      }
+    }
   }
 
   supabase.auth.onAuthStateChange(async (event, session) => {
@@ -116,8 +121,13 @@ onMounted(async () => {
           navItems.value.push({ name: '交易所操作', path: '/dashboard/exchange', icon: 'scale' })
         }
       }
+      if (profile && profile.is_admin) {
+        if (!navItems.value.find(item => item.path === '/dashboard/admin')) {
+          navItems.value.push({ name: '後台管理', path: '/dashboard/admin', icon: 'scale' })
+        }
+      }
     } else {
-      navItems.value = navItems.value.filter(item => item.path !== '/dashboard/exchange')
+      navItems.value = navItems.value.filter(item => item.path !== '/dashboard/exchange' && item.path !== '/dashboard/admin')
     }
   })
 })

@@ -58,6 +58,11 @@ const router = createRouter({
           path: 'exchange',
           name: 'exchange',
           component: () => import('../views/dashboard/Exchange.vue')
+        },
+        {
+          path: 'admin',
+          name: 'admin',
+          component: () => import('../views/dashboard/Admin.vue')
         }
       ]
     }
