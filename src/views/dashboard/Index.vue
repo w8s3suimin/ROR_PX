@@ -289,6 +289,8 @@ onUnmounted(() => {
   if (timer) clearInterval(timer)
 })
 
+</script>
+
 <style scoped>
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
