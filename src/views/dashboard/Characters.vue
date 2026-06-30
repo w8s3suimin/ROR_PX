@@ -23,7 +23,7 @@
         <div class="text-center drop-shadow-md cursor-pointer hover:text-white flex items-center justify-center gap-1" :class="viewAsAdmin ? 'col-span-6' : 'col-span-4'" @click="handleSort('game_account')">
           遊戲帳號<span v-if="viewAsAdmin">/平台ID</span>
           <span class="text-[10px]" v-if="sortConfig.key === 'game_account'">{{ sortConfig.dir === 'asc' ? '▲' : '▼' }}</span>
-          <span v-if="filters.game_account" @click.stop="clearFilter('game_account')" title="解除過濾" class="text-lg">🔒</span>
+          <span v-if="filters.game_account || filters.platform_id" @click.stop="clearFilter('game_account'); clearFilter('platform_id')" title="解除過濾" class="text-lg">🔒</span>
         </div>
         <div class="col-span-2 text-center drop-shadow-md cursor-pointer hover:text-white flex items-center justify-center gap-1" @click="handleSort('server_name')">
           伺服器
@@ -61,7 +61,7 @@
         <div class="flex-[1.2] min-w-0 text-center pr-1 drop-shadow-md cursor-pointer flex items-center justify-center gap-1" @click="handleSort('mobile_account')">
           伺服器/帳號
           <span class="text-[10px]" v-if="sortConfig.key === 'mobile_account'">{{ sortConfig.dir === 'asc' ? '▲' : '▼' }}</span>
-          <span v-if="filters.game_account || filters.server_name" @click.stop="clearFilter('game_account'); clearFilter('server_name')" title="解除過濾">🔒</span>
+          <span v-if="filters.game_account || filters.server_name || filters.platform_id" @click.stop="clearFilter('game_account'); clearFilter('server_name'); clearFilter('platform_id')" title="解除過濾">🔒</span>
         </div>
         <div class="flex-[1.2] min-w-0 text-center px-1 drop-shadow-md cursor-pointer flex items-center justify-center gap-1" @click="handleSort('level')">
           角色/等級
@@ -134,7 +134,10 @@
             <div class="font-bold text-white text-sm">
               <span @click.stop="toggleStringFilter('game_account', char.game_account)" class="hover:text-ror-accent transition-colors">{{ char.game_account || '未知遊戲帳號' }}</span>
             </div>
-            <div v-if="viewAsAdmin" class="text-xs text-ror-muted">{{ char.profiles?.email || '未綁定' }}</div>
+            <div v-if="viewAsAdmin" class="text-xs text-ror-muted">
+              <span v-if="char.profiles?.email" @click.stop="toggleStringFilter('platform_id', char.profiles?.email)" class="hover:text-ror-accent transition-colors cursor-pointer">{{ char.profiles?.email }}</span>
+              <span v-else>未綁定</span>
+            </div>
           </div>
           <div class="col-span-2 text-sm text-gray-300 truncate text-center">
             <span @click.stop="toggleStringFilter('server_name', char.server_name)" class="inline-block px-2 py-1 rounded bg-white/5 border border-white/10 hover:text-ror-accent hover:border-ror-accent/50 transition-colors">{{ char.server_name }}</span>
@@ -338,6 +341,7 @@ const filters = ref({
   vitality: null,
   crystal: null,
   dispatch: null,
+  platform_id: null,
 })
 
 const hasActiveFilters = computed(() => {
@@ -555,6 +559,7 @@ const filteredAndSortedCharacters = computed(() => {
   // Filtering
   if (filters.value.game_account) res = res.filter(c => c.game_account === filters.value.game_account)
   if (filters.value.server_name) res = res.filter(c => c.server_name === filters.value.server_name)
+  if (filters.value.platform_id) res = res.filter(c => c.profiles?.email === filters.value.platform_id)
   if (filters.value.dispatch === 'full') {
     res = res.filter(c => (Number(c.dispatch_current) || 0) >= (Number(c.dispatch_max) || 0))
   }
