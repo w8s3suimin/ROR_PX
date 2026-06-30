@@ -53,21 +53,21 @@
           <h3 class="text-lg font-bold text-white mb-4 border-b border-white/10 pb-2">調整與綁定現有授權碼</h3>
           <div class="space-y-4">
             <div>
-              <label class="block text-sm text-ror-muted mb-1">授權碼 (必填)</label>
+              <label class="block text-sm text-ror-muted mb-1">授權碼</label>
               <div class="flex gap-2">
                 <input type="text" v-model="updateCode" placeholder="請輸入欲修改的授權碼..." class="flex-1 w-full bg-[#1a1a1a] border border-white/10 rounded-lg px-3 py-2 text-white font-mono focus:outline-none focus:border-ror-accent">
-                <button @click="verifyCode" :disabled="isValidating" class="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg transition-colors whitespace-nowrap disabled:opacity-50">
+                <button @click="verifyCode" :disabled="isValidating || isCodeVerified" :class="isCodeVerified ? 'bg-white/10 text-white opacity-50 cursor-not-allowed' : 'bg-yellow-500 text-black hover:bg-yellow-400 font-bold'" class="px-4 py-2 rounded-lg transition-colors whitespace-nowrap">
                   {{ isValidating ? '驗證中...' : '驗證' }}
                 </button>
               </div>
             </div>
             <div>
-              <label class="block text-sm text-ror-muted mb-1">綁定至使用者信箱 (選填)</label>
-              <input type="email" v-model="updateEmail" placeholder="留空則不更動原綁定..." class="w-full bg-[#1a1a1a] border border-white/10 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-ror-accent">
+              <label class="block text-sm text-ror-muted mb-1">綁定至使用者信箱</label>
+              <input type="email" v-model="updateEmail" placeholder="輸入使用者信箱..." class="w-full bg-[#1a1a1a] border border-white/10 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-ror-accent">
             </div>
             <div class="grid grid-cols-2 gap-4">
               <div>
-                <label class="block text-sm text-ror-muted mb-1">重新指定到期日 (選填)</label>
+                <label class="block text-sm text-ror-muted mb-1">重新指定到期日</label>
                 <div class="flex flex-col gap-2">
                   <input v-if="!pendingExtensionText" type="datetime-local" step="1" v-model="updateExpireDate" class="w-full bg-[#1a1a1a] border border-white/10 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-ror-accent">
                   <div v-else class="w-full bg-[#1a1a1a] border border-yellow-500/50 rounded-lg px-3 py-2 text-yellow-500 font-bold flex items-center justify-between">
@@ -83,12 +83,13 @@
                 </div>
               </div>
               <div>
-                <label class="block text-sm text-ror-muted mb-1">重新指定上限 (選填)</label>
+                <label class="block text-sm text-ror-muted mb-1">重新指定上限</label>
                 <input type="number" v-model="updateDevices" placeholder="留空不改" class="w-full bg-[#1a1a1a] border border-white/10 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-ror-accent" min="1">
               </div>
             </div>
-            <button @click="updateAdminLicense" :disabled="isUpdating" class="w-full mt-2 bg-blue-500 text-white font-bold rounded-lg py-2 hover:bg-blue-600 transition-colors disabled:opacity-50">
-              {{ isUpdating ? '更新中...' : '送出更新' }}
+            
+            <button @click="updateAdminLicense" :disabled="isUpdating || !isCodeVerified" :class="isCodeVerified ? 'bg-blue-600 hover:bg-blue-500 text-white' : 'bg-white/5 text-white/30 cursor-not-allowed'" class="w-full py-2.5 rounded-lg font-bold transition-colors">
+              {{ isUpdating ? '處理中...' : '送出更新' }}
             </button>
           </div>
         </div>
@@ -186,9 +187,14 @@ const isUpdating = ref(false)
 const isValidating = ref(false)
 const pendingExtensionText = ref('')
 const pendingDaysToAdd = ref(0)
+const verifiedCode = ref('')
+
+const isCodeVerified = computed(() => {
+  return updateCode.value.trim() !== '' && updateCode.value === verifiedCode.value;
+});
 
 const canExtend = (targetPlan) => {
-  if (!updatePlanType.value) return false;
+  if (!isCodeVerified.value || !updatePlanType.value) return false;
   return updatePlanType.value === targetPlan;
 }
 
@@ -234,6 +240,7 @@ const verifyCode = async () => {
     updateDevices.value = license.allowed_devices;
     pendingExtensionText.value = '';
     pendingDaysToAdd.value = 0;
+    verifiedCode.value = updateCode.value;
     
     if (license.expires_at) {
       updateExpireDate.value = formatDatetimeLocal(new Date(license.expires_at));
@@ -313,6 +320,7 @@ const updateAdminLicense = async () => {
       updatePlanType.value = '';
       pendingExtensionText.value = '';
       pendingDaysToAdd.value = 0;
+      verifiedCode.value = '';
     }
   } catch (err) {
     console.error(err);
