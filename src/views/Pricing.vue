@@ -3,10 +3,10 @@
     <!-- Header -->
     <div class="text-center mb-4 md:mb-12">
       <h1 class="text-xl md:text-4xl font-bold text-ror-accent mb-2 md:mb-4">
-        授權碼方案預告
+        授權碼方案
       </h1>
       <p class="text-ror-muted text-sm md:text-lg max-w-2xl mx-auto leading-normal">
-        即將推出基於 PX 點數 (PXP) 的彈性方案。<br/>
+        基於 PX 點數 (PXP) 的彈性方案。<br/>
         儲值比例：<span class="text-white font-semibold whitespace-nowrap ml-1">1 台幣 = 1 PXP</span>
       </p>
     </div>
