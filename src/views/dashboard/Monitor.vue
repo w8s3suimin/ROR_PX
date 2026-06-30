@@ -85,7 +85,15 @@ const currentTime = ref(Date.now())
 const selectedPlatform = ref('')
 let timer = null
 let fetchTimer = null
+let isPolling = false
 
+const pollDevices = async () => {
+  if (!isPolling) return
+  await fetchDevices()
+  if (isPolling) {
+    fetchTimer = setTimeout(pollDevices, 5000)
+  }
+}
 const getDeviceStatus = (dev) => {
   if (!dev || !dev.updated_at) return 'offline'
   const lastUpdate = new Date(dev.updated_at).getTime()
@@ -217,11 +225,8 @@ onMounted(async () => {
   timer = setInterval(() => {
     currentTime.value = Date.now()
   }, 1000)
-
-  // Poll for latest device data every 5 seconds
-  fetchTimer = setInterval(() => {
-    fetchDevices()
-  }, 5000)
+  // Start recursive polling instead of setInterval
+  isPolling = true
 
   // Fetch auth code for the current user
   const { data: { user } } = await supabase.auth.getUser()
@@ -239,13 +244,15 @@ onMounted(async () => {
     }
   }
 
-  // Initial fetch
+  // Initial fetch and start polling
   await fetchDevices()
+  fetchTimer = setTimeout(pollDevices, 5000)
 })
 
 onUnmounted(() => {
+  isPolling = false
   if (timer) clearInterval(timer)
-  if (fetchTimer) clearInterval(fetchTimer)
+  if (fetchTimer) clearTimeout(fetchTimer)
 })
 
 function formatTime24H(timestamp) {
