@@ -433,18 +433,14 @@ async function sendFlexScheduleReply(replyToken, targetName, schedule, profiles)
        statusIcon = sData.completed ? "☑" : "📈";
     }
     
-    let displayUser = userName;
-    if (sData && sData.user_id && statusIcon.trim() !== "") {
-      displayUser += " " + statusIcon;
-    }
-    
     contents.push({
       type: "box",
       layout: "horizontal",
       margin: "md",
       contents: [
-        { type: "text", text: slot.display, size: "md", color: "#DDDDDD", flex: 4 },
-        { type: "text", text: displayUser, size: "md", color: userColor, flex: 6, align: "start", weight: (sData && sData.user_id) ? "bold" : "regular" }
+        { type: "text", text: slot.display, size: "md", color: "#DDDDDD", flex: 5 },
+        { type: "text", text: userName, size: "md", color: userColor, flex: 3, align: "start", weight: (sData && sData.user_id) ? "bold" : "regular" },
+        { type: "text", text: statusIcon, size: "md", color: "#FBBF24", flex: 2, align: "start", weight: "bold" }
       ]
     });
     
