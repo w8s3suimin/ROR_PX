@@ -80,7 +80,7 @@
               <div @click="copyCode(currentLicense.code)" :class="currentLicense.code === '尚未配發' ? 'cursor-default' : 'cursor-pointer hover:border-ror-accent/50'" class="bg-black/30 px-3 py-2 rounded border border-white/5 text-white select-all text-sm font-mono break-all font-semibold flex items-center justify-between group transition-colors">
                 {{ currentLicense.code }}
                 <svg v-if="currentLicense.code !== '尚未配發'" class="w-4 h-4 text-ror-muted group-hover:text-ror-accent transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
-                <button v-else @click.stop="router.push('/pricing')" class="px-3 py-1 bg-ror-accent text-black font-bold rounded hover:bg-ror-accent/90 transition-colors text-xs whitespace-nowrap shadow-[0_0_10px_rgba(255,204,0,0.2)]">前往開通</button>
+                <button v-else-if="selectedTab !== 'infinite'" @click.stop="openPurchaseModal" class="px-3 py-1 bg-ror-accent text-black font-bold rounded hover:bg-ror-accent/90 transition-colors text-xs whitespace-nowrap shadow-[0_0_10px_rgba(255,204,0,0.2)]">前往開通</button>
               </div>
             </div>
             <div class="flex items-center justify-between border-t border-white/5 pt-2">
@@ -134,6 +134,44 @@
         </div>
       </div>
       
+    </div>
+
+    <!-- Confirm Modal -->
+    <div v-if="buyModal.show" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+      <div class="bg-ror-card border border-white/10 rounded-2xl p-6 max-w-sm w-full shadow-2xl relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-1 bg-yellow-500"></div>
+        <h3 class="text-xl font-bold text-white mb-2">確認開通授權</h3>
+        
+        <div v-if="userPxp < buyModal.cost" class="text-ror-muted mb-6">
+          <div class="flex items-center gap-3 p-3 bg-red-500/10 border border-red-500/20 rounded-lg mb-4 text-red-400">
+            <svg class="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+            <p class="text-sm">您的 PX 點數不足，請先儲值。</p>
+          </div>
+          <p class="text-sm">目前點數：<span class="text-white font-bold">{{ userPxp }}</span></p>
+          <p class="text-sm">所需點數：<span class="text-yellow-500 font-bold">{{ buyModal.cost }}</span></p>
+        </div>
+        
+        <div v-else class="text-ror-muted mb-6">
+          <p class="mb-4 text-sm">即將開通帳戶：<br/><span class="text-white font-bold">{{ userEmail }}</span></p>
+          <div class="bg-black/30 p-3 rounded-lg border border-white/5 space-y-2">
+            <p class="text-sm flex justify-between"><span>將扣除點數：</span><span class="text-yellow-500 font-bold">{{ buyModal.cost }}</span></p>
+            <p class="text-sm flex justify-between"><span>購買後剩餘：</span><span class="text-green-400 font-bold">{{ userPxp - buyModal.cost }}</span></p>
+          </div>
+        </div>
+        
+        <div class="flex gap-3 justify-end">
+          <button @click="buyModal.show = false" class="px-4 py-2 rounded-lg border border-white/10 text-ror-muted hover:text-white hover:bg-white/5 transition-colors text-sm font-medium">
+            取消
+          </button>
+          <button v-if="userPxp < buyModal.cost" @click="buyModal.show = false" class="px-4 py-2 rounded-lg bg-ror-accent text-black font-bold hover:bg-ror-accent/90 transition-colors text-sm">
+            我知道了
+          </button>
+          <button v-else @click="confirmBuy" :disabled="isBuying" class="px-4 py-2 rounded-lg bg-yellow-500 text-black font-bold hover:bg-yellow-400 transition-colors disabled:opacity-50 text-sm flex items-center justify-center min-w-[100px]">
+            <svg v-if="isBuying" class="animate-spin -ml-1 mr-2 h-4 w-4 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+            {{ isBuying ? '處理中...' : '確認開通' }}
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -196,6 +234,55 @@ watch(isAdminRole, (newVal) => {
 const currentTime = ref(Date.now())
 let timer = null
 let fetchedDevices = []
+
+const buyModal = ref({
+  show: false,
+  planType: '',
+  cost: 0,
+  prefix: '',
+  days: 0
+})
+const isBuying = ref(false)
+
+const openPurchaseModal = () => {
+  if (selectedTab.value === 'infinite') return
+  let cost = 0, prefix = '', days = 0;
+  if (selectedTab.value === 'daily') { cost = 20; prefix = 'PXD-'; days = 1; }
+  else if (selectedTab.value === 'weekly') { cost = 100; prefix = 'PXW-'; days = 7; }
+  else if (selectedTab.value === 'monthly') { cost = 350; prefix = 'PXM-'; days = 30; }
+  buyModal.value = { show: true, planType: selectedTab.value, cost, prefix, days }
+}
+
+const confirmBuy = async () => {
+  if (isBuying.value) return
+  isBuying.value = true
+  
+  try {
+    const { data, error } = await supabase.rpc('purchase_license', {
+      p_plan_type: buyModal.value.planType,
+      p_cost: buyModal.value.cost,
+      p_prefix: buyModal.value.prefix,
+      p_days: buyModal.value.days
+    })
+    
+    if (error) throw error
+    if (!data.success) {
+      alert(data.message)
+    } else {
+      buyModal.value.show = false
+      userPxp.value = data.remaining_pxp
+      
+      licenses.value[buyModal.value.planType].code = data.code
+      licenses.value[buyModal.value.planType].days = buyModal.value.days
+      licenses.value[buyModal.value.planType].limit = 1
+    }
+  } catch (error) {
+    console.error('Purchase failed', error)
+    alert('開通失敗，請稍後再試')
+  } finally {
+    isBuying.value = false
+  }
+}
 
 const updateDeviceStats = () => {
   let online = 0
