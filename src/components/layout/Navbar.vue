@@ -102,16 +102,15 @@
       <router-link to="/docs" @click="mobileRightSidebarOpen = false" class="text-white hover:text-ror-accent transition-colors font-medium text-lg">互動說明書</router-link>
       <router-link to="/pricing" @click="mobileRightSidebarOpen = false" class="text-white hover:text-ror-accent transition-colors font-medium text-lg">方案定價</router-link>
       <router-link to="/download" @click="mobileRightSidebarOpen = false" class="text-white hover:text-ror-accent transition-colors font-medium text-lg">下載與更新</router-link>
-      
-      <div v-if="isLoggedIn" class="mt-4 pt-4 border-t border-gray-800 flex flex-col gap-2">
-        <span class="text-white text-sm font-medium">帳戶: {{ userEmail }}</span>
-        <span class="text-yellow-400 font-bold text-sm">點數: {{ userPxp }} PXP</span>
-      </div>
     </nav>
 
     <!-- Bottom Actions -->
     <div class="p-4 border-t border-ror-border">
       <template v-if="isLoggedIn">
+        <div class="flex flex-col gap-1 items-end mb-4">
+          <span class="text-yellow-400 font-bold text-sm">{{ userPxp }} PXP</span>
+          <span class="text-white text-sm font-medium">{{ userEmail }}</span>
+        </div>
         <router-link 
           to="/dashboard" 
           @click="mobileRightSidebarOpen = false"
