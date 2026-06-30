@@ -7,9 +7,13 @@
         <p class="text-ror-muted mt-1">即時同步設備、目前任務的狀態顯示</p>
       </div>
       <div class="flex gap-4">
+        <select v-if="viewAsAdmin" v-model="selectedPlatform" class="bg-[#1a1a1a] border border-ror-border rounded px-3 py-1.5 text-sm text-white focus:outline-none focus:border-ror-accent">
+          <option value="">全部平台</option>
+          <option v-for="email in uniquePlatforms" :key="email" :value="email">{{ email }}</option>
+        </select>
         <div class="bg-[#1a1a1a] border border-ror-border rounded px-4 py-2 flex items-center">
           <div class="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
-          <span class="text-sm font-medium">在線: {{ onlineCount }} / {{ devices.length }}</span>
+          <span class="text-sm font-medium">在線: {{ onlineCount }} / {{ filteredDevicesList.length }}</span>
         </div>
       </div>
     </div>
@@ -51,14 +55,18 @@
             <span class="text-white font-bold text-base w-20 flex-shrink-0 tracking-wide">目前任務</span>
             <span class="text-ror-accent text-[15px] font-bold truncate ml-2" :title="getTaskDisplay(dev)">{{ getTaskDisplay(dev) }}</span>
           </div>
-          <div class="flex justify-end text-xs mt-4 pt-2 border-t border-ror-border/30 text-gray-500 font-mono tracking-wide">
-            updated at {{ formatTime24H(dev.updated_at) }}
+          <div class="flex justify-between items-center text-xs mt-4 pt-2 border-t border-ror-border/30 text-gray-500 font-mono tracking-wide">
+            <span v-if="viewAsAdmin" class="text-ror-muted hover:text-ror-accent cursor-pointer truncate mr-2" @click="selectedPlatform = dev.profiles?.email || ''">
+              {{ dev.profiles?.email || '未知平台' }}
+            </span>
+            <span v-else></span>
+            <span>updated at {{ formatTime24H(dev.updated_at) }}</span>
           </div>
         </div>
       </div>
       
       <!-- Empty State -->
-      <div v-if="devices.length === 0" class="col-span-full py-12 text-center border-2 border-dashed border-ror-border rounded-xl">
+      <div v-if="filteredDevicesList.length === 0" class="col-span-full py-12 text-center border-2 border-dashed border-ror-border rounded-xl">
         <p class="text-ror-muted">目前沒有設備資料</p>
       </div>
     </div>
@@ -68,11 +76,13 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { supabase } from '../../utils/supabase.js'
+import { viewAsAdmin } from '../../utils/adminState.js'
 
 const currentUser = ref(null)
 const devices = ref([])
 const authCode = ref('載入中...')
 const currentTime = ref(Date.now())
+const selectedPlatform = ref('')
 let timer = null
 let fetchTimer = null
 
@@ -131,12 +141,27 @@ const getTaskDisplay = (dev) => {
   return `${baseTask}${durationStr}`
 }
 
+const uniquePlatforms = computed(() => {
+  const emails = devices.value.map(d => d.profiles?.email).filter(Boolean)
+  return [...new Set(emails)].sort()
+})
+
+const filteredDevicesList = computed(() => {
+  let res = devices.value
+  if (!viewAsAdmin.value && currentUser.value) {
+    res = res.filter(d => d.user_id === currentUser.value.id)
+  } else if (viewAsAdmin.value && selectedPlatform.value) {
+    res = res.filter(d => d.profiles?.email === selectedPlatform.value)
+  }
+  return res
+})
+
 const onlineCount = computed(() => {
-  return devices.value.filter(dev => getDeviceStatus(dev) !== 'offline').length
+  return filteredDevicesList.value.filter(dev => getDeviceStatus(dev) !== 'offline').length
 })
 
 const sortedDevices = computed(() => {
-  return [...devices.value].sort((a, b) => {
+  return [...filteredDevicesList.value].sort((a, b) => {
     const isAOnline = getDeviceStatus(a) !== 'offline' ? 1 : 0
     const isBOnline = getDeviceStatus(b) !== 'offline' ? 1 : 0
     if (isAOnline !== isBOnline) {
@@ -149,10 +174,11 @@ const sortedDevices = computed(() => {
 const fetchDevices = async () => {
   if (!currentUser.value) return // 確保有使用者才查詢
   
-  const { data, error } = await supabase
+  let query = supabase
     .from('devices_status')
     .select(`
       id,
+      user_id,
       device_index,
       character_id,
       is_offline,
@@ -168,10 +194,18 @@ const fetchDevices = async () => {
         character_name,
         level,
         crystal
+      ),
+      profiles (
+        email
       )
     `)
-    .eq('user_id', currentUser.value.id)
     .order('device_index', { ascending: true })
+
+  if (!viewAsAdmin.value) {
+    query = query.eq('user_id', currentUser.value.id)
+  }
+
+  const { data, error } = await query
 
   if (data) {
     devices.value = data
