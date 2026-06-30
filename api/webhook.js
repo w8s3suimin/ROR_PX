@@ -331,6 +331,13 @@ async function upsertSupabaseSchedule(schedulePayload) {
 
 function getLocalDateStr(offsetDays = 0) {
   const d = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Taipei"}));
+  
+  // 班表是以每天晚上 21:00 為分界（A21-24 起始）
+  // 如果現在時間還沒到 21:00，代表我們還在「昨天」的班表週期內
+  if (d.getHours() < 21) {
+    d.setDate(d.getDate() - 1);
+  }
+  
   d.setDate(d.getDate() + offsetDays);
   const yyyy = d.getFullYear();
   const mm = String(d.getMonth() + 1).padStart(2, '0');
