@@ -329,6 +329,7 @@ const loading = ref(true)
 const error = ref(null)
 const expandedRow = ref(null)
 const selectedMobileChar = ref(null)
+const currentUserId = ref(null)
 
 // Sorting State
 const sortConfig = ref({ key: 'updated_at', dir: 'desc' })
@@ -378,6 +379,9 @@ onMounted(async () => {
     
     // Fetch characters and join with profiles to get the email
     const { data: authData } = await supabase.auth.getUser()
+    if (authData?.user) {
+      currentUserId.value = authData.user.id
+    }
     
     let query = supabase
       .from('characters')
@@ -555,6 +559,10 @@ const sliderTrackStyle = computed(() => {
 // computed for table
 const filteredAndSortedCharacters = computed(() => {
   let res = [...characters.value].filter(c => c)
+
+  if (!viewAsAdmin.value && currentUserId.value) {
+    res = res.filter(c => c.user_id === currentUserId.value)
+  }
   
   // Filtering
   if (filters.value.game_account) res = res.filter(c => c.game_account === filters.value.game_account)
