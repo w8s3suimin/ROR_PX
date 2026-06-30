@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="min-h-screen bg-[#121212] text-white py-12 px-6">
     <div class="max-w-4xl mx-auto space-y-12">
       <!-- Header -->
@@ -145,10 +145,10 @@ const patches = ref([
     date: '2026-06-30',
     isLatest: true,
     features: [
-      { icon: '✨', color: 'text-blue-400', desc: '<strong>設備及角色監控：</strong>資料庫功能正式上線，所有模擬器上獲取的資料會匯集到管理中心網頁之中。' },
-      { icon: ' ', color: 'text-blue-400', desc: '<strong>設備：</strong>設備監控面板可查看所有機台的連線狀態、當前執行任務與持續時間。' },
-      { icon: ' ', color: 'text-blue-400', desc: '<strong>角色：</strong>角色的物資與狀態將會同步更新到角色管理面板中。' },
-      { icon: '✨', color: 'text-blue-400', desc: '<strong>安全驗證：</strong>實裝啟動授權碼驗證機制，未經授權之設備將被強制停止，提升系統安全性。' }
+      { icon: '✨', color: 'text-yellow-400', desc: '<strong>新系統與安全：</strong>設備與角色監控資料庫正式上線，並實裝授權碼驗證機制，提升系統安全性。' },
+      { icon: '🛒', color: 'text-blue-400', desc: '<strong>商會訂單優化：</strong>新增二次水晶掃描機制提升辨識率，並加入面板尋找防呆與防資料歸零覆蓋機制。' },
+      { icon: '🌕', color: 'text-red-400', desc: '<strong>紅月與登入修復：</strong>解決紅月跑動超時誤判返回主城的問題，並修復無帳號場景與切換帳號時的登入卡點。' },
+      { icon: '🛠️', color: 'text-gray-400', desc: '<strong>穩定度與狀態容錯：</strong>優化心跳回報與網路異常容錯，修復連線池延遲、世界地圖卡死以及玩法按鈕異動導致的點擊失效。' }
     ]
   },  {
     version: 'v0.3.003',
