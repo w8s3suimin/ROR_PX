@@ -472,6 +472,7 @@ const fetchUserData = async () => {
       const { data: profile } = await supabase.from('profiles').select('pxp').eq('id', user.id).single()
       if (profile) {
         userPxp.value = profile.pxp || 0
+        window.dispatchEvent(new CustomEvent('pxp-updated', { detail: userPxp.value }))
       }
       
       const { data: licenseData } = await supabase

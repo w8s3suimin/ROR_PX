@@ -186,5 +186,9 @@ onMounted(async () => {
       userPxp.value = 0
     }
   })
+
+  window.addEventListener('pxp-updated', (e) => {
+    userPxp.value = e.detail
+  })
 })
 </script>
