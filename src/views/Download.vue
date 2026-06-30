@@ -147,7 +147,7 @@ const patches = ref([
     features: [
       { icon: '✨', color: 'text-yellow-400', desc: '<strong>雲端監控與安全：</strong>設備與角色雲端同步系統正式上線（含空白名稱防護），並實裝授權碼驗證，提升整體安全性。' },
       { icon: '🛒', color: 'text-blue-400', desc: '<strong>商會訂單優化：</strong>新增二次水晶掃描機制提升辨識率，並加入面板防呆及數據歸零防護，避免任務卡死或錯誤覆蓋雲端。' },
-      { icon: '🌕', color: 'text-red-400', desc: '<strong>登入與介面修復：</strong>解決無帳號/切換帳號（含熱更新與誤點防護）、開啟世界地圖、紅月超時及玩法按鈕異動等各類卡死與判定失效問題。' },
+      { icon: '🌕', color: 'text-red-400', desc: '<strong>登入與介面修復：</strong>解決切換帳號(含熱更新防護)、開啟地圖與紅月超時等卡死問題。玩法按鈕因更新異動之點擊失效，現已升級為智慧判定位置。' },
       { icon: '🛠️', color: 'text-gray-400', desc: '<strong>網路容錯與連線：</strong>強化心跳回報與網路斷線容錯機制，並徹底解決任務結束後連線池延遲關閉導致卡頓五分鐘的問題。' }
     ]
   },  {
