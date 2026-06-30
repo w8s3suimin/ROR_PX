@@ -9,7 +9,13 @@ function loadEnv(filePath) {
     content.split('\n').forEach(line => {
       const match = line.match(/^([^#=]+)=(.*)$/);
       if (match) {
-        process.env[match[1].trim()] = match[2].trim();
+        let value = match[2].trim();
+        if (value.startsWith('"') && value.endsWith('"')) {
+          value = value.slice(1, -1);
+        } else if (value.startsWith("'") && value.endsWith("'")) {
+          value = value.slice(1, -1);
+        }
+        process.env[match[1].trim()] = value;
       }
     });
   }
