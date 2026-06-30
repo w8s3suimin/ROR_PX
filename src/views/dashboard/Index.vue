@@ -78,7 +78,12 @@
                 <span v-if="copied" class="text-green-400 text-[10px] animate-pulse">已複製!</span>
               </p>
               <div @click="copyCode(currentLicense.code)" :class="currentLicense.code === '尚未配發' ? 'cursor-default' : 'cursor-pointer hover:border-ror-accent/50'" class="bg-black/30 px-3 py-2 rounded border border-white/5 text-white select-all text-sm font-mono break-all font-semibold flex items-center justify-between group transition-colors">
-                {{ currentLicense.code }}
+                <div class="flex items-center">
+                  <button v-if="currentLicense.code !== '尚未配發' && selectedTab !== 'infinite'" @click.stop="openExtendModal" class="p-1 mr-2 rounded-full hover:bg-white/10 text-ror-muted hover:text-white transition-colors" title="自助展延 / 擴充機台">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                  </button>
+                  {{ currentLicense.code }}
+                </div>
                 <svg v-if="currentLicense.code !== '尚未配發'" class="w-4 h-4 text-ror-muted group-hover:text-ror-accent transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
                 <button v-else-if="selectedTab !== 'infinite'" @click.stop="openPurchaseModal" class="px-3 py-1 bg-ror-accent text-black font-bold rounded hover:bg-ror-accent/90 transition-colors text-xs whitespace-nowrap shadow-[0_0_10px_rgba(255,204,0,0.2)]">前往開通</button>
               </div>
@@ -173,6 +178,60 @@
         </div>
       </div>
     </div>
+
+    <!-- Extend Modal -->
+    <div v-if="extendModal.show" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+      <div class="bg-ror-card border border-white/10 rounded-2xl p-6 max-w-md w-full shadow-2xl relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-1 bg-blue-500"></div>
+        <h3 class="text-xl font-bold text-white mb-4">自助展延 / 擴充機台</h3>
+        
+        <div class="space-y-4 mb-6">
+          <div class="bg-black/30 p-3 rounded-lg border border-white/5 space-y-2">
+            <p class="text-sm flex justify-between text-ror-muted"><span>目前帳號：</span><span class="text-white">{{ userEmail }}</span></p>
+            <p class="text-sm flex justify-between text-ror-muted"><span>目前機台上限：</span><span class="text-white font-bold">{{ extendModal.currentDevices }} 台</span></p>
+            <p class="text-sm flex justify-between text-ror-muted"><span>目前到期時間：</span><span class="text-yellow-500 font-mono">{{ extendModal.currentExpirationFormatted }}</span></p>
+          </div>
+
+          <div class="space-y-3">
+            <div>
+              <label class="block text-sm text-ror-muted mb-1">欲開通到幾台？ (只能增加)</label>
+              <div class="flex items-center gap-2">
+                <button @click="extendModal.targetDevices > extendModal.currentDevices ? extendModal.targetDevices-- : null" class="w-8 h-8 rounded bg-white/5 hover:bg-white/10 flex items-center justify-center text-white" :disabled="extendModal.targetDevices <= extendModal.currentDevices">-</button>
+                <input type="number" v-model="extendModal.targetDevices" readonly class="w-16 bg-black border border-white/10 rounded px-2 py-1 text-center text-white font-bold" />
+                <button @click="extendModal.targetDevices++" class="w-8 h-8 rounded bg-white/5 hover:bg-white/10 flex items-center justify-center text-white">+</button>
+              </div>
+            </div>
+            
+            <div>
+              <label class="block text-sm text-ror-muted mb-1">展延時間 (一次增加一週期)</label>
+              <div class="flex items-center gap-2">
+                <button @click="extendModal.addCycles > 0 ? extendModal.addCycles-- : null" class="w-8 h-8 rounded bg-white/5 hover:bg-white/10 flex items-center justify-center text-white" :disabled="extendModal.addCycles <= 0">-</button>
+                <input type="text" :value="`+ ${extendModal.addCycles} 週期`" readonly class="w-24 bg-black border border-white/10 rounded px-2 py-1 text-center text-white font-bold" />
+                <button @click="extendModal.addCycles++" class="w-8 h-8 rounded bg-white/5 hover:bg-white/10 flex items-center justify-center text-white">+</button>
+              </div>
+              <p class="text-xs text-yellow-500 mt-1">預計展延至：{{ targetExpirationFormatted }}</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="bg-ror-accent/10 p-3 rounded-lg border border-ror-accent/20 space-y-2 mb-6">
+          <p class="text-sm flex justify-between text-ror-muted"><span>目前點數：</span><span class="text-white font-bold">{{ userPxp }}</span></p>
+          <p class="text-sm flex justify-between text-ror-muted"><span>本次需花費：</span><span class="text-yellow-500 font-bold">{{ calculatedCost }}</span></p>
+          <div class="h-px bg-white/10 my-1"></div>
+          <p class="text-sm flex justify-between text-ror-muted"><span>扣除後剩餘：</span><span class="font-bold" :class="userPxp >= calculatedCost ? 'text-green-400' : 'text-red-400'">{{ userPxp - calculatedCost }}</span></p>
+          <p v-if="userPxp < calculatedCost" class="text-xs text-red-400 text-right mt-1">點數不足！</p>
+        </div>
+        
+        <div class="flex gap-3 justify-end">
+          <button @click="extendModal.show = false" class="px-4 py-2 rounded-lg border border-white/10 text-ror-muted hover:text-white hover:bg-white/5 transition-colors text-sm font-medium">
+            取消
+          </button>
+          <button class="px-4 py-2 rounded-lg bg-blue-500 text-white font-bold hover:bg-blue-400 transition-colors disabled:opacity-50 text-sm flex items-center justify-center min-w-[100px]" :disabled="userPxp < calculatedCost || (extendModal.addCycles === 0 && extendModal.targetDevices === extendModal.currentDevices)">
+            確認扣款並展延
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -243,6 +302,65 @@ const buyModal = ref({
   days: 0
 })
 const isBuying = ref(false)
+
+const extendModal = ref({
+  show: false,
+  planType: '',
+  currentDevices: 0,
+  targetDevices: 0,
+  addCycles: 0,
+  currentExpiration: null,
+  currentExpirationFormatted: '',
+})
+
+const openExtendModal = () => {
+  const planType = selectedTab.value
+  const lic = licenses.value[planType]
+  if (!lic || lic.code === '尚未配發' || planType === 'infinite') return
+
+  extendModal.value = {
+    show: true,
+    planType,
+    currentDevices: lic.limit,
+    targetDevices: lic.limit,
+    addCycles: 0,
+    currentExpiration: lic.expires_at,
+    currentExpirationFormatted: new Date(lic.expires_at).toLocaleString('zh-TW', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })
+  }
+}
+
+const calculatedCost = computed(() => {
+  if (!extendModal.value.show) return 0
+  const planType = extendModal.value.planType
+  const basePrice = planType === 'daily' ? 20 : planType === 'weekly' ? 100 : 300
+  const cycleDays = planType === 'daily' ? 1 : planType === 'weekly' ? 7 : 30
+
+  let remainingDays = 0
+  if (extendModal.value.currentExpiration) {
+    const diffTime = Math.max(0, new Date(extendModal.value.currentExpiration).getTime() - Date.now())
+    remainingDays = diffTime / (1000 * 60 * 60 * 24)
+  }
+
+  const addDevices = Math.max(0, extendModal.value.targetDevices - extendModal.value.currentDevices)
+  const costAddDevice = Math.floor((remainingDays / cycleDays)) * addDevices * basePrice
+  const costExtend = extendModal.value.addCycles * basePrice * extendModal.value.targetDevices
+
+  return Math.max(0, costAddDevice) + costExtend
+})
+
+const targetExpirationFormatted = computed(() => {
+  if (!extendModal.value.show) return ''
+  const cycleDays = extendModal.value.planType === 'daily' ? 1 : extendModal.value.planType === 'weekly' ? 7 : 30
+  const addDays = extendModal.value.addCycles * cycleDays
+  
+  let baseDate = new Date()
+  if (extendModal.value.currentExpiration && new Date(extendModal.value.currentExpiration) > baseDate) {
+    baseDate = new Date(extendModal.value.currentExpiration)
+  }
+  
+  baseDate.setDate(baseDate.getDate() + addDays)
+  return baseDate.toLocaleString('zh-TW', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })
+})
 
 const openPurchaseModal = () => {
   if (selectedTab.value === 'infinite') return
@@ -342,8 +460,10 @@ onMounted(async () => {
             if (type === 'infinite') {
               licenses.value[type].limit = '∞'
               licenses.value[type].days = '∞'
+              licenses.value[type].expires_at = null
             } else {
               licenses.value[type].limit = item.allowed_devices
+              licenses.value[type].expires_at = item.expires_at
               if (item.expires_at) {
                 const diffTime = Math.max(0, new Date(item.expires_at).getTime() - Date.now())
                 licenses.value[type].days = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
