@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="min-h-screen bg-[#121212] text-white py-12 px-6">
     <div class="max-w-4xl mx-auto space-y-12">
       <!-- Header -->
@@ -16,10 +16,10 @@
           <div class="space-y-3 flex-1 text-center md:text-left">
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-sm font-medium border border-blue-500/20">
               <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
-              最新版本 v0.3.003
+              最新版本 v0.4.001
             </div>
             <h2 class="text-2xl font-bold">ROR_JS 掛機框架</h2>
-            <p class="text-ror-muted">發布日期：2026-06-24</p>
+            <p class="text-ror-muted">發布日期：2026-06-30</p>
           </div>
           <div class="flex flex-col gap-3 w-full md:w-auto">
             <a href="#" class="flex items-center justify-center gap-2 bg-ror-accent text-black px-8 py-4 rounded-xl font-bold hover:bg-ror-accent-hover transition-all shadow-[0_0_20px_rgba(255,204,0,0.3)] hover:shadow-[0_0_30px_rgba(255,204,0,0.5)] transform hover:-translate-y-1">
@@ -141,9 +141,18 @@ const setItemRef = (el, idx) => {
 
 const patches = ref([
   {
+    version: 'v0.4.001',
+    date: '2026-06-30',
+    isLatest: true,
+    features: [
+      { icon: '✨', color: 'text-blue-400', desc: '<strong>設備及角色監控：</strong>資料庫功能正式上線，所有模擬器上獲取的資料會匯集到管理中心網頁之中。' },
+      { icon: ' ', color: 'text-blue-400', desc: '<strong>設備：</strong>設備監控面板可查看所有機台的連線狀態、當前執行任務與持續時間。' },
+      { icon: ' ', color: 'text-blue-400', desc: '<strong>角色：</strong>角色的物資與狀態將會同步更新到角色管理面板中。' },
+      { icon: '✨', color: 'text-blue-400', desc: '<strong>安全驗證：</strong>實裝啟動授權碼驗證機制，未經授權之設備將被強制停止，提升系統安全性。' }
+    ]
+  },  {
     version: 'v0.3.003',
     date: '2026-06-24',
-    isLatest: true,
     features: [
       { icon: '🎯', color: 'text-blue-400', desc: '<strong>主線與紅月優化：</strong>主線新增任務種類選擇；紅月優化防卡死機制與專屬特徵判定，並加入領獎次數長按快捷設定。' },
       { icon: '✨', color: 'text-yellow-400', desc: '<strong>系統與新功能：</strong>新增授權碼快速設定、自動更新修復，並支援商會訂單掃描時自動回傳水晶總量。' },
@@ -372,3 +381,4 @@ onUnmounted(() => {
   }
 }
 </style>
+
