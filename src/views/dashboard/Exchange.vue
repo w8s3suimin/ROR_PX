@@ -549,16 +549,7 @@ const updateSlot = async (targetId, slotName) => {
     return
   }
 
-  // Admin can input a custom name directly when registering
   let assignId = currentUser.value.id;
-  if (isAdmin.value) {
-    const customName = window.prompt("管理員登記：請輸入要指派的人員名稱 (留空則預設登記自己)");
-    if (customName !== null && customName.trim() !== "") {
-      assignId = customName.trim();
-    } else if (customName === null) {
-      return; // Cancelled
-    }
-  }
 
   const bDate = getBaseDateStringForTarget(targetId)
   // Find or create schedule in local state
