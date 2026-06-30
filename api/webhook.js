@@ -219,7 +219,18 @@ async function processSchedule(text, targets) {
 
 async function handleGetScheduleCommand(message, targets) {
   const args = message.split(' ');
-  const targetNameInput = args.length > 1 ? args.slice(1).join(' ') : null;
+  let targetNameInput = args.length > 1 ? args.slice(1).join(' ') : null;
+  
+  let isTomorrow = false;
+  if (targetNameInput && (targetNameInput.includes('明天') || targetNameInput.includes('-明') || targetNameInput.endsWith('明'))) {
+    isTomorrow = true;
+    targetNameInput = targetNameInput.replace(/明天|-明|明$/g, '').trim();
+    if (!targetNameInput) targetNameInput = null;
+  } else if (message.includes('-明') || message.includes('明天')) {
+    isTomorrow = true;
+  }
+  
+  const targetDateStr = getLocalDateStr(isTomorrow ? 1 : 0);
   
   const activeTargets = targets.filter(t => t.is_active);
   let targetId = null;
@@ -242,9 +253,9 @@ async function handleGetScheduleCommand(message, targets) {
   
   let schedulePromise = null;
   if (targetId) {
-    schedulePromise = getLatestScheduleForTarget(targetId);
+    schedulePromise = getScheduleForTarget(targetId, targetDateStr);
   } else {
-    schedulePromise = getLatestScheduleOverall();
+    schedulePromise = getScheduleOverall(targetDateStr);
   }
   
   // 平行發出請求以節省時間 (同時去拉班表跟拉使用者名單)
@@ -318,8 +329,17 @@ async function upsertSupabaseSchedule(schedulePayload) {
   });
 }
 
-async function getLatestScheduleForTarget(targetId) {
-  const url = `${SUPABASE_URL}/rest/v1/exchange_schedules?target_id=eq.${targetId}&order=base_date.desc&limit=1`;
+function getLocalDateStr(offsetDays = 0) {
+  const d = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Taipei"}));
+  d.setDate(d.getDate() + offsetDays);
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+}
+
+async function getScheduleForTarget(targetId, baseDate) {
+  const url = `${SUPABASE_URL}/rest/v1/exchange_schedules?target_id=eq.${targetId}&base_date=eq.${baseDate}&limit=1`;
   const response = await fetch(url, {
     method: 'GET',
     headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
@@ -328,8 +348,8 @@ async function getLatestScheduleForTarget(targetId) {
   return data.length > 0 ? data[0] : null;
 }
 
-async function getLatestScheduleOverall() {
-  const url = `${SUPABASE_URL}/rest/v1/exchange_schedules?order=updated_at.desc&limit=1`;
+async function getScheduleOverall(baseDate) {
+  const url = `${SUPABASE_URL}/rest/v1/exchange_schedules?base_date=eq.${baseDate}&order=updated_at.desc&limit=1`;
   const response = await fetch(url, {
     method: 'GET',
     headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
