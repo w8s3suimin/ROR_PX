@@ -101,7 +101,7 @@
         </div>
       </div>
 
-      <div class="bg-ror-card border border-ror-border rounded-xl p-6 md:col-span-2">
+      <div class="bg-ror-card border border-ror-border rounded-xl p-6">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3">
           <h2 class="text-xl font-bold text-ror-accent">設備狀態</h2>
           <div class="flex w-full sm:w-auto space-x-1 bg-black/20 p-1 rounded-lg border border-white/5">
