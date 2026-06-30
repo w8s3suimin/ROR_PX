@@ -62,7 +62,7 @@
 </template>
 
 <script setup>
-import { computed, ref, onMounted } from 'vue'
+import { computed, ref, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { supabase } from '../../utils/supabase'
 
@@ -109,7 +109,7 @@ onMounted(async () => {
     }
   }
 
-  supabase.auth.onAuthStateChange(async (event, session) => {
+  const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
     isLoggedIn.value = !!session
     if (session) {
       const { data: profile } = await supabase
@@ -129,6 +129,12 @@ onMounted(async () => {
       }
     } else {
       navItems.value = navItems.value.filter(item => item.path !== '/dashboard/exchange' && item.path !== '/dashboard/admin')
+    }
+  })
+
+  onUnmounted(() => {
+    if (authListener && authListener.subscription) {
+      authListener.subscription.unsubscribe()
     }
   })
 })
