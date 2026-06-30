@@ -338,15 +338,15 @@ const confirmExtend = async () => {
       alert('擴充失敗：' + error.message)
     } else if (data && data.success) {
       // 擴充成功，更新本地狀態
-      alert('擴充成功！')
-      extendModal.value.show = false
       await fetchUserData() // 重新獲取資料與點數
+      extendModal.value.show = false
+      alert('擴充成功！')
     } else {
       alert('擴充失敗：' + (data?.message || '未知錯誤'))
     }
   } catch (e) {
     console.error('Error extending license:', e)
-    alert('發生錯誤，請稍後再試')
+    alert('發生異常錯誤，請稍後再試')
   } finally {
     isExtending.value = false
   }
@@ -427,11 +427,8 @@ const confirmBuy = async () => {
       alert(data.message)
     } else {
       buyModal.value.show = false
-      userPxp.value = data.remaining_pxp
-      
-      licenses.value[buyModal.value.planType].code = data.code
-      licenses.value[buyModal.value.planType].days = buyModal.value.days
-      licenses.value[buyModal.value.planType].limit = 1
+      await fetchUserData() // 重新讀取完整的資料庫狀態 (包含 expires_at)
+      alert('開通成功！')
     }
   } catch (error) {
     console.error('Purchase failed', error)
