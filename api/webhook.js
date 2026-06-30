@@ -464,7 +464,7 @@ async function sendFlexScheduleReply(replyToken, targetName, schedule, profiles)
         type: "box",
         layout: "vertical",
         paddingAll: "xl",
-        borderWidth: "bold",
+        borderWidth: "normal",
         borderColor: "#FBBF24",
         cornerRadius: "xl",
         contents: contents
