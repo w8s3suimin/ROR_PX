@@ -1,10 +1,18 @@
 <template>
   <div class="h-full">
-    <div class="mb-4 flex items-baseline gap-3 flex-wrap">
-      <h1 class="text-2xl md:text-3xl font-bold text-white tracking-tight shrink-0 flex items-center gap-3">
-        角色管理
-      </h1>
-      <p class="text-sm text-ror-muted">集中監控所有帳號角色的狀態、物資與資產</p>
+    <div class="mb-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div class="flex items-baseline gap-3 flex-wrap">
+        <h1 class="text-2xl md:text-3xl font-bold text-white tracking-tight shrink-0 flex items-center gap-3">
+          角色管理
+        </h1>
+        <p class="text-sm text-ror-muted">集中監控所有帳號角色的狀態、物資與資產</p>
+      </div>
+      <div>
+        <select v-if="viewAsAdmin" v-model="filters.platform_id" class="bg-[#1a1a1a] border border-ror-border rounded px-3 py-1.5 text-sm text-white focus:outline-none focus:border-ror-accent">
+          <option :value="null">全部平台</option>
+          <option v-for="email in uniquePlatforms" :key="email" :value="email">{{ email }}</option>
+        </select>
+      </div>
     </div>
 
     <!-- Error/Loading States -->
@@ -135,7 +143,7 @@
               <span @click.stop="toggleStringFilter('game_account', char.game_account)" class="hover:text-ror-accent transition-colors">{{ char.game_account || '未知遊戲帳號' }}</span>
             </div>
             <div v-if="viewAsAdmin" class="text-xs text-ror-muted">
-              <span v-if="char.profiles?.email" @click.stop="toggleStringFilter('platform_id', char.profiles?.email)" class="hover:text-ror-accent transition-colors cursor-pointer">{{ char.profiles?.email }}</span>
+              <span v-if="char.profiles?.email">{{ char.profiles?.email }}</span>
               <span v-else>未綁定</span>
             </div>
           </div>
@@ -347,6 +355,12 @@ const filters = ref({
 
 const hasActiveFilters = computed(() => {
   return Object.values(filters.value).some(val => val !== null)
+})
+
+const uniquePlatforms = computed(() => {
+  if (!characters.value) return []
+  const platforms = characters.value.map(c => c.profiles?.email).filter(Boolean)
+  return [...new Set(platforms)].sort()
 })
 
 const clearAllFilters = () => {

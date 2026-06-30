@@ -1,7 +1,7 @@
 <template>
   <div class="animate-fade-in">
     <!-- Header -->
-    <div class="mb-6 flex justify-between items-center">
+    <div class="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
       <div>
         <h1 class="text-3xl font-bold text-white tracking-tight">設備監控</h1>
         <p class="text-ror-muted mt-1">即時同步設備、目前任務的狀態顯示</p>
