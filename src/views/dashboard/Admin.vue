@@ -55,7 +55,12 @@
             <div>
               <label class="block text-sm text-ror-muted mb-1">授權碼</label>
               <div class="flex gap-2">
-                <input type="text" v-model="updateCode" placeholder="請輸入欲修改的授權碼..." class="flex-1 w-full bg-[#1a1a1a] border border-white/10 rounded-lg px-3 py-2 text-white font-mono focus:outline-none focus:border-ror-accent">
+                <div class="relative flex-1">
+                  <input type="text" v-model="updateCode" placeholder="請輸入欲修改的授權碼..." class="w-full bg-[#1a1a1a] border border-white/10 rounded-lg pl-3 pr-10 py-2 text-white font-mono focus:outline-none focus:border-ror-accent">
+                  <button v-if="isCodeVerified" @click="verifyCode" class="absolute right-2 top-1/2 -translate-y-1/2 text-white/50 hover:text-white transition-colors focus:outline-none" title="重新讀取資料 (復原修改)">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                  </button>
+                </div>
                 <button @click="verifyCode" :disabled="isValidating || isCodeVerified" :class="isCodeVerified ? 'bg-white/10 text-white opacity-50 cursor-not-allowed' : 'bg-yellow-500 text-black hover:bg-yellow-400 font-bold'" class="px-4 py-2 rounded-lg transition-colors whitespace-nowrap">
                   {{ isValidating ? '驗證中...' : '驗證' }}
                 </button>
