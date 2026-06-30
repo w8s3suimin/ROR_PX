@@ -66,9 +66,12 @@
                 </button>
               </div>
             </div>
-            <div>
+            <div class="relative">
               <label class="block text-sm text-ror-muted mb-1">綁定至使用者信箱</label>
-              <input type="email" v-model="updateEmail" placeholder="輸入使用者信箱..." class="w-full bg-[#1a1a1a] border border-white/10 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-ror-accent">
+              <input type="email" list="admin-email-list" v-model="updateEmail" placeholder="輸入使用者信箱..." class="w-full bg-[#1a1a1a] border border-white/10 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-ror-accent">
+              <datalist id="admin-email-list">
+                <option v-for="email in allEmails" :key="email" :value="email"></option>
+              </datalist>
             </div>
             <div class="grid grid-cols-2 gap-4">
               <div>
@@ -110,6 +113,7 @@ import { supabase } from '../../utils/supabase'
 import { isAdminRole } from '../../utils/adminState'
 
 const router = useRouter()
+const allEmails = ref([])
 
 onMounted(async () => {
   // 防護機制，雙重確認為 Admin 否則踢回 Dashboard
@@ -119,10 +123,22 @@ onMounted(async () => {
       const { data: profile } = await supabase.from('profiles').select('is_admin').eq('id', session.user.id).single()
       if (!profile || !profile.is_admin) {
         router.push('/dashboard')
+        return
       }
     } else {
       router.push('/login')
+      return
     }
+  }
+
+  // 取得所有使用者信箱供下拉選單使用
+  try {
+    const { data } = await supabase.from('profiles').select('email')
+    if (data) {
+      allEmails.value = data.map(p => p.email).filter(Boolean)
+    }
+  } catch (e) {
+    console.error('Failed to fetch emails', e)
   }
 })
 
