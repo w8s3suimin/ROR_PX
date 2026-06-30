@@ -142,7 +142,8 @@ async function processSchedule(text, targets) {
       const shiftDateStr = dateMap[prefix];
       if (shiftDateStr) {
         const [yyyy, mm, dd] = shiftDateStr.split('-').map(Number);
-        const shiftEndDate = new Date(yyyy, mm - 1, dd, parseInt(shiftMatch[3], 10), 0, 0);
+        const endHour = parseInt(shiftMatch[3], 10);
+        const shiftEndDate = new Date(Date.UTC(yyyy, mm - 1, dd, endHour - 8, 0, 0));
         const now = new Date();
         if (now > shiftEndDate) continue;
       }
@@ -163,7 +164,7 @@ async function processSchedule(text, targets) {
       
       parsedDataByTarget[currentTarget.id][mainBaseDate][shiftCode] = {
         user_id: userName,
-        status: isProcessed ? 'completed' : '📈',
+        status: isProcessed ? 'completed' : '☐',
         completed: isProcessed,
         updated_at: new Date().toISOString()
       };
@@ -462,7 +463,7 @@ async function sendFlexScheduleReply(replyToken, targetName, schedule, profiles)
          userName = sData.user_id;
        }
        userColor = "#FBBF24"; // yellow
-       statusIcon = sData.completed ? "☑" : "📈";
+       statusIcon = sData.completed ? "☑" : "☐";
     }
     
     contents.push({
