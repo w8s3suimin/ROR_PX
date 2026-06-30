@@ -17,7 +17,7 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
         <!-- 區塊1：產生新的授權碼 -->
         <div class="bg-black/30 rounded-xl p-5 border border-white/5">
-          <h3 class="text-lg font-bold text-white mb-4 border-b border-white/10 pb-2">產生新授權碼 (手動派發用)</h3>
+          <h3 class="text-lg font-bold text-white mb-4 border-b border-white/10 pb-2">產生新授權碼</h3>
           <div class="space-y-4">
             <div>
               <label class="block text-sm text-ror-muted mb-1">方案類型</label>
@@ -63,7 +63,14 @@
             <div class="grid grid-cols-2 gap-4">
               <div>
                 <label class="block text-sm text-ror-muted mb-1">重新指定到期日 (選填)</label>
-                <input type="date" v-model="updateExpireDate" class="w-full bg-[#1a1a1a] border border-white/10 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-ror-accent">
+                <div class="flex flex-col gap-2">
+                  <input type="date" v-model="updateExpireDate" class="w-full bg-[#1a1a1a] border border-white/10 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-ror-accent">
+                  <div class="flex gap-2">
+                    <button @click="quickAddDays(30)" class="flex-1 bg-white/10 hover:bg-white/20 text-xs py-1 rounded transition-colors">+月</button>
+                    <button @click="quickAddDays(7)" class="flex-1 bg-white/10 hover:bg-white/20 text-xs py-1 rounded transition-colors">+周</button>
+                    <button @click="quickAddDays(1)" class="flex-1 bg-white/10 hover:bg-white/20 text-xs py-1 rounded transition-colors">+日</button>
+                  </div>
+                </div>
               </div>
               <div>
                 <label class="block text-sm text-ror-muted mb-1">重新指定上限 (選填)</label>
@@ -166,6 +173,39 @@ const updateExpireDate = ref('')
 const updateDevices = ref('')
 const isUpdating = ref(false)
 
+const quickAddDays = async (days) => {
+  if (!updateCode.value) {
+    alert('請先輸入欲展延的授權碼');
+    return;
+  }
+  isUpdating.value = true;
+  try {
+    const { data, error } = await supabase.rpc('admin_update_license', {
+      p_code: updateCode.value,
+      p_user_email: updateEmail.value || null,
+      p_expires_at: null,
+      p_allowed_devices: updateDevices.value ? parseInt(updateDevices.value) : null,
+      p_add_days: days
+    });
+    
+    if (error) throw error;
+    if (!data.success) {
+      alert(data.message);
+    } else {
+      alert(`成功展延 ${days} 天！`);
+      updateCode.value = '';
+      updateEmail.value = '';
+      updateExpireDate.value = '';
+      updateDevices.value = '';
+    }
+  } catch (err) {
+    console.error(err);
+    alert('更新失敗');
+  } finally {
+    isUpdating.value = false;
+  }
+}
+
 const updateAdminLicense = async () => {
   if (!updateCode.value) {
     alert('請輸入授權碼');
@@ -184,7 +224,8 @@ const updateAdminLicense = async () => {
       p_code: updateCode.value,
       p_user_email: updateEmail.value || null,
       p_expires_at: expiresAtStr,
-      p_allowed_devices: updateDevices.value ? parseInt(updateDevices.value) : null
+      p_allowed_devices: updateDevices.value ? parseInt(updateDevices.value) : null,
+      p_add_days: null
     });
     
     if (error) throw error;
