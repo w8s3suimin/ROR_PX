@@ -231,9 +231,9 @@ BEGIN
         END IF;
     END IF;
 
-    -- 加機費用 = floor(剩餘天數 / 方案週期天數 * 加機數量 * 原價)
+    -- 加機費用 = floor(剩餘天數 / 方案週期天數 * 原價) * 加機數量
     IF p_add_devices > 0 THEN
-        v_cost_add_device := floor((v_remaining_days / v_cycle_days) * p_add_devices * v_base_price);
+        v_cost_add_device := floor((v_remaining_days / v_cycle_days) * v_base_price) * p_add_devices;
         IF v_cost_add_device < 0 THEN v_cost_add_device := 0; END IF;
     END IF;
 

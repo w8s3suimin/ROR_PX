@@ -381,7 +381,7 @@ const calculatedCost = computed(() => {
   }
 
   const addDevices = Math.max(0, extendModal.value.targetDevices - extendModal.value.currentDevices)
-  const costAddDevice = Math.floor((remainingDays / cycleDays) * addDevices * basePrice)
+  const costAddDevice = Math.floor((remainingDays / cycleDays) * basePrice) * addDevices
   const costExtend = extendModal.value.addCycles * basePrice * extendModal.value.targetDevices
 
   return Math.max(0, costAddDevice) + costExtend
