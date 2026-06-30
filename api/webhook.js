@@ -497,8 +497,7 @@ async function sendTextScheduleReply(replyToken, targetName, schedule, profiles)
   const mB = nextD.getMonth() + 1;
   const dB = nextD.getDate();
   
-  const shortName = targetName.split('．').pop() || targetName;
-  const titleLine = `指揮官 ${shortName} 班表`;
+  const titleLine = `${targetName} 班表`;
   const dateLine = `A ${mA}/${dA}; B ${mB}/${dB}`;
   const dutyOfficerLine = `值班人員 ${dutyOfficerName}`;
   const separator = `------------------------`;
