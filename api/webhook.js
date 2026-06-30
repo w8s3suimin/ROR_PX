@@ -430,7 +430,7 @@ async function sendFlexScheduleReply(replyToken, targetName, schedule, profiles)
          userName = sData.user_id;
        }
        userColor = "#FBBF24"; // yellow
-       statusIcon = sData.completed ? "✅" : "📈";
+       statusIcon = sData.completed ? "✔" : "📈";
     }
     
     contents.push({
@@ -440,7 +440,7 @@ async function sendFlexScheduleReply(replyToken, targetName, schedule, profiles)
       contents: [
         { type: "text", text: slot.display, size: "sm", color: "#DDDDDD", flex: 4 },
         { type: "text", text: userName, size: "sm", color: userColor, flex: 4, align: "center", weight: (sData && sData.user_id) ? "bold" : "regular" },
-        { type: "text", text: statusIcon, size: "sm", flex: 2, align: "end" }
+        { type: "text", text: statusIcon, size: "sm", flex: 2, align: "end", color: "#FBBF24", weight: "bold" }
       ]
     });
     
@@ -460,6 +460,9 @@ async function sendFlexScheduleReply(replyToken, targetName, schedule, profiles)
         type: "box",
         layout: "vertical",
         paddingAll: "xl",
+        borderWidth: "normal",
+        borderColor: "#FBBF24",
+        cornerRadius: "lg",
         contents: contents
       }
     }
