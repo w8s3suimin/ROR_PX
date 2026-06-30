@@ -408,8 +408,8 @@ async function sendFlexScheduleReply(replyToken, targetName, schedule, profiles)
     layout: "horizontal",
     margin: "lg",
     contents: [
-      { type: "text", text: "值班人員", size: "sm", color: "#888888", flex: 0 },
-      { type: "text", text: dutyOfficerName, size: "sm", color: "#FFFFFF", margin: "md" }
+      { type: "text", text: "值班人員", size: "md", color: "#888888", flex: 0 },
+      { type: "text", text: dutyOfficerName, size: "md", color: "#FFFFFF", margin: "md" }
     ]
   });
   
@@ -443,8 +443,8 @@ async function sendFlexScheduleReply(replyToken, targetName, schedule, profiles)
       layout: "horizontal",
       margin: "md",
       contents: [
-        { type: "text", text: slot.display, size: "sm", color: "#DDDDDD", flex: 4 },
-        { type: "text", text: displayUser, size: "sm", color: userColor, flex: 6, align: "start", weight: (sData && sData.user_id) ? "bold" : "regular" }
+        { type: "text", text: slot.display, size: "md", color: "#DDDDDD", flex: 4 },
+        { type: "text", text: displayUser, size: "md", color: userColor, flex: 6, align: "start", weight: (sData && sData.user_id) ? "bold" : "regular" }
       ]
     });
     
