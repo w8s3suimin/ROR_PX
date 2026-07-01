@@ -72,7 +72,14 @@ const router = createRouter({
 // Auth Guard
 router.beforeEach(async (to, from, next) => {
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
-  const { data: { session } } = await supabase.auth.getSession()
+  
+  let session = null;
+  try {
+    const { data } = await supabase.auth.getSession();
+    session = data.session;
+  } catch (error) {
+    console.error('Error getting session:', error);
+  }
 
   if (requiresAuth && !session) {
     next('/login')
