@@ -175,6 +175,13 @@ const sortedDevices = computed(() => {
     if (isAOnline !== isBOnline) {
       return isBOnline - isAOnline // 1 (online) comes before 0 (offline)
     }
+    
+    const emailA = a.profiles?.email || ''
+    const emailB = b.profiles?.email || ''
+    if (emailA !== emailB) {
+      return emailA.localeCompare(emailB)
+    }
+    
     return a.device_index - b.device_index
   })
 })
