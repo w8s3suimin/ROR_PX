@@ -16,10 +16,10 @@
           <div class="space-y-3 flex-1 text-center md:text-left">
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-sm font-medium border border-blue-500/20">
               <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
-              最新版本 v0.4.002
+              最新版本 v0.4.003
             </div>
             <h2 class="text-2xl font-bold">ROR_JS 掛機框架</h2>
-            <p class="text-ror-muted">發布日期：2026-07-01</p>
+            <p class="text-ror-muted">發布日期：2026-07-02</p>
           </div>
           <div class="flex flex-col gap-3 w-full md:w-auto">
             <a href="https://github.com/w8s3suimin/ROR_JS/releases/latest" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center gap-2 bg-ror-accent text-black px-8 py-4 rounded-xl font-bold hover:bg-ror-accent-hover transition-all shadow-[0_0_20px_rgba(255,204,0,0.3)] hover:shadow-[0_0_30px_rgba(255,204,0,0.5)] transform hover:-translate-y-1">
@@ -140,9 +140,20 @@ const setItemRef = (el, idx) => {
 
 const patches = ref([
   {
+    version: 'v0.4.003',
+    date: '2026-07-02',
+    isLatest: true,
+    features: [
+      { icon: '⚡', color: 'text-yellow-400', desc: '<strong>彈窗檢測優化：</strong>新增故事劇情對話框的自動跳過支援。' },
+      { icon: '🛠️', color: 'text-red-400', desc: '<strong>回城判定修復：</strong>因應遊戲更新，已將回城判讀更新為通用對話框圖標。' },
+      { icon: '🎁', color: 'text-purple-400', desc: '<strong>通行證領取修復：</strong>解決因匯出遺漏導致無法自動領取通行證獎勵的問題。' },
+      { icon: '✨', color: 'text-blue-400', desc: '<strong>穩定性提升：</strong>改善基礎函數調用，提升整體掛機框架穩定度。' }
+    ]
+  },
+  {
     version: 'v0.4.002',
     date: '2026-07-01',
-    isLatest: true,
+    isLatest: false,
     features: [
       { icon: '✨', color: 'text-blue-400', desc: '<strong>優化進度顯示：</strong>新增自動更新進度條與動畫提示，明確顯示下載進度以避免誤判為程式當機。' },
       { icon: '✨', color: 'text-purple-400', desc: '<strong>增量更新升級：</strong>升級自動更新機制，實作MD5比對僅下載有更動的檔案，大幅縮短更新時間。' },
