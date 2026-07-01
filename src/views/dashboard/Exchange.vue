@@ -180,8 +180,11 @@
 
 <script setup>
 import { ref, onMounted, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import { supabase } from '../../utils/supabase'
 import { viewAsAdmin as isAdmin } from '../../utils/adminState'
+
+const router = useRouter()
 
 const loading = ref(true)
 const currentUser = ref(null)
@@ -271,15 +274,22 @@ const fetchData = async () => {
     // Check if admin and get current name
     const { data: profile } = await supabase
       .from('profiles')
-      .select('is_admin, exchange_name')
+      .select('is_admin, exchange_name, exchange_member')
       .eq('id', session.user.id)
       .single()
       
     if (profile) {
+      if (!profile.is_admin && !profile.exchange_member) {
+        router.push('/dashboard')
+        return
+      }
       settingsName.value = profile.exchange_name || ''
       if (!profile.exchange_name) {
         showSettings.value = true // Prompt to set name first time
       }
+    } else {
+      router.push('/dashboard')
+      return
     }
   }
 
