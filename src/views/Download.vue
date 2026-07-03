@@ -16,10 +16,10 @@
           <div class="space-y-3 flex-1 text-center md:text-left">
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-sm font-medium border border-blue-500/20">
               <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
-              最新版本 v0.4.004
+              最新版本 v0.5.001
             </div>
             <h2 class="text-2xl font-bold">ROR_JS 掛機框架</h2>
-            <p class="text-ror-muted">發布日期：2026-07-03</p>
+            <p class="text-ror-muted">發布日期：2026-07-04</p>
           </div>
           <div class="flex flex-col gap-3 w-full md:w-auto">
             <a href="https://github.com/w8s3suimin/ROR_JS/releases/latest" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center gap-2 bg-ror-accent text-black px-8 py-4 rounded-xl font-bold hover:bg-ror-accent-hover transition-all shadow-[0_0_20px_rgba(255,204,0,0.3)] hover:shadow-[0_0_30px_rgba(255,204,0,0.5)] transform hover:-translate-y-1">
@@ -140,9 +140,18 @@ const setItemRef = (el, idx) => {
 
 const patches = ref([
   {
+    version: 'v0.5.001',
+    date: '2026-07-04',
+    isLatest: true,
+    features: [
+      { icon: '🌟', color: 'text-yellow-400', desc: '<strong>全新功能：</strong>新增自動交易功能，目前支援自動販售活動道具。' },
+      { icon: '🛠️', color: 'text-red-400', desc: '<strong>任務修復：</strong>解決回城函數呼叫名稱錯誤導致的任務崩潰問題。' }
+    ]
+  },
+  {
     version: 'v0.4.004',
     date: '2026-07-03',
-    isLatest: true,
+    isLatest: false,
     features: [
       { icon: '✨', color: 'text-yellow-400', desc: '<strong>系統優化：</strong>系統分頁可自行選擇回城時要點擊的按鈕（職業轉換或王都訓練場）。' },
       { icon: '🛠️', color: 'text-red-400', desc: '<strong>卡點修復：</strong>解決遊戲更新後因新增多種 NPC 對話情況而導致的腳本卡點異常。' }
