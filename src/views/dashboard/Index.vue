@@ -406,7 +406,7 @@ const openPurchaseModal = () => {
   let cost = 0, prefix = '', days = 0;
   if (selectedTab.value === 'daily') { cost = 20; prefix = 'PXD-'; days = 1; }
   else if (selectedTab.value === 'weekly') { cost = 100; prefix = 'PXW-'; days = 7; }
-  else if (selectedTab.value === 'monthly') { cost = 350; prefix = 'PXM-'; days = 30; }
+  else if (selectedTab.value === 'monthly') { cost = 300; prefix = 'PXM-'; days = 30; }
   buyModal.value = { show: true, planType: selectedTab.value, cost, prefix, days }
 }
 
