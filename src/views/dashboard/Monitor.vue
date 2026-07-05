@@ -30,17 +30,19 @@
     </div>
 
     <!-- Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4" @dragleave.prevent="dragOverIndex = null">
       <div v-for="(dev, index) in displayDevices" :key="dev.id" 
-           class="rounded-xl p-4 flex flex-col gap-3 hover:border-ror-accent transition-all duration-300 group relative" 
+           class="rounded-xl p-4 flex flex-col gap-3 transition-all duration-300 group relative" 
            :class="[
-             getDeviceStatus(dev) !== 'offline' ? 'bg-ror-card border border-ror-border opacity-100 shadow-[0_4px_20px_rgba(0,0,0,0.5)]' : 'bg-black/80 border border-gray-600 opacity-50 grayscale-[30%]',
-             { 'shake cursor-move': isEditing }
+             getDeviceStatus(dev) !== 'offline' ? 'bg-ror-card opacity-100 shadow-[0_4px_20px_rgba(0,0,0,0.5)]' : 'bg-black/80 opacity-50 grayscale-[30%]',
+             isEditing ? 'cursor-move' : '',
+             isEditing && dragOverIndex === null ? 'shake hover:border-ror-accent border border-ror-border' : '',
+             !isEditing ? 'border border-ror-border hover:border-ror-accent' : '',
+             dragOverIndex === index && draggedItemIndex !== index ? 'border-2 border-dashed border-white bg-black/60 scale-105 z-10 opacity-80' : (isEditing && dragOverIndex !== null ? 'border border-ror-border' : '')
            ]"
            :draggable="isEditing"
            @dragstart="onDragStart($event, index)"
-           @dragover.prevent
-           @dragenter.prevent="onDragEnter($event, index)"
+           @dragover.prevent="dragOverIndex = index"
            @drop="onDrop($event, index)"
            @dragend="onDragEnd">
         
@@ -119,6 +121,7 @@ const isEditing = ref(false)
 const editableDevices = ref([])
 const deletedDeviceIds = ref([])
 const draggedItemIndex = ref(null)
+const dragOverIndex = ref(null)
 
 let timer = null
 let fetchTimer = null
@@ -289,11 +292,8 @@ const onDragStart = (event, index) => {
   }
 }
 
-const onDragEnter = (event, index) => {
-  // Can be used for visual indicators later if needed
-}
-
 const onDrop = (event, index) => {
+  dragOverIndex.value = null
   if (draggedItemIndex.value !== null && draggedItemIndex.value !== index) {
     const draggedItem = editableDevices.value.splice(draggedItemIndex.value, 1)[0]
     editableDevices.value.splice(index, 0, draggedItem)
@@ -303,6 +303,7 @@ const onDrop = (event, index) => {
 
 const onDragEnd = () => {
   draggedItemIndex.value = null
+  dragOverIndex.value = null
 }
 
 const saveChanges = async () => {
