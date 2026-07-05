@@ -243,7 +243,9 @@ const toggleEditMode = async () => {
       selectedPlatform.value = currentUser.value?.email || ''
     }
     
-    editableDevices.value = JSON.parse(JSON.stringify(sortedDevices.value))
+    // In edit mode, strictly sort by device_index ignoring online status
+    const baseList = [...filteredDevicesList.value].sort((a, b) => a.device_index - b.device_index)
+    editableDevices.value = JSON.parse(JSON.stringify(baseList))
     deletedDeviceIds.value = []
     isEditing.value = true
     // Stop polling
