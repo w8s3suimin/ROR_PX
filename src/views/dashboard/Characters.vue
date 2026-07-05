@@ -332,7 +332,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { supabase } from '../../utils/supabase'
 import { isAdminRole, viewAsAdmin } from '../../utils/adminState'
 
@@ -391,7 +391,7 @@ const getServerWeight = (serverName) => {
   return index !== -1 ? index : 999
 }
 
-onMounted(async () => {
+const fetchCharacters = async () => {
   try {
     loading.value = true
     
@@ -410,12 +410,14 @@ onMounted(async () => {
         )
       `)
       
-    if (!viewAsAdmin.value && authData?.user) {
-      query = query.eq('user_id', authData.user.id)
+    if (!viewAsAdmin.value && currentUserId.value) {
+      query = query.eq('user_id', currentUserId.value)
     }
 
     const { data, error: err } = await query
     
+    if (err) throw err
+
     characters.value = data || []
     
     // Set dynamic max/min for ranges
@@ -434,6 +436,14 @@ onMounted(async () => {
   } finally {
     loading.value = false
   }
+}
+
+onMounted(() => {
+  fetchCharacters()
+})
+
+watch(viewAsAdmin, () => {
+  fetchCharacters()
 })
 
 const toggleRow = (id) => {
