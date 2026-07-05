@@ -37,7 +37,7 @@
              getDeviceStatus(dev) !== 'offline' ? 'bg-ror-card opacity-100 shadow-[0_4px_20px_rgba(0,0,0,0.5)]' : 'bg-black/80 opacity-50 grayscale-[30%]',
              isEditing ? 'cursor-move' : '',
              isEditing && draggedItemIndex === null ? 'shake hover:border-ror-accent border border-ror-border' : '',
-             isEditing && draggedItemIndex !== null && draggedItemIndex === index ? 'opacity-30 scale-95 border border-ror-accent' : '',
+             isEditing && draggedItemIndex !== null && draggedItemIndex === index ? 'opacity-60 scale-[0.98] border-2 border-dashed border-white bg-black' : '',
              isEditing && draggedItemIndex !== null && draggedItemIndex !== index ? 'border border-ror-border' : '',
              !isEditing ? 'border border-ror-border hover:border-ror-accent' : ''
            ]"
