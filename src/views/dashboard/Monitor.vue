@@ -30,20 +30,22 @@
     </div>
 
     <!-- Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4" @dragleave.prevent="dragOverIndex = null">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
       <div v-for="(dev, index) in displayDevices" :key="dev.id" 
            class="rounded-xl p-4 flex flex-col gap-3 transition-all duration-300 group relative" 
            :class="[
              getDeviceStatus(dev) !== 'offline' ? 'bg-ror-card opacity-100 shadow-[0_4px_20px_rgba(0,0,0,0.5)]' : 'bg-black/80 opacity-50 grayscale-[30%]',
              isEditing ? 'cursor-move' : '',
-             isEditing && dragOverIndex === null ? 'shake hover:border-ror-accent border border-ror-border' : '',
-             !isEditing ? 'border border-ror-border hover:border-ror-accent' : '',
-             dragOverIndex === index && draggedItemIndex !== index ? 'border-2 border-dashed border-white bg-black/60 scale-105 z-10 opacity-80' : (isEditing && dragOverIndex !== null ? 'border border-ror-border' : '')
+             isEditing && draggedItemIndex === null ? 'shake hover:border-ror-accent border border-ror-border' : '',
+             isEditing && draggedItemIndex !== null && draggedItemIndex === index ? 'opacity-30 scale-95 border border-ror-accent' : '',
+             isEditing && draggedItemIndex !== null && draggedItemIndex !== index ? 'border border-ror-border' : '',
+             !isEditing ? 'border border-ror-border hover:border-ror-accent' : ''
            ]"
            :draggable="isEditing"
            @dragstart="onDragStart($event, index)"
-           @dragover.prevent="dragOverIndex = index"
-           @drop="onDrop($event, index)"
+           @dragover.prevent
+           @dragenter.prevent="onDragEnter($event, index)"
+           @drop="onDrop"
            @dragend="onDragEnd">
         
         <!-- Delete Button for Offline Devices in Edit Mode -->
@@ -121,7 +123,6 @@ const isEditing = ref(false)
 const editableDevices = ref([])
 const deletedDeviceIds = ref([])
 const draggedItemIndex = ref(null)
-const dragOverIndex = ref(null)
 
 let timer = null
 let fetchTimer = null
@@ -292,18 +293,26 @@ const onDragStart = (event, index) => {
   }
 }
 
-const onDrop = (event, index) => {
-  dragOverIndex.value = null
+const onDragEnter = (event, index) => {
   if (draggedItemIndex.value !== null && draggedItemIndex.value !== index) {
+    // Dynamically reorder array for real-time preview
     const draggedItem = editableDevices.value.splice(draggedItemIndex.value, 1)[0]
     editableDevices.value.splice(index, 0, draggedItem)
+    
+    // Update the index reference to follow the dragged item
+    draggedItemIndex.value = index
+    
+    // Reindex instantly so # numbers update during drag
     reindexDevices()
   }
 }
 
+const onDrop = () => {
+  draggedItemIndex.value = null
+}
+
 const onDragEnd = () => {
   draggedItemIndex.value = null
-  dragOverIndex.value = null
 }
 
 const saveChanges = async () => {
