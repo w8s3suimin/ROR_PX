@@ -2,7 +2,7 @@
   <div class="animate-fade-in relative">
     
     <!-- Edit Mode Floating Hint -->
-    <div v-if="isEditing" class="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 pointer-events-none transition-all duration-300">
+    <div v-if="isEditing" class="fixed top-24 left-1/2 transform -translate-x-1/2 z-[100] pointer-events-none transition-all duration-300">
       <div class="bg-yellow-500 text-black px-6 py-2.5 rounded-full shadow-[0_4px_20px_rgba(234,179,8,0.4)] font-bold text-sm tracking-wide flex items-center gap-2 border-2 border-yellow-400">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
           <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
