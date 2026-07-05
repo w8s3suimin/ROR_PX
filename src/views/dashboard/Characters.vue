@@ -7,7 +7,11 @@
         </h1>
         <p class="text-sm text-ror-muted">集中監控所有帳號角色的狀態、物資與資產</p>
       </div>
-      <div class="flex justify-end">
+      <div class="flex justify-between items-center w-full">
+        <div class="bg-[#1a1a1a] border border-ror-border rounded px-4 py-2 flex items-center shrink-0">
+          <div class="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
+          <span class="text-sm font-medium">角色數量: {{ filteredAndSortedCharacters.length }}</span>
+        </div>
         <select v-if="viewAsAdmin" v-model="filters.platform_id" class="bg-[#1a1a1a] border border-ror-border rounded px-3 py-1.5 text-sm text-white focus:outline-none focus:border-ror-accent">
           <option :value="null">全部平台</option>
           <option v-for="email in uniquePlatforms" :key="email" :value="email">{{ email }}</option>
