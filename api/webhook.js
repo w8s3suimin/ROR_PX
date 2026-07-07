@@ -155,14 +155,25 @@ async function processSchedule(text, targets) {
         .replace(/轉/g, '')
         .trim();
         
+      let finalBaseDate = mainBaseDate;
+      let finalShiftCode = shiftCode;
+      
+      if (shiftCode === 'B21-24') {
+        const [yyyy, mm, dd] = mainBaseDate.split('-').map(Number);
+        const d = new Date(yyyy, mm - 1, dd);
+        d.setDate(d.getDate() + 1);
+        finalBaseDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        finalShiftCode = 'A21-24';
+      }
+      
       if (!parsedDataByTarget[currentTarget.id]) {
         parsedDataByTarget[currentTarget.id] = {};
       }
-      if (!parsedDataByTarget[currentTarget.id][mainBaseDate]) {
-        parsedDataByTarget[currentTarget.id][mainBaseDate] = {};
+      if (!parsedDataByTarget[currentTarget.id][finalBaseDate]) {
+        parsedDataByTarget[currentTarget.id][finalBaseDate] = {};
       }
       
-      parsedDataByTarget[currentTarget.id][mainBaseDate][shiftCode] = {
+      parsedDataByTarget[currentTarget.id][finalBaseDate][finalShiftCode] = {
         user_id: userName,
         status: isProcessed ? 'completed' : '☐',
         completed: isProcessed,
@@ -253,14 +264,20 @@ async function handleGetScheduleCommand(message, targets) {
   }
   
   let schedulePromise = null;
+  let nextSchedulePromise = null;
+  const dNext = new Date(targetDateStr);
+  dNext.setDate(dNext.getDate() + 1);
+  const nextTargetDateStr = `${dNext.getFullYear()}-${String(dNext.getMonth() + 1).padStart(2, '0')}-${String(dNext.getDate()).padStart(2, '0')}`;
+  
   if (targetId) {
     schedulePromise = getScheduleForTarget(targetId, targetDateStr);
+    nextSchedulePromise = getScheduleForTarget(targetId, nextTargetDateStr);
   } else {
     schedulePromise = getScheduleOverall(targetDateStr);
   }
   
   // 平行發出請求以節省時間 (同時去拉班表跟拉使用者名單)
-  const [schedule, profiles] = await Promise.all([
+  let [schedule, profiles] = await Promise.all([
     schedulePromise,
     getSupabaseProfiles()
   ]);
@@ -268,6 +285,21 @@ async function handleGetScheduleCommand(message, targets) {
   if (!schedule) {
     if (targetId) return { success: false, message: `【${targetName}】目前沒有任何班表資料。` };
     else return { success: false, message: "系統中目前沒有任何班表資料。" };
+  }
+
+  let nextSchedule = null;
+  if (targetId) {
+    nextSchedule = await nextSchedulePromise;
+  } else {
+    nextSchedule = await getScheduleForTarget(schedule.target_id, nextTargetDateStr);
+  }
+  
+  // Attach nextSchedule's A21-24 to schedule's B21-24 for rendering
+  if (!schedule.slots_data) schedule.slots_data = {};
+  if (nextSchedule && nextSchedule.slots_data && nextSchedule.slots_data['A21-24']) {
+    schedule.slots_data['B21-24'] = nextSchedule.slots_data['A21-24'];
+  } else {
+    delete schedule.slots_data['B21-24'];
   }
 
   if (!targetId) {

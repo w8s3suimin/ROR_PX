@@ -84,27 +84,27 @@
               <!-- Middle: Personnel -->
               <div class="flex-1 py-1.5 px-3 flex items-center justify-between border-l border-r border-white/5">
                 <div class="flex-1 text-center truncate relative group/name">
-                  <span v-if="getSlotData(target.id, slot.key)?.user_id" 
-                        @click="isAdmin ? editSlotName(target.id, slot.key) : null"
+                  <span v-if="getSlotData(target.id, slot)?.user_id" 
+                        @click="isAdmin ? editSlotName(target.id, slot) : null"
                         :class="['text-sm font-medium', isAdmin ? 'cursor-pointer hover:text-white text-ror-accent' : 'text-ror-accent']"
                         :title="isAdmin ? '點擊修改名稱' : ''">
-                    {{ getUserName(getSlotData(target.id, slot.key).user_id) }}
+                    {{ getUserName(getSlotData(target.id, slot).user_id) }}
                   </span>
-                  <span v-else-if="!target.is_active || isSlotLocked(target.id, slot.key)" class="text-gray-500 text-sm">未登記</span>
+                  <span v-else-if="!target.is_active || isSlotLocked(target.id, slot)" class="text-gray-500 text-sm">未登記</span>
                   <span v-else class="text-gray-500 text-sm invisible">未登記</span> <!-- Space preservation -->
                 </div>
                 
                 <!-- Action Buttons -->
                 <div v-if="target.is_active" class="flex-shrink-0 flex items-center ml-1 w-6 justify-center">
-                  <button v-if="!getSlotData(target.id, slot.key)?.user_id" 
-                          @click="updateSlot(target.id, slot.key)" 
-                          :disabled="isSlotLocked(target.id, slot.key)"
+                  <button v-if="!getSlotData(target.id, slot)?.user_id" 
+                          @click="updateSlot(target.id, slot)" 
+                          :disabled="isSlotLocked(target.id, slot)"
                           class="text-ror-accent hover:text-white transition-colors disabled:opacity-30 disabled:cursor-not-allowed" title="登記">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                   </button>
-                  <button v-else-if="canEditStatus(target.id, slot.key)" 
-                          @click="cancelSlot(target.id, slot.key)"
-                          :disabled="isSlotLocked(target.id, slot.key)"
+                  <button v-else-if="canEditStatus(target.id, slot)" 
+                          @click="cancelSlot(target.id, slot)"
+                          :disabled="isSlotLocked(target.id, slot)"
                           class="text-ror-accent hover:text-white transition-colors disabled:opacity-30 disabled:cursor-not-allowed" title="取消登記">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                   </button>
@@ -113,13 +113,13 @@
 
               <!-- Right: Checkbox -->
               <div class="w-12 py-1.5 flex justify-center items-center">
-                <div @click="canEditStatus(target.id, slot.key) ? toggleSlotStatus(target.id, slot.key, !getSlotData(target.id, slot.key)?.completed) : null"
+                <div @click="canEditStatus(target.id, slot) ? toggleSlotStatus(target.id, slot, !getSlotData(target.id, slot)?.completed) : null"
                      class="w-5 h-5 border-2 rounded transition-colors flex items-center justify-center bg-black"
                      :class="{ 
-                       'opacity-30 cursor-not-allowed border-gray-600': !canEditStatus(target.id, slot.key), 
-                       'cursor-pointer hover:bg-ror-accent/20 border-ror-accent': canEditStatus(target.id, slot.key) 
+                       'opacity-30 cursor-not-allowed border-gray-600': !canEditStatus(target.id, slot), 
+                       'cursor-pointer hover:bg-ror-accent/20 border-ror-accent': canEditStatus(target.id, slot) 
                      }">
-                  <svg v-if="getSlotData(target.id, slot.key)?.completed" class="w-3.5 h-3.5 text-ror-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                  <svg v-if="getSlotData(target.id, slot)?.completed" class="w-3.5 h-3.5 text-ror-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                 </div>
               </div>
 
@@ -240,15 +240,18 @@ const getTargetSlots = (targetId) => {
   const monthB = dB.getMonth() + 1
   const dateB = dB.getDate()
   
+  const currentBaseDateString = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+  const nextBaseDateString = `${dB.getFullYear()}-${String(dB.getMonth() + 1).padStart(2, '0')}-${String(dB.getDate()).padStart(2, '0')}`
+  
   return [
-    { key: 'A21-24', display: `${monthA}/${dateA} 21-24` },
-    { key: 'B00-06', display: `${monthB}/${dateB} 00-06` },
-    { key: 'B06-09', display: `${monthB}/${dateB} 06-09` },
-    { key: 'B09-12', display: `${monthB}/${dateB} 09-12` },
-    { key: 'B12-15', display: `${monthB}/${dateB} 12-15` },
-    { key: 'B15-18', display: `${monthB}/${dateB} 15-18` },
-    { key: 'B18-21', display: `${monthB}/${dateB} 18-21` },
-    { key: 'B21-24', display: `${monthB}/${dateB} 21-24` }
+    { key: 'A21-24', realBaseDate: currentBaseDateString, dbKey: 'A21-24', display: `${monthA}/${dateA} 21-24` },
+    { key: 'B00-06', realBaseDate: currentBaseDateString, dbKey: 'B00-06', display: `${monthB}/${dateB} 00-06` },
+    { key: 'B06-09', realBaseDate: currentBaseDateString, dbKey: 'B06-09', display: `${monthB}/${dateB} 06-09` },
+    { key: 'B09-12', realBaseDate: currentBaseDateString, dbKey: 'B09-12', display: `${monthB}/${dateB} 09-12` },
+    { key: 'B12-15', realBaseDate: currentBaseDateString, dbKey: 'B12-15', display: `${monthB}/${dateB} 12-15` },
+    { key: 'B15-18', realBaseDate: currentBaseDateString, dbKey: 'B15-18', display: `${monthB}/${dateB} 15-18` },
+    { key: 'B18-21', realBaseDate: currentBaseDateString, dbKey: 'B18-21', display: `${monthB}/${dateB} 18-21` },
+    { key: 'B21-24', realBaseDate: nextBaseDateString, dbKey: 'A21-24', display: `${monthB}/${dateB} 21-24` }
   ]
 }
 
@@ -312,14 +315,22 @@ const fetchData = async () => {
 }
 
 const fetchAllSchedulesAtOffsetZero = async () => {
-  const baseDates = targets.value.map(t => getBaseDateStringForTarget(t.id))
-  if (baseDates.length === 0) return
+  let allDates = []
+  targets.value.forEach(t => {
+    const d = getBaseDateObjForTarget(t.id)
+    allDates.push(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`)
+    
+    const dNext = new Date(d)
+    dNext.setDate(dNext.getDate() + 1)
+    allDates.push(`${dNext.getFullYear()}-${String(dNext.getMonth() + 1).padStart(2, '0')}-${String(dNext.getDate()).padStart(2, '0')}`)
+  })
+  if (allDates.length === 0) return
 
   const { data } = await supabase
     .from('exchange_schedules')
     .select('*')
     .in('target_id', targets.value.map(t => t.id))
-    .in('base_date', baseDates)
+    .in('base_date', [...new Set(allDates)])
 
   if (data) {
     schedules.value = data
@@ -333,18 +344,21 @@ watch(isAdmin, () => {
 })
 
 const fetchSchedulesForTarget = async (targetId) => {
-  const bDate = getBaseDateStringForTarget(targetId)
+  const d = getBaseDateObjForTarget(targetId)
+  const bDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+  const dNext = new Date(d)
+  dNext.setDate(dNext.getDate() + 1)
+  const nextDate = `${dNext.getFullYear()}-${String(dNext.getMonth() + 1).padStart(2, '0')}-${String(dNext.getDate()).padStart(2, '0')}`
+
   const { data } = await supabase
     .from('exchange_schedules')
     .select('*')
     .eq('target_id', targetId)
-    .eq('base_date', bDate)
-    .maybeSingle()
+    .in('base_date', [bDate, nextDate])
     
-  // Remove existing schedule for this target from local state
   schedules.value = schedules.value.filter(s => s.target_id !== targetId)
   if (data) {
-    schedules.value.push(data)
+    schedules.value.push(...data)
   }
 }
 
@@ -450,38 +464,37 @@ const updateDutyOfficer = async (targetId, value) => {
   }
 }
 
-const getSlotData = (targetId, slotName) => {
-  const bDate = getBaseDateStringForTarget(targetId)
-  const schedule = schedules.value.find(s => s.target_id === targetId && s.base_date === bDate)
+const getSlotData = (targetId, slot) => {
+  const schedule = schedules.value.find(s => s.target_id === targetId && s.base_date === slot.realBaseDate)
   if (!schedule) return null
-  return schedule.slots_data[slotName] || null
+  return schedule.slots_data[slot.dbKey] || null
 }
 
 const getUserName = (userId) => {
   return userProfiles.value[userId] || userId
 }
 
-const canEditStatus = (targetId, slotKey) => {
+const canEditStatus = (targetId, slot) => {
   if (isAdmin.value) return true
   const dutyOfficerId = getDutyOfficer(targetId)
   if (currentUser.value?.id === dutyOfficerId) return true
-  const slotData = getSlotData(targetId, slotKey)
+  const slotData = getSlotData(targetId, slot)
   if (slotData && slotData.user_id === currentUser.value?.id) return true
   return false
 }
 
-const toggleSlotStatus = async (targetId, slotKey, isCompleted) => {
-  if (!canEditStatus(targetId, slotKey)) return
+const toggleSlotStatus = async (targetId, slot, isCompleted) => {
+  if (!canEditStatus(targetId, slot)) return
 
-  const bDate = getBaseDateStringForTarget(targetId)
+  const bDate = slot.realBaseDate
   let scheduleIndex = schedules.value.findIndex(s => s.target_id === targetId && s.base_date === bDate)
   let schedule = scheduleIndex >= 0 ? schedules.value[scheduleIndex] : null
   
-  if (!schedule || !schedule.slots_data[slotKey]) return // Cant toggle a slot that isn't registered
+  if (!schedule || !schedule.slots_data[slot.dbKey]) return // Cant toggle a slot that isn't registered
 
   let newSlotsData = { ...schedule.slots_data }
-  newSlotsData[slotKey] = {
-    ...newSlotsData[slotKey],
+  newSlotsData[slot.dbKey] = {
+    ...newSlotsData[slot.dbKey],
     completed: isCompleted,
     status: isCompleted ? 'completed' : '📈',
     updated_at: new Date().toISOString()
@@ -500,38 +513,40 @@ const toggleSlotStatus = async (targetId, slotKey, isCompleted) => {
   }
 }
 
-const isSlotLocked = (targetId, slotKey) => {
+const isSlotLocked = (targetId, slot) => {
   if (isAdmin.value) return false // Admin can always edit
   
-  const d = getBaseDateObjForTarget(targetId)
-  const isA = slotKey.startsWith('A')
+  const [year, month, day] = slot.realBaseDate.split('-').map(Number)
+  const d = new Date(year, month - 1, day)
+  
+  const isA = slot.dbKey.startsWith('A')
   if (!isA) {
     d.setDate(d.getDate() + 1)
   }
   
-  // parse end hour from slotKey e.g. A21-24 -> 24
-  const endHour = parseInt(slotKey.split('-')[1])
+  // parse end hour from slot.dbKey e.g. A21-24 -> 24
+  const endHour = parseInt(slot.dbKey.split('-')[1])
   d.setHours(endHour, 0, 0, 0)
   
   // If current time is past the end hour, it's locked
   return new Date() > d
 }
 
-const cancelSlot = async (targetId, slotKey) => {
-  if (!canEditStatus(targetId, slotKey)) return
-  if (isSlotLocked(targetId, slotKey)) {
+const cancelSlot = async (targetId, slot) => {
+  if (!canEditStatus(targetId, slot)) return
+  if (isSlotLocked(targetId, slot)) {
     alert("該班次時間已過，無法取消登記。")
     return
   }
 
-  const bDate = getBaseDateStringForTarget(targetId)
+  const bDate = slot.realBaseDate
   let scheduleIndex = schedules.value.findIndex(s => s.target_id === targetId && s.base_date === bDate)
   let schedule = scheduleIndex >= 0 ? schedules.value[scheduleIndex] : null
   
-  if (!schedule || !schedule.slots_data[slotKey]) return
+  if (!schedule || !schedule.slots_data[slot.dbKey]) return
 
   let newSlotsData = { ...schedule.slots_data }
-  delete newSlotsData[slotKey] // Remove registration entirely
+  delete newSlotsData[slot.dbKey] // Remove registration entirely
   
   schedule.slots_data = newSlotsData // Optimistic
 
@@ -546,7 +561,7 @@ const cancelSlot = async (targetId, slotKey) => {
   }
 }
 
-const updateSlot = async (targetId, slotName) => {
+const updateSlot = async (targetId, slot) => {
   if (!currentUser.value) return
   if (!userProfiles.value[currentUser.value.id]) {
     alert("請先點擊右上角齒輪設定您的交易所名稱！")
@@ -554,14 +569,14 @@ const updateSlot = async (targetId, slotName) => {
     return
   }
 
-  if (isSlotLocked(targetId, slotName)) {
+  if (isSlotLocked(targetId, slot)) {
     alert("該班次時間已過，無法登記。")
     return
   }
 
   let assignId = currentUser.value.id;
 
-  const bDate = getBaseDateStringForTarget(targetId)
+  const bDate = slot.realBaseDate
   // Find or create schedule in local state
   let scheduleIndex = schedules.value.findIndex(s => s.target_id === targetId && s.base_date === bDate)
   let schedule = scheduleIndex >= 0 ? schedules.value[scheduleIndex] : null
@@ -577,7 +592,7 @@ const updateSlot = async (targetId, slotName) => {
   }
 
   let newSlotsData = { ...schedule.slots_data }
-  newSlotsData[slotName] = {
+  newSlotsData[slot.dbKey] = {
     user_id: assignId,
     status: '📈',
     completed: false,
@@ -601,20 +616,20 @@ const updateSlot = async (targetId, slotName) => {
   }
 }
 
-const editSlotName = async (targetId, slotKey) => {
+const editSlotName = async (targetId, slot) => {
   if (!isAdmin.value) return;
   
-  const bDate = getBaseDateStringForTarget(targetId);
+  const bDate = slot.realBaseDate;
   const schedule = schedules.value.find(s => s.target_id === targetId && s.base_date === bDate);
-  if (!schedule || !schedule.slots_data[slotKey]) return;
+  if (!schedule || !schedule.slots_data[slot.dbKey]) return;
   
-  const currentName = getUserName(schedule.slots_data[slotKey].user_id);
+  const currentName = getUserName(schedule.slots_data[slot.dbKey].user_id);
   const newName = window.prompt("修改班次人員名稱：", currentName);
   
   if (newName !== null && newName.trim() !== "" && newName !== currentName) {
     let newSlotsData = { ...schedule.slots_data };
-    newSlotsData[slotKey] = {
-      ...newSlotsData[slotKey],
+    newSlotsData[slot.dbKey] = {
+      ...newSlotsData[slot.dbKey],
       user_id: newName.trim(),
       updated_at: new Date().toISOString()
     };
