@@ -144,6 +144,7 @@ const patches = ref([
     date: '2026-07-08',
     isLatest: true,
     features: [
+      { icon: '⚠️', color: 'text-red-400', desc: '<strong>注意：</strong>本次熱更新功能修復需要以 APK 覆蓋更新安裝才能完成修復。' },
       { icon: '🗺️', color: 'text-green-400', desc: '<strong>尋路優化：</strong>紅月任務尋路改為利用小地圖圖標定位，並新增多種等級地圖的專屬點擊座標，大幅增加地圖相容性。' },
       { icon: '📜', color: 'text-yellow-400', desc: '<strong>選單優化：</strong>懸浮窗的下拉選單改為可滑動對話框，解決選單過長無法選擇的問題。' },
       { icon: '🛠️', color: 'text-blue-400', desc: '<strong>熱更新修復：</strong>實裝「熱更新防退版跳轉機制」，徹底解決冷啟動時底層引擎覆蓋檔案導致更新退回舊版的問題。' }
