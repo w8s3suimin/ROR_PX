@@ -60,7 +60,11 @@
                 <label class="block text-sm text-ror-muted mb-1">授權碼</label>
                 <div class="flex gap-2">
                   <div class="relative flex-1">
-                    <input type="text" v-model="updateCode" placeholder="請輸入欲修改的授權碼..." class="w-full bg-[#1a1a1a] border border-white/10 rounded-lg pl-3 pr-10 py-2 text-white font-mono focus:outline-none focus:border-ror-accent">
+                    <input type="text" list="all-codes-list" v-model="updateCode" placeholder="請輸入欲修改的授權碼..." class="w-full bg-[#1a1a1a] border border-white/10 rounded-lg pl-3 pr-10 py-2 text-white font-mono focus:outline-none focus:border-ror-accent">
+                    <datalist id="all-codes-list">
+                      <option value="所有授權碼">所有授權碼</option>
+                      <option v-for="c in allCodes" :key="c" :value="c"></option>
+                    </datalist>
                     <button v-if="isCodeVerified" @click="verifyCode" class="absolute right-2 top-1/2 -translate-y-1/2 text-white/50 hover:text-white transition-colors focus:outline-none" title="重新讀取資料 (復原修改)">
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
                     </button>
@@ -70,7 +74,7 @@
                   </button>
                 </div>
               </div>
-              <div class="relative">
+              <div class="relative" v-if="verifiedCode !== '所有授權碼'">
                 <label class="block text-sm text-ror-muted mb-1">綁定至使用者信箱</label>
                 <input type="email" list="admin-email-list" v-model="updateEmail" placeholder="輸入使用者信箱..." class="w-full bg-[#1a1a1a] border border-white/10 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-ror-accent">
                 <datalist id="admin-email-list">
@@ -78,11 +82,11 @@
                 </datalist>
               </div>
               <div class="grid grid-cols-2 gap-4">
-                <div>
+                <div :class="verifiedCode === '所有授權碼' ? 'col-span-2' : ''">
                   <label class="block text-sm text-ror-muted mb-1">重新指定到期日</label>
                   <div class="flex flex-col gap-2">
-                    <input v-if="!pendingExtensionText" type="datetime-local" step="1" v-model="updateExpireDate" class="w-full bg-[#1a1a1a] border border-white/10 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-ror-accent">
-                    <div v-else class="w-full bg-[#1a1a1a] border border-yellow-500/50 rounded-lg px-3 py-2 text-yellow-500 font-bold flex items-center justify-between">
+                    <input v-if="!pendingExtensionText && verifiedCode !== '所有授權碼'" type="datetime-local" step="1" v-model="updateExpireDate" class="w-full bg-[#1a1a1a] border border-white/10 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-ror-accent">
+                    <div v-if="pendingExtensionText" class="w-full bg-[#1a1a1a] border border-yellow-500/50 rounded-lg px-3 py-2 text-yellow-500 font-bold flex items-center justify-between">
                       <span>{{ pendingExtensionText }}</span>
                       <button @click="cancelPending" class="text-xs text-ror-muted hover:text-white underline">取消</button>
                     </div>
@@ -94,7 +98,7 @@
                     </div>
                   </div>
                 </div>
-                <div>
+                <div v-if="verifiedCode !== '所有授權碼'">
                   <label class="block text-sm text-ror-muted mb-1">重新指定上限</label>
                   <input type="number" v-model="updateDevices" placeholder="留空不改" class="w-full bg-[#1a1a1a] border border-white/10 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-ror-accent" min="1">
                 </div>
@@ -119,6 +123,7 @@ import { isAdminRole } from '../../utils/adminState'
 
 const router = useRouter()
 const allEmails = ref([])
+const allCodes = ref([])
 const isCheckingAuth = ref(true)
 
 onMounted(async () => {
@@ -145,6 +150,16 @@ onMounted(async () => {
     }
   } catch (e) {
     console.error('Failed to fetch emails', e)
+  }
+
+  // 取得所有授權碼供下拉選單使用
+  try {
+    const { data } = await supabase.from('authorization_codes').select('code')
+    if (data) {
+      allCodes.value = data.map(c => c.code)
+    }
+  } catch (e) {
+    console.error('Failed to fetch codes', e)
   }
   
   isCheckingAuth.value = false;
@@ -224,6 +239,7 @@ const isCodeVerified = computed(() => {
 
 const canExtend = (targetPlan) => {
   if (!isCodeVerified.value || !updatePlanType.value) return false;
+  if (updatePlanType.value === 'all') return true;
   return updatePlanType.value === targetPlan;
 }
 
@@ -248,6 +264,15 @@ const verifyCode = async () => {
   if (!updateCode.value) {
     alert('請輸入授權碼'); return;
   }
+
+  if (updateCode.value === '所有授權碼') {
+    updatePlanType.value = 'all';
+    pendingExtensionText.value = '';
+    pendingDaysToAdd.value = 0;
+    verifiedCode.value = '所有授權碼';
+    return;
+  }
+
   isValidating.value = true;
   try {
     const { data: license, error } = await supabase
@@ -285,7 +310,13 @@ const verifyCode = async () => {
 }
 
 const quickAddDays = (days, plan) => {
-  if (updatePlanType.value !== plan) return;
+  if (updatePlanType.value !== plan && updatePlanType.value !== 'all') return;
+  
+  if (updatePlanType.value === 'all') {
+    pendingDaysToAdd.value += days;
+    pendingExtensionText.value = `所有授權碼展延 +${pendingDaysToAdd.value} 天`;
+    return;
+  }
   
   let baseDate;
   if (updateExpireDate.value) {
@@ -316,6 +347,51 @@ const updateAdminLicense = async () => {
     return;
   }
   isUpdating.value = true;
+  
+  if (verifiedCode.value === '所有授權碼') {
+    if (pendingDaysToAdd.value <= 0) {
+      alert('請選擇展延天數');
+      isUpdating.value = false;
+      return;
+    }
+    try {
+      const { data: codes, error: fetchErr } = await supabase.from('authorization_codes').select('code, expires_at');
+      if (fetchErr) throw fetchErr;
+
+      const now = Date.now();
+      for (const c of codes) {
+        let baseDate;
+        if (c.expires_at) {
+          baseDate = new Date(c.expires_at);
+          if (baseDate.getTime() < now) {
+            baseDate = new Date();
+          }
+        } else {
+          baseDate = new Date();
+        }
+        baseDate.setDate(baseDate.getDate() + pendingDaysToAdd.value);
+        
+        await supabase.from('authorization_codes')
+          .update({ expires_at: baseDate.toISOString() })
+          .eq('code', c.code);
+      }
+      alert('所有授權碼更新成功！');
+      updateCode.value = '';
+      updateEmail.value = '';
+      updateExpireDate.value = '';
+      updateDevices.value = '';
+      updatePlanType.value = '';
+      pendingExtensionText.value = '';
+      pendingDaysToAdd.value = 0;
+      verifiedCode.value = '';
+    } catch (err) {
+      console.error(err);
+      alert('批量更新失敗');
+    } finally {
+      isUpdating.value = false;
+    }
+    return;
+  }
   
   try {
     let expiresAtStr = null;
