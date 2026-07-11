@@ -132,9 +132,9 @@
           </div>
           
           <!-- Col 3: Crystal & Red Moon -->
-          <div class="flex-[0.8] min-w-0 px-1 border-r border-ror-border/30 text-center flex flex-wrap items-center justify-center gap-x-1 gap-y-1">
+          <div class="flex-[0.8] min-w-0 px-1 border-r border-ror-border/30 text-center flex flex-col items-center justify-center gap-1">
             <div class="text-[12px] font-mono text-[#ff93d3] font-bold cursor-pointer hover:opacity-80" @click.stop="openNumericFilter('crystal')">{{ formatCrystal(char.crystal) }}</div>
-            <div class="text-[10px]">
+            <div class="text-[10px] mt-0.5">
               <span class="px-1 py-0.5 rounded font-bold font-mono" :class="Number(getBloodMoonCount(char)) >= 3 ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'">
                 {{ getBloodMoonCount(char) }}/3
               </span>
