@@ -16,7 +16,7 @@
           <div class="space-y-3 flex-1 text-center md:text-left">
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-sm font-medium border border-blue-500/20">
               <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
-              最新版本 v0.5.004
+              最新版本 v0.5.005
             </div>
             <h2 class="text-2xl font-bold">ROR_JS 掛機框架</h2>
             <p class="text-ror-muted">發布日期：2026-07-12</p>
@@ -140,9 +140,17 @@ const setItemRef = (el, idx) => {
 
 const patches = ref([
   {
-    version: 'v0.5.004',
+    version: 'v0.5.005',
     date: '2026-07-12',
     isLatest: true,
+    features: [
+      { icon: '🛠️', color: 'text-red-400', desc: '<strong>熱更新修復：</strong>修復熱更新跳轉後目錄指向錯誤，導致更新腳本無法生效的問題。' }
+    ]
+  },
+  {
+    version: 'v0.5.004',
+    date: '2026-07-12',
+    isLatest: false,
     features: [
       { icon: '✨', color: 'text-yellow-400', desc: '<strong>功能升級：</strong>自動交易功能優化，支援可動態指定交易物品與三層分類下拉選單選擇。' },
       { icon: '🌕', color: 'text-blue-400', desc: '<strong>任務追蹤：</strong>新增紅月任務雲端次數追蹤功能，實作資料庫儲存程序與跨日自動重置判定。' }
