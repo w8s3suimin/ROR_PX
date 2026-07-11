@@ -16,7 +16,7 @@
           <div class="space-y-3 flex-1 text-center md:text-left">
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-sm font-medium border border-blue-500/20">
               <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
-              最新版本 v0.5.008
+              最新版本 v0.5.009
             </div>
             <h2 class="text-2xl font-bold">ROR_JS 掛機框架</h2>
             <p class="text-ror-muted">發布日期：2026-07-12</p>
@@ -140,9 +140,17 @@ const setItemRef = (el, idx) => {
 
 const patches = ref([
   {
-    version: 'v0.5.008',
+    version: 'v0.5.009',
     date: '2026-07-12',
     isLatest: true,
+    features: [
+      { icon: '🛠️', color: 'text-red-400', desc: '<strong>更新修復：</strong>強制刷新版本號以突破快取機制，確保所有腳本順利套用。' }
+    ]
+  },
+  {
+    version: 'v0.5.008',
+    date: '2026-07-12',
+    isLatest: false,
     features: [
       { icon: '🛠️', color: 'text-red-400', desc: '<strong>核心引擎優化：</strong>移除不必要之路徑存在檢查，解決部分未更新之核心圖片在獨立 APK 模式下因為權限阻擋而無法被正常載入的嚴重 Bug。' }
     ]
