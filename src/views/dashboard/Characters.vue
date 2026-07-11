@@ -84,18 +84,19 @@
           <span class="text-[10px]" v-if="sortConfig.key === 'level'">{{ sortConfig.dir === 'asc' ? '▲' : '▼' }}</span>
           <span v-if="filters.level" @click.stop="clearFilter('level')" title="解除過濾">🔒</span>
         </div>
-        <div class="flex-[0.8] min-w-0 text-center px-1 drop-shadow-md cursor-pointer flex flex-col items-center justify-center gap-0.5">
-          <div class="text-[#ff93d3] flex items-center justify-center gap-1" @click="handleSort('crystal')">
+        <div class="flex-[0.8] min-w-0 text-center px-1 drop-shadow-md cursor-pointer flex flex-wrap items-center justify-center gap-x-1 gap-y-0 text-ror-accent">
+          <div class="flex items-center justify-center gap-0.5" @click="handleSort('crystal')">
             <span v-if="filters.crystal" @click.stop="clearFilter('crystal')" title="解除過濾">🔒</span>
             水晶
             <span class="text-[10px]" v-if="sortConfig.key === 'crystal'">{{ sortConfig.dir === 'asc' ? '▲' : '▼' }}</span>
           </div>
-          <div class="text-[10px] text-red-400 flex items-center justify-center gap-1" @click="handleSort('blood_moon_count')">
+          <span class="text-[10px] opacity-50">/</span>
+          <div class="flex items-center justify-center gap-0.5" @click="handleSort('blood_moon_count')">
             紅月
             <span class="text-[10px]" v-if="sortConfig.key === 'blood_moon_count'">{{ sortConfig.dir === 'asc' ? '▲' : '▼' }}</span>
           </div>
         </div>
-        <div class="flex-[0.9] min-w-0 text-right pl-1 text-[#4dabf7] drop-shadow-md cursor-pointer flex items-center justify-end gap-1" @click="handleSort('vitality')">
+        <div class="flex-[0.9] min-w-0 text-right pl-1 drop-shadow-md cursor-pointer flex items-center justify-end gap-1 text-ror-accent" @click="handleSort('vitality')">
           <span v-if="filters.vitality || filters.dispatch" @click.stop="clearFilter('vitality'); clearFilter('dispatch')" title="解除過濾">🔒</span>
           活力值
           <span class="text-[10px]" v-if="sortConfig.key === 'vitality'">{{ sortConfig.dir === 'asc' ? '▲' : '▼' }}</span>
@@ -131,9 +132,13 @@
           </div>
           
           <!-- Col 3: Crystal & Red Moon -->
-          <div class="flex-[0.8] min-w-0 px-1 border-r border-ror-border/30 text-center flex flex-col items-center justify-center gap-1">
+          <div class="flex-[0.8] min-w-0 px-1 border-r border-ror-border/30 text-center flex flex-wrap items-center justify-center gap-x-1 gap-y-1">
             <div class="text-[12px] font-mono text-[#ff93d3] font-bold cursor-pointer hover:opacity-80" @click.stop="openNumericFilter('crystal')">{{ formatCrystal(char.crystal) }}</div>
-            <div class="text-[11px] font-mono text-red-400 font-bold">{{ getBloodMoonCount(char) }}/3</div>
+            <div class="text-[10px]">
+              <span class="px-1 py-0.5 rounded font-bold font-mono" :class="Number(getBloodMoonCount(char)) >= 3 ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'">
+                {{ getBloodMoonCount(char) }}/3
+              </span>
+            </div>
           </div>
 
           <!-- Col 4: Vitality / Dispatch -->
@@ -191,8 +196,10 @@
             </div>
           </div>
           
-          <div class="col-span-2 text-center text-red-400 font-mono relative group">
-            <span class="text-sm font-bold">{{ getBloodMoonCount(char) }}/3</span>
+          <div class="col-span-2 text-center relative group">
+            <span class="px-2 py-1 rounded text-xs font-bold font-mono" :class="Number(getBloodMoonCount(char)) >= 3 ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'">
+              {{ getBloodMoonCount(char) }} / 3
+            </span>
             <div class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden md:group-hover:block whitespace-nowrap bg-black text-gray-300 text-xs px-2 py-1 rounded border border-ror-border z-10 pointer-events-none shadow-lg">
               最後更新: {{ formatTime(char.blood_moon_updated_at || char.updated_at) }}
             </div>
