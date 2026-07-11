@@ -60,14 +60,24 @@
                 <label class="block text-sm text-ror-muted mb-1">授權碼</label>
                 <div class="flex gap-2">
                   <div class="relative flex-1">
-                    <input type="text" list="all-codes-list" v-model="updateCode" placeholder="請輸入欲修改的授權碼..." class="w-full bg-[#1a1a1a] border border-white/10 rounded-lg pl-3 pr-10 py-2 text-white font-mono focus:outline-none focus:border-ror-accent">
-                    <datalist id="all-codes-list">
-                      <option value="所有授權碼">所有授權碼</option>
-                      <option v-for="c in allCodes" :key="c" :value="c"></option>
-                    </datalist>
-                    <button v-if="isCodeVerified" @click="verifyCode" class="absolute right-2 top-1/2 -translate-y-1/2 text-white/50 hover:text-white transition-colors focus:outline-none" title="重新讀取資料 (復原修改)">
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                    </button>
+                    <input type="text" v-model="updateCode" @input="forceShowAllCodes = false" @focus="showCodeDropdown = true" @blur="hideCodeDropdown" placeholder="請輸入欲修改的授權碼..." class="w-full bg-[#1a1a1a] border border-white/10 rounded-lg pl-3 pr-16 py-2 text-white font-mono focus:outline-none focus:border-ror-accent">
+                    
+                    <div class="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                      <button v-if="isCodeVerified" @click="verifyCode" class="text-white/50 hover:text-white transition-colors focus:outline-none p-1" title="重新讀取資料 (復原修改)">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                      </button>
+                      <button @mousedown.prevent="toggleCodeDropdown" class="text-white/50 hover:text-white transition-colors focus:outline-none p-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                      </button>
+                    </div>
+
+                    <ul v-show="showCodeDropdown" class="absolute z-10 w-full mt-1 bg-[#1a1a1a] border border-white/10 rounded-lg max-h-60 overflow-y-auto shadow-xl">
+                      <li @mousedown.prevent="selectCode('所有授權碼')" class="px-3 py-2 hover:bg-white/10 cursor-pointer text-yellow-500 font-bold border-b border-white/5">所有授權碼</li>
+                      <li v-for="c in filteredCodes" :key="c" @mousedown.prevent="selectCode(c)" class="px-3 py-2 hover:bg-white/10 cursor-pointer text-white font-mono text-sm">
+                        {{ c }}
+                      </li>
+                      <li v-if="filteredCodes.length === 0" class="px-3 py-2 text-white/30 text-sm">無相符選項</li>
+                    </ul>
                   </div>
                   <button @click="verifyCode" :disabled="isValidating || isCodeVerified" :class="isCodeVerified ? 'bg-white/10 text-white opacity-50 cursor-not-allowed' : 'bg-yellow-500 text-black hover:bg-yellow-400 font-bold'" class="px-4 py-2 rounded-lg transition-colors whitespace-nowrap">
                     {{ isValidating ? '驗證中...' : '驗證' }}
@@ -76,10 +86,18 @@
               </div>
               <div class="relative" v-if="verifiedCode !== '所有授權碼'">
                 <label class="block text-sm text-ror-muted mb-1">綁定至使用者信箱</label>
-                <input type="email" list="admin-email-list" v-model="updateEmail" placeholder="輸入使用者信箱..." class="w-full bg-[#1a1a1a] border border-white/10 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-ror-accent">
-                <datalist id="admin-email-list">
-                  <option v-for="email in allEmails" :key="email" :value="email"></option>
-                </datalist>
+                <div class="relative">
+                  <input type="email" v-model="updateEmail" @input="forceShowAllEmails = false" @focus="showEmailDropdown = true" @blur="hideEmailDropdown" placeholder="輸入使用者信箱..." class="w-full bg-[#1a1a1a] border border-white/10 rounded-lg px-3 py-2 pr-10 text-white focus:outline-none focus:border-ror-accent">
+                  <button @mousedown.prevent="toggleEmailDropdown" class="absolute right-2 top-1/2 -translate-y-1/2 text-white/50 hover:text-white transition-colors focus:outline-none p-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                  </button>
+                  <ul v-show="showEmailDropdown" class="absolute z-10 w-full mt-1 bg-[#1a1a1a] border border-white/10 rounded-lg max-h-60 overflow-y-auto shadow-xl">
+                    <li v-for="e in filteredEmails" :key="e" @mousedown.prevent="selectEmail(e)" class="px-3 py-2 hover:bg-white/10 cursor-pointer text-white text-sm">
+                      {{ e }}
+                    </li>
+                    <li v-if="filteredEmails.length === 0" class="px-3 py-2 text-white/30 text-sm">無相符選項</li>
+                  </ul>
+                </div>
               </div>
               <div class="grid grid-cols-2 gap-4">
                 <div :class="verifiedCode === '所有授權碼' ? 'col-span-2' : ''">
@@ -152,9 +170,9 @@ onMounted(async () => {
     console.error('Failed to fetch emails', e)
   }
 
-  // 取得所有授權碼供下拉選單使用
+  // 取得所有授權碼供下拉選單使用 (排除無限卡/DEV碼)
   try {
-    const { data } = await supabase.from('authorization_codes').select('code')
+    const { data } = await supabase.from('authorization_codes').select('code').not('code', 'ilike', 'DEV-%')
     if (data) {
       allCodes.value = data.map(c => c.code)
     }
@@ -244,10 +262,53 @@ const canExtend = (targetPlan) => {
 }
 
 const cancelPending = () => {
-  pendingExtensionText.value = '';
-  pendingDaysToAdd.value = 0;
-  // 嘗試恢復先前的到期日（如果有存在 updateExpireDate 內）
+  if (verifiedCode.value === '所有授權碼') {
+    pendingExtensionText.value = '所有授權碼展延 +0 天';
+    pendingDaysToAdd.value = 0;
+  } else {
+    pendingExtensionText.value = '';
+    pendingDaysToAdd.value = 0;
+  }
 }
+
+const showCodeDropdown = ref(false)
+const forceShowAllCodes = ref(false)
+const showEmailDropdown = ref(false)
+const forceShowAllEmails = ref(false)
+
+const toggleCodeDropdown = () => {
+  showCodeDropdown.value = !showCodeDropdown.value;
+  if (showCodeDropdown.value) forceShowAllCodes.value = true;
+}
+const selectCode = (c) => {
+  updateCode.value = c;
+  showCodeDropdown.value = false;
+  forceShowAllCodes.value = false;
+}
+const hideCodeDropdown = () => setTimeout(() => { showCodeDropdown.value = false }, 200)
+
+const filteredCodes = computed(() => {
+  if (forceShowAllCodes.value || !updateCode.value) return allCodes.value;
+  const q = updateCode.value.toLowerCase();
+  return allCodes.value.filter(c => c.toLowerCase().includes(q));
+})
+
+const toggleEmailDropdown = () => {
+  showEmailDropdown.value = !showEmailDropdown.value;
+  if (showEmailDropdown.value) forceShowAllEmails.value = true;
+}
+const selectEmail = (e) => {
+  updateEmail.value = e;
+  showEmailDropdown.value = false;
+  forceShowAllEmails.value = false;
+}
+const hideEmailDropdown = () => setTimeout(() => { showEmailDropdown.value = false }, 200)
+
+const filteredEmails = computed(() => {
+  if (forceShowAllEmails.value || !updateEmail.value) return allEmails.value;
+  const q = updateEmail.value.toLowerCase();
+  return allEmails.value.filter(e => e.toLowerCase().includes(q));
+})
 
 const formatDatetimeLocal = (date) => {
   const pad = (n) => n.toString().padStart(2, '0')
@@ -267,7 +328,7 @@ const verifyCode = async () => {
 
   if (updateCode.value === '所有授權碼') {
     updatePlanType.value = 'all';
-    pendingExtensionText.value = '';
+    pendingExtensionText.value = '所有授權碼展延 +0 天';
     pendingDaysToAdd.value = 0;
     verifiedCode.value = '所有授權碼';
     return;
@@ -355,7 +416,8 @@ const updateAdminLicense = async () => {
       return;
     }
     try {
-      const { data: codes, error: fetchErr } = await supabase.from('authorization_codes').select('code, expires_at');
+      // 不撈取 DEV 無限卡代碼
+      const { data: codes, error: fetchErr } = await supabase.from('authorization_codes').select('code, expires_at').not('code', 'ilike', 'DEV-%');
       if (fetchErr) throw fetchErr;
 
       const now = Date.now();
