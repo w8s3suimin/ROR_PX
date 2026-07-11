@@ -16,7 +16,7 @@
           <div class="space-y-3 flex-1 text-center md:text-left">
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-sm font-medium border border-blue-500/20">
               <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
-              最新版本 v0.5.005
+              最新版本 v0.5.006
             </div>
             <h2 class="text-2xl font-bold">ROR_JS 掛機框架</h2>
             <p class="text-ror-muted">發布日期：2026-07-12</p>
@@ -140,9 +140,17 @@ const setItemRef = (el, idx) => {
 
 const patches = ref([
   {
-    version: 'v0.5.005',
+    version: 'v0.5.006',
     date: '2026-07-12',
     isLatest: true,
+    features: [
+      { icon: '🛠️', color: 'text-red-400', desc: '<strong>熱更新修復：</strong>修正地下城等級檢測與圖片路徑回退解析不正確的問題。' }
+    ]
+  },
+  {
+    version: 'v0.5.005',
+    date: '2026-07-12',
+    isLatest: false,
     features: [
       { icon: '🛠️', color: 'text-red-400', desc: '<strong>熱更新修復：</strong>統一圖片路徑回退機制，解決熱更新後部分任務無法讀取圖片導致中斷的問題。' }
     ]
