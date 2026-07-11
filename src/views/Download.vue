@@ -16,7 +16,7 @@
           <div class="space-y-3 flex-1 text-center md:text-left">
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-sm font-medium border border-blue-500/20">
               <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
-              最新版本 v0.5.009
+              最新版本 v0.5.011
             </div>
             <h2 class="text-2xl font-bold">ROR_JS 掛機框架</h2>
             <p class="text-ror-muted">發布日期：2026-07-12</p>
@@ -140,43 +140,14 @@ const setItemRef = (el, idx) => {
 
 const patches = ref([
   {
-    version: 'v0.5.009',
+    version: 'v0.5.011',
     date: '2026-07-12',
     isLatest: true,
     features: [
-      { icon: '🛠️', color: 'text-red-400', desc: '<strong>更新修復：</strong>強制刷新版本號以突破快取機制，確保所有腳本順利套用。' }
-    ]
-  },
-  {
-    version: 'v0.5.008',
-    date: '2026-07-12',
-    isLatest: false,
-    features: [
-      { icon: '🛠️', color: 'text-red-400', desc: '<strong>核心引擎優化：</strong>移除不必要之路徑存在檢查，解決部分未更新之核心圖片在獨立 APK 模式下因為權限阻擋而無法被正常載入的嚴重 Bug。' }
-    ]
-  },
-  {
-    version: 'v0.5.007',
-    date: '2026-07-12',
-    isLatest: false,
-    features: [
-      { icon: '🛠️', color: 'text-red-400', desc: '<strong>熱更新修復：</strong>徹底解決熱更新在 APK 環境下尋找不到圖片目錄的嚴重 Bug，確保地下城及委託板任務正常執行。' }
-    ]
-  },
-  {
-    version: 'v0.5.006',
-    date: '2026-07-12',
-    isLatest: false,
-    features: [
-      { icon: '🛠️', color: 'text-red-400', desc: '<strong>熱更新修復：</strong>修正地下城等級檢測與圖片路徑回退解析不正確的問題。' }
-    ]
-  },
-  {
-    version: 'v0.5.005',
-    date: '2026-07-12',
-    isLatest: false,
-    features: [
-      { icon: '🛠️', color: 'text-red-400', desc: '<strong>熱更新修復：</strong>統一圖片路徑回退機制，解決熱更新後部分任務無法讀取圖片導致中斷的問題。' }
+      { icon: '🛠️', color: 'text-red-400', desc: '<strong>核心修復：</strong>徹底解決熱更新路徑解析與圖片資源讀取 Bug，確保地下城與委託板任務在各模式下皆能正常執行。' },
+      { icon: '⚡', color: 'text-yellow-400', desc: '<strong>更新優化：</strong>新增更新伺服器請求時間戳記防護，突破 CDN 快取限制，確保未來的腳本更新都能即時下發不漏接。' },
+      { icon: '🛡️', color: 'text-green-400', desc: '<strong>防護升級：</strong>為地下城等任務增加尋圖區域安全邊界防護，避免畫面偏移時觸發座標越界崩潰。' },
+      { icon: '⚙️', color: 'text-gray-400', desc: '<strong>路徑回退：</strong>統一圖片路徑回退機制，解決熱更新後部分任務無法讀取圖片導致中斷的問題。' }
     ]
   },
   {
