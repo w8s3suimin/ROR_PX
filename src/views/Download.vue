@@ -16,10 +16,10 @@
           <div class="space-y-3 flex-1 text-center md:text-left">
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-sm font-medium border border-blue-500/20">
               <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
-              最新版本 v0.5.003
+              最新版本 v0.5.004
             </div>
             <h2 class="text-2xl font-bold">ROR_JS 掛機框架</h2>
-            <p class="text-ror-muted">發布日期：2026-07-08</p>
+            <p class="text-ror-muted">發布日期：2026-07-12</p>
           </div>
           <div class="flex flex-col gap-3 w-full md:w-auto">
             <a href="https://github.com/w8s3suimin/ROR_JS/releases/latest" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center gap-2 bg-ror-accent text-black px-8 py-4 rounded-xl font-bold hover:bg-ror-accent-hover transition-all shadow-[0_0_20px_rgba(255,204,0,0.3)] hover:shadow-[0_0_30px_rgba(255,204,0,0.5)] transform hover:-translate-y-1">
@@ -140,9 +140,18 @@ const setItemRef = (el, idx) => {
 
 const patches = ref([
   {
+    version: 'v0.5.004',
+    date: '2026-07-12',
+    isLatest: true,
+    features: [
+      { icon: '✨', color: 'text-yellow-400', desc: '<strong>功能升級：</strong>自動交易功能優化，支援可動態指定交易物品與三層分類下拉選單選擇。' },
+      { icon: '🌕', color: 'text-blue-400', desc: '<strong>任務追蹤：</strong>新增紅月任務雲端次數追蹤功能，實作資料庫儲存程序與跨日自動重置判定。' }
+    ]
+  },
+  {
     version: 'v0.5.003',
     date: '2026-07-08',
-    isLatest: true,
+    isLatest: false,
     features: [
       { icon: '⚠️', color: 'text-red-400', desc: '<strong>注意：</strong>本次熱更新功能修復需要以 APK 覆蓋更新安裝才能完成修復。' },
       { icon: '🗺️', color: 'text-green-400', desc: '<strong>紅月優化：</strong>實裝其他等級的關卡選擇。' },
