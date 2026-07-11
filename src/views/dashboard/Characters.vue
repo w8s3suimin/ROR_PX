@@ -31,7 +31,7 @@
     <!-- Resource List -->
     <div v-else class="space-y-4">
       <!-- Desktop List Header -->
-      <div class="sticky top-16 z-30 hidden md:grid gap-4 pl-6 pr-20 py-3.5 bg-gradient-to-r from-[#1a1a1a]/95 via-[#222]/95 to-[#1a1a1a]/95 backdrop-blur-md rounded-xl text-[15px] font-black text-ror-accent border border-ror-accent/20 shadow-[0_10px_30px_rgba(0,0,0,0.8)] tracking-wider mb-2 select-none" :style="{ gridTemplateColumns: viewAsAdmin ? 'repeat(24, minmax(0, 1fr))' : 'repeat(22, minmax(0, 1fr))' }">
+      <div class="sticky top-16 z-30 hidden md:grid gap-4 pl-6 pr-20 py-3.5 bg-gradient-to-r from-[#1a1a1a]/95 via-[#222]/95 to-[#1a1a1a]/95 backdrop-blur-md rounded-xl text-[15px] font-black text-ror-accent border border-ror-accent/20 shadow-[0_10px_30px_rgba(0,0,0,0.8)] tracking-wider mb-2 select-none" :style="{ gridTemplateColumns: viewAsAdmin ? 'repeat(26, minmax(0, 1fr))' : 'repeat(24, minmax(0, 1fr))' }">
         <div class="text-center drop-shadow-md cursor-pointer hover:text-white flex items-center justify-center gap-1" :class="viewAsAdmin ? 'col-span-6' : 'col-span-4'" @click="handleSort('game_account')">
           遊戲帳號<span v-if="viewAsAdmin">/平台ID</span>
           <span class="text-[10px]" v-if="sortConfig.key === 'game_account'">{{ sortConfig.dir === 'asc' ? '▲' : '▼' }}</span>
@@ -55,6 +55,10 @@
           <span v-if="filters.crystal" @click.stop="clearFilter('crystal')" title="解除過濾" class="text-lg">🔒</span>
           水晶
           <span class="text-[10px]" v-if="sortConfig.key === 'crystal'">{{ sortConfig.dir === 'asc' ? '▲' : '▼' }}</span>
+        </div>
+        <div class="col-span-2 text-center text-red-400 drop-shadow-md cursor-pointer hover:text-white flex items-center justify-center gap-1" @click="handleSort('blood_moon_count')">
+          紅月狀態
+          <span class="text-[10px]" v-if="sortConfig.key === 'blood_moon_count'">{{ sortConfig.dir === 'asc' ? '▲' : '▼' }}</span>
         </div>
         <div class="col-span-2 text-center drop-shadow-md cursor-pointer hover:text-white flex items-center justify-center gap-1" @click="handleSort('dispatch')">
           派遣狀態
@@ -80,10 +84,16 @@
           <span class="text-[10px]" v-if="sortConfig.key === 'level'">{{ sortConfig.dir === 'asc' ? '▲' : '▼' }}</span>
           <span v-if="filters.level" @click.stop="clearFilter('level')" title="解除過濾">🔒</span>
         </div>
-        <div class="flex-[0.8] min-w-0 text-center px-1 text-[#ff93d3] drop-shadow-md cursor-pointer flex items-center justify-center gap-1" @click="handleSort('crystal')">
-          <span v-if="filters.crystal" @click.stop="clearFilter('crystal')" title="解除過濾">🔒</span>
-          水晶
-          <span class="text-[10px]" v-if="sortConfig.key === 'crystal'">{{ sortConfig.dir === 'asc' ? '▲' : '▼' }}</span>
+        <div class="flex-[0.8] min-w-0 text-center px-1 drop-shadow-md cursor-pointer flex flex-col items-center justify-center gap-0.5">
+          <div class="text-[#ff93d3] flex items-center justify-center gap-1" @click="handleSort('crystal')">
+            <span v-if="filters.crystal" @click.stop="clearFilter('crystal')" title="解除過濾">🔒</span>
+            水晶
+            <span class="text-[10px]" v-if="sortConfig.key === 'crystal'">{{ sortConfig.dir === 'asc' ? '▲' : '▼' }}</span>
+          </div>
+          <div class="text-[10px] text-red-400 flex items-center justify-center gap-1" @click="handleSort('blood_moon_count')">
+            紅月
+            <span class="text-[10px]" v-if="sortConfig.key === 'blood_moon_count'">{{ sortConfig.dir === 'asc' ? '▲' : '▼' }}</span>
+          </div>
         </div>
         <div class="flex-[0.9] min-w-0 text-right pl-1 text-[#4dabf7] drop-shadow-md cursor-pointer flex items-center justify-end gap-1" @click="handleSort('vitality')">
           <span v-if="filters.vitality || filters.dispatch" @click.stop="clearFilter('vitality'); clearFilter('dispatch')" title="解除過濾">🔒</span>
@@ -120,9 +130,10 @@
             <div class="text-[11px] font-mono text-gray-300 mt-1 cursor-pointer hover:text-ror-accent" @click.stop="openNumericFilter('level')">Lv.{{ char.level }}</div>
           </div>
           
-          <!-- Col 3: Crystal -->
-          <div class="flex-[0.8] min-w-0 px-1 border-r border-ror-border/30 text-center flex flex-col items-center justify-center">
-            <div class="text-[12px] font-mono text-[#ff93d3] font-bold cursor-pointer hover:opacity-80" @click.stop="openNumericFilter('crystal')">{{ formatNumber(char.crystal) }}</div>
+          <!-- Col 3: Crystal & Red Moon -->
+          <div class="flex-[0.8] min-w-0 px-1 border-r border-ror-border/30 text-center flex flex-col items-center justify-center gap-1">
+            <div class="text-[12px] font-mono text-[#ff93d3] font-bold cursor-pointer hover:opacity-80" @click.stop="openNumericFilter('crystal')">{{ formatCrystal(char.crystal) }}</div>
+            <div class="text-[11px] font-mono text-red-400 font-bold">{{ getBloodMoonCount(char) }}/3</div>
           </div>
 
           <!-- Col 4: Vitality / Dispatch -->
@@ -139,7 +150,7 @@
         <!-- Main Row (Desktop) -->
         <div 
           class="hidden md:grid gap-4 pl-6 pr-20 py-4 cursor-pointer items-center relative"
-          :style="{ gridTemplateColumns: viewAsAdmin ? 'repeat(24, minmax(0, 1fr))' : 'repeat(22, minmax(0, 1fr))' }"
+          :style="{ gridTemplateColumns: viewAsAdmin ? 'repeat(26, minmax(0, 1fr))' : 'repeat(24, minmax(0, 1fr))' }"
           @click="toggleRow(char.id)"
         >
           <div class="truncate text-center" :class="viewAsAdmin ? 'col-span-6' : 'col-span-4'">
@@ -174,12 +185,19 @@
           </div>
           
           <div class="col-span-3 text-right font-mono text-[#ff93d3] relative group">
-            <span class="cursor-pointer hover:opacity-80 transition-opacity" @click.stop="openNumericFilter('crystal')">{{ formatNumber(char.crystal) }}</span>
+            <span class="cursor-pointer hover:opacity-80 transition-opacity" @click.stop="openNumericFilter('crystal')">{{ formatCrystal(char.crystal) }}</span>
             <div class="absolute right-0 bottom-full mb-2 hidden md:group-hover:block whitespace-nowrap bg-black text-gray-300 text-xs px-2 py-1 rounded border border-ror-border z-10 pointer-events-none shadow-lg">
               最後更新: {{ formatTime(char.updated_at) }}
             </div>
           </div>
           
+          <div class="col-span-2 text-center text-red-400 font-mono relative group">
+            <span class="text-sm font-bold">{{ getBloodMoonCount(char) }}/3</span>
+            <div class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden md:group-hover:block whitespace-nowrap bg-black text-gray-300 text-xs px-2 py-1 rounded border border-ror-border z-10 pointer-events-none shadow-lg">
+              最後更新: {{ formatTime(char.blood_moon_updated_at || char.updated_at) }}
+            </div>
+          </div>
+
           <div class="col-span-2 text-center relative group">
             <span @click.stop="toggleDispatchFilter(char.dispatch_current >= char.dispatch_max)" class="px-2 py-1 rounded text-xs font-bold hover:opacity-80 transition-opacity" :class="char.dispatch_current >= char.dispatch_max ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'">
               {{ char.dispatch_current }} / {{ char.dispatch_max }}
@@ -459,6 +477,36 @@ const formatNumber = (num) => {
   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
 }
 
+const formatCrystal = (num) => {
+  if (num === null || num === undefined) return '0'
+  const val = Number(num)
+  if (val >= 1000) {
+    return Math.floor(val / 1000).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + 'K'
+  }
+  return val.toString()
+}
+
+const getBloodMoonCount = (char) => {
+  if (!char.blood_moon_count || !char.blood_moon_updated_at) return '0'
+  const updatedTime = new Date(char.blood_moon_updated_at).getTime()
+  
+  // Calculate today's 5:00 AM
+  const now = new Date()
+  let resetTime = new Date(now)
+  resetTime.setHours(5, 0, 0, 0)
+  
+  // If current time is before 5:00 AM today, the reset time should be 5:00 AM yesterday
+  if (now.getTime() < resetTime.getTime()) {
+    resetTime.setDate(resetTime.getDate() - 1)
+  }
+  
+  if (updatedTime < resetTime.getTime()) {
+    return '0'
+  }
+  
+  return char.blood_moon_count.toString()
+}
+
 const formatTime = (dateStr) => {
   if (!dateStr) return '未知'
   const date = new Date(dateStr)
@@ -642,7 +690,11 @@ const filteredAndSortedCharacters = computed(() => {
     } else {
       const valA = a[sortConfig.value.key]
       const valB = b[sortConfig.value.key]
-      if (sortConfig.value.key.includes('updated_at')) {
+      if (sortConfig.value.key === 'blood_moon_count') {
+        const bmCountA = Number(getBloodMoonCount(a)) || 0
+        const bmCountB = Number(getBloodMoonCount(b)) || 0
+        diff = bmCountA - bmCountB
+      } else if (sortConfig.value.key.includes('updated_at')) {
         const timeA = valA ? new Date(valA).getTime() : 0
         const timeB = valB ? new Date(valB).getTime() : 0
         diff = timeA - timeB
