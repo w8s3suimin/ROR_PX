@@ -16,10 +16,10 @@
           <div class="space-y-3 flex-1 text-center md:text-left">
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-sm font-medium border border-blue-500/20">
               <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
-              最新版本 v0.5.011
+              最新版本 v0.5.012
             </div>
             <h2 class="text-2xl font-bold">ROR_JS 掛機框架</h2>
-            <p class="text-ror-muted">發布日期：2026-07-12</p>
+            <p class="text-ror-muted">發布日期：2026-07-17</p>
           </div>
           <div class="flex flex-col gap-3 w-full md:w-auto">
             <a href="https://github.com/w8s3suimin/ROR_JS/releases/latest" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center gap-2 bg-ror-accent text-black px-8 py-4 rounded-xl font-bold hover:bg-ror-accent-hover transition-all shadow-[0_0_20px_rgba(255,204,0,0.3)] hover:shadow-[0_0_30px_rgba(255,204,0,0.5)] transform hover:-translate-y-1">
@@ -140,9 +140,18 @@ const setItemRef = (el, idx) => {
 
 const patches = ref([
   {
+    version: 'v0.5.012',
+    date: '2026-07-17',
+    isLatest: true,
+    features: [
+      { icon: '🛠️', color: 'text-red-400', desc: '<strong>核心修復：</strong>修復角色選擇位置異常的問題，確保角色登入與切換功能正常運作。' },
+      { icon: '✨', color: 'text-yellow-400', desc: '<strong>交易優化：</strong>修正自動交易任務中，跟隨最低價的點擊位置錯誤問題。' }
+    ]
+  },
+  {
     version: 'v0.5.011',
     date: '2026-07-12',
-    isLatest: true,
+    isLatest: false,
     features: [
       { icon: '🛠️', color: 'text-red-400', desc: '<strong>核心修復：</strong>徹底解決熱更新路徑解析與圖片資源讀取 Bug，確保地下城與委託板任務在各模式下皆能正常執行。' },
       { icon: '⚡', color: 'text-yellow-400', desc: '<strong>更新優化：</strong>新增更新伺服器請求時間戳記防護，突破 CDN 快取限制，確保未來的腳本更新都能即時下發不漏接。' },
