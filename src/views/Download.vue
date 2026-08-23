@@ -16,10 +16,10 @@
           <div class="space-y-3 flex-1 text-center md:text-left">
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-sm font-medium border border-blue-500/20">
               <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
-              最新版本 v0.5.012
+              最新版本 v0.5.013
             </div>
             <h2 class="text-2xl font-bold">ROR_JS 掛機框架</h2>
-            <p class="text-ror-muted">發布日期：2026-07-17</p>
+            <p class="text-ror-muted">發布日期：2026-08-23</p>
           </div>
           <div class="flex flex-col gap-3 w-full md:w-auto">
             <a href="https://github.com/w8s3suimin/ROR_JS/releases/latest" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center gap-2 bg-ror-accent text-black px-8 py-4 rounded-xl font-bold hover:bg-ror-accent-hover transition-all shadow-[0_0_20px_rgba(255,204,0,0.3)] hover:shadow-[0_0_30px_rgba(255,204,0,0.5)] transform hover:-translate-y-1">
@@ -140,9 +140,20 @@ const setItemRef = (el, idx) => {
 
 const patches = ref([
   {
+    version: 'v0.5.013',
+    date: '2026-08-23',
+    isLatest: true,
+    features: [
+      { icon: '🌕', color: 'text-red-400', desc: '<strong>關卡擴充：</strong>紅月任務新增 118 等級關卡支援。' },
+      { icon: '🏰', color: 'text-blue-400', desc: '<strong>關卡擴充：</strong>地下城任務新增 120 等級關卡支援。' },
+      { icon: '🔄', color: 'text-yellow-400', desc: '<strong>辨識修復：</strong>修復角色切換時文字辨識異常的問題，提升換角穩定度。' },
+      { icon: '✨', color: 'text-green-400', desc: '<strong>活動優化：</strong>更新雙人同行活動判定與紅點讀取邏輯，確保獎勵正常領取。' }
+    ]
+  },
+  {
     version: 'v0.5.012',
     date: '2026-07-17',
-    isLatest: true,
+    isLatest: false,
     features: [
       { icon: '🛠️', color: 'text-red-400', desc: '<strong>核心修復：</strong>修復角色選擇位置異常的問題，確保角色登入與切換功能正常運作。' },
       { icon: '✨', color: 'text-yellow-400', desc: '<strong>交易優化：</strong>修正自動交易任務中，跟隨最低價的點擊位置錯誤問題。' }
