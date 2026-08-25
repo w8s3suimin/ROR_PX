@@ -16,7 +16,7 @@
           <div class="space-y-3 flex-1 text-center md:text-left">
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-sm font-medium border border-blue-500/20">
               <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
-              最新版本 v0.5.015
+              最新版本 v0.5.016
             </div>
             <h2 class="text-2xl font-bold">ROR_JS 掛機框架</h2>
             <p class="text-ror-muted">發布日期：2026-08-25</p>
@@ -140,9 +140,16 @@ const setItemRef = (el, idx) => {
 
 const patches = ref([
   {
-    version: 'v0.5.015',
+    version: 'v0.5.016',
     date: '2026-08-25',
     isLatest: true,
+    features: [
+      { icon: '🛠️', color: 'text-red-400', desc: '<strong>價格調整修復：</strong>修復自動交易在上架商品時未正確調整設定價格檔位的問題。' }
+    ]
+  },
+  {
+    version: 'v0.5.015',
+    date: '2026-08-25',
     features: [
       { icon: '🔍', color: 'text-yellow-400', desc: '<strong>找圖功能強化：</strong>自動交易設定新增「找圖功能強化」選項，支援以高精度圖標模板進行辨識。' }
     ]
