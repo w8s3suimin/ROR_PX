@@ -4,33 +4,30 @@
     <!-- 手機模式專屬：左右分頁切換 (Mobile Only Tabs) -->
     <div class="flex md:hidden w-full max-w-sm mb-6 p-1 bg-ror-card border border-ror-border rounded-xl">
       <button 
-        @click="activeMobileTab = 'license'" 
-        :class="activeMobileTab === 'license' ? 'bg-ror-accent text-black font-bold shadow-md' : 'text-ror-muted hover:text-white'"
-        class="flex-1 py-2.5 text-sm rounded-lg transition-all text-center flex items-center justify-center gap-1.5"
-      >
-        <span>⚡ 授權碼方案</span>
-      </button>
-      <button 
         @click="activeMobileTab = 'deposit'" 
         :class="activeMobileTab === 'deposit' ? 'bg-ror-accent text-black font-bold shadow-md' : 'text-ror-muted hover:text-white'"
         class="flex-1 py-2.5 text-sm rounded-lg transition-all text-center flex items-center justify-center gap-1.5"
       >
         <span>💎 儲值方案</span>
       </button>
+      <button 
+        @click="activeMobileTab = 'license'" 
+        :class="activeMobileTab === 'license' ? 'bg-ror-accent text-black font-bold shadow-md' : 'text-ror-muted hover:text-white'"
+        class="flex-1 py-2.5 text-sm rounded-lg transition-all text-center flex items-center justify-center gap-1.5"
+      >
+        <span>⚡ 授權碼方案</span>
+      </button>
     </div>
 
-    <!-- ================= 區塊：儲值比例與優惠 ================= -->
+    <!-- ================= 區塊：儲值方案 ================= -->
     <section 
       class="w-full max-w-5xl md:mb-14"
       :class="activeMobileTab === 'deposit' ? 'block' : 'hidden md:block'"
     >
       <div class="text-center mb-6 md:mb-8">
         <h1 class="text-2xl md:text-4xl font-bold text-ror-accent mb-2">
-          儲值比例與優惠
+          儲值方案
         </h1>
-        <p class="text-ror-muted text-sm md:text-base max-w-2xl mx-auto">
-          正常儲值為 1 TWD : 1 PXP，單次大額儲值享專屬折扣優惠。
-        </p>
       </div>
 
       <!-- 儲值比例卡片 Grid -->
@@ -283,7 +280,7 @@ import { supabase } from '../utils/supabase'
 
 const router = useRouter()
 const showInfoModal = ref(false)
-const activeMobileTab = ref('license')
+const activeMobileTab = ref('deposit')
 
 const user = ref(null)
 const userEmail = ref('')
