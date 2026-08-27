@@ -1,106 +1,208 @@
 <template>
-  <div class="min-h-[calc(100vh-4rem)] p-2 md:p-4 max-w-7xl mx-auto pt-6 pb-4 md:py-12 relative flex flex-col items-center justify-start md:justify-center">
-    <!-- Header -->
-    <div class="text-center mb-4 md:mb-12">
-      <h1 class="text-xl md:text-4xl font-bold text-ror-accent mb-2 md:mb-4">
-        授權碼方案
-      </h1>
-      <p class="text-ror-muted text-sm md:text-lg max-w-2xl mx-auto leading-normal">
-        基於 PX 點數 (PXP) 的彈性方案。<br/>
-        儲值比例：<span class="text-white font-semibold whitespace-nowrap ml-1">1 台幣 = 1 PXP</span>
-      </p>
+  <div class="min-h-[calc(100vh-4rem)] p-3 md:p-6 max-w-6xl mx-auto pt-6 pb-12 relative flex flex-col items-center">
+    
+    <!-- 手機模式專屬：左右分頁切換 (Mobile Only Tabs) -->
+    <div class="flex md:hidden w-full max-w-sm mb-6 p-1 bg-ror-card border border-ror-border rounded-xl">
+      <button 
+        @click="activeMobileTab = 'license'" 
+        :class="activeMobileTab === 'license' ? 'bg-ror-accent text-black font-bold shadow-md' : 'text-ror-muted hover:text-white'"
+        class="flex-1 py-2.5 text-sm rounded-lg transition-all text-center flex items-center justify-center gap-1.5"
+      >
+        <span>⚡ 授權碼方案</span>
+      </button>
+      <button 
+        @click="activeMobileTab = 'deposit'" 
+        :class="activeMobileTab === 'deposit' ? 'bg-ror-accent text-black font-bold shadow-md' : 'text-ror-muted hover:text-white'"
+        class="flex-1 py-2.5 text-sm rounded-lg transition-all text-center flex items-center justify-center gap-1.5"
+      >
+        <span>💎 儲值方案</span>
+      </button>
     </div>
 
-    <!-- 方案卡片 Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-8 max-w-5xl mx-auto mb-2 md:mb-12 w-full">
-      
-      <!-- 日卡 -->
-      <div class="bg-ror-surface/50 border border-ror-border rounded-xl p-4 md:p-8 flex flex-row md:flex-col items-center md:items-stretch hover:border-ror-accent/50 transition-colors">
-        <div class="flex-1 w-full text-left md:text-center md:flex md:flex-col md:h-full">
-          <h3 class="text-lg md:text-2xl font-bold text-white mb-0.5 md:mb-2">日卡方案</h3>
-          <div class="text-ror-accent text-2xl md:text-4xl font-bold mb-1 md:mb-4">20 <span class="text-xs md:text-lg text-ror-muted font-normal">PXP / 天</span></div>
-          <ul class="text-ror-muted space-y-0.5 md:space-y-3 mb-0 md:mb-8 flex-1 text-xs md:text-base text-left">
-            <li class="flex items-center"><span class="mr-1 md:mr-2 text-ror-accent">✓</span> 適合短期測試與臨時掛機</li>
-            <li class="flex items-center"><span class="mr-1 md:mr-2 text-ror-accent">✓</span> 24 小時精確計時</li>
-          </ul>
-        </div>
-        <div class="ml-2 md:ml-0 md:mt-auto shrink-0 flex items-center justify-center">
-          <button v-if="hasLicense('daily')" disabled class="w-12 h-12 md:w-full md:h-auto py-1 md:py-3 text-[10px] md:text-base leading-tight md:leading-normal rounded-lg bg-green-500/10 border border-green-500/30 text-green-400 cursor-not-allowed flex flex-col md:block items-center justify-center">
-            <span class="md:hidden">已經</span>
-            <span class="md:hidden">開通</span>
-            <span class="hidden md:inline">已開通</span>
-          </button>
-          <button v-else @click="handleBuy('daily', 20, 'PXD-', 1)" class="w-12 h-12 md:w-full md:h-auto py-1 md:py-3 text-[10px] md:text-base leading-tight md:leading-normal rounded-lg bg-yellow-500 hover:bg-yellow-400 border border-yellow-400 text-black font-bold flex flex-col md:block items-center justify-center transition-colors shadow-[0_0_15px_rgba(234,179,8,0.3)]">
-            <span class="md:hidden">立即</span>
-            <span class="md:hidden">購買</span>
-            <span class="hidden md:inline">購買</span>
-          </button>
-        </div>
+    <!-- ================= 區塊：儲值比例與優惠 ================= -->
+    <section 
+      class="w-full max-w-5xl md:mb-14"
+      :class="activeMobileTab === 'deposit' ? 'block' : 'hidden md:block'"
+    >
+      <div class="text-center mb-6 md:mb-8">
+        <h1 class="text-2xl md:text-4xl font-bold text-ror-accent mb-2">
+          儲值比例與優惠
+        </h1>
+        <p class="text-ror-muted text-sm md:text-base max-w-2xl mx-auto">
+          正常儲值為 1 TWD : 1 PXP，單次大額儲值享專屬折扣優惠。
+        </p>
       </div>
 
-      <!-- 周卡 -->
-      <div class="bg-ror-surface/50 border border-ror-border rounded-xl p-4 md:p-8 flex flex-row md:flex-col items-center md:items-stretch hover:border-ror-accent/50 transition-colors relative">
-        <div class="flex-1 w-full text-left md:text-center md:flex md:flex-col md:h-full">
-          <h3 class="text-lg md:text-2xl font-bold text-white mb-0.5 md:mb-2">周卡方案</h3>
-          <div class="text-ror-accent text-2xl md:text-4xl font-bold mb-1 md:mb-4">100 <span class="text-xs md:text-lg text-ror-muted font-normal">PXP / 7天</span></div>
-          <ul class="text-ror-muted space-y-0.5 md:space-y-3 mb-0 md:mb-8 flex-1 text-xs md:text-base text-left">
-            <li class="flex items-center"><span class="mr-1 md:mr-2 text-ror-accent">✓</span> 平均每日約 14.28 PXP</li>
-            <li class="flex items-center"><span class="mr-1 md:mr-2 text-ror-accent">✓</span> 享有按比例加機折扣</li>
-          </ul>
+      <!-- 儲值比例卡片 Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-6 w-full mb-6 md:mb-0">
+        <!-- 標準儲值 -->
+        <div class="bg-ror-card/50 border border-ror-border rounded-xl p-4 md:p-6 flex flex-col hover:border-ror-accent/40 transition-colors">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="text-base md:text-xl font-bold text-white">標準儲值</h3>
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-white/10 text-ror-muted">一般儲值</span>
+          </div>
+          <div class="text-ror-accent text-2xl md:text-3xl font-bold mb-2">
+            1 : 1
+            <span class="text-xs text-ror-muted font-normal ml-1">TWD : PXP</span>
+          </div>
+          <p class="text-ror-muted text-xs md:text-sm mb-4 leading-relaxed">
+            正常儲值比例為 1 TWD = 1 PXP，無門檻限制，隨時靈活補充點數。
+          </p>
+          <div class="mt-auto pt-3 border-t border-white/5 text-xs text-ror-muted flex items-center">
+            <span class="text-ror-accent font-bold mr-1.5">✓</span> 正常儲值：1 TWD = 1 PXP
+          </div>
         </div>
-        <div class="ml-2 md:ml-0 md:mt-auto shrink-0 flex items-center justify-center">
-          <button v-if="hasLicense('weekly')" disabled class="w-12 h-12 md:w-full md:h-auto py-1 md:py-3 text-[10px] md:text-base leading-tight md:leading-normal rounded-lg bg-green-500/10 border border-green-500/30 text-green-400 cursor-not-allowed flex flex-col md:block items-center justify-center">
-            <span class="md:hidden">已經</span>
-            <span class="md:hidden">開通</span>
-            <span class="hidden md:inline">已開通</span>
-          </button>
-          <button v-else @click="handleBuy('weekly', 100, 'PXW-', 7)" class="w-12 h-12 md:w-full md:h-auto py-1 md:py-3 text-[10px] md:text-base leading-tight md:leading-normal rounded-lg bg-yellow-500 hover:bg-yellow-400 border border-yellow-400 text-black font-bold flex flex-col md:block items-center justify-center transition-colors shadow-[0_0_15px_rgba(234,179,8,0.3)]">
-            <span class="md:hidden">立即</span>
-            <span class="md:hidden">購買</span>
-            <span class="hidden md:inline">購買</span>
-          </button>
+
+        <!-- 單次超過 3000 (85折) -->
+        <div class="bg-ror-card/50 border border-ror-border rounded-xl p-4 md:p-6 flex flex-col hover:border-ror-accent/40 transition-colors relative">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="text-base md:text-xl font-bold text-white">大額儲值優惠</h3>
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-yellow-500/20 text-yellow-400 border border-yellow-500/30">85 折</span>
+          </div>
+          <div class="text-ror-accent text-2xl md:text-3xl font-bold mb-2">
+            85 折
+            <span class="text-xs text-ror-muted font-normal ml-1">滿額折扣</span>
+          </div>
+          <p class="text-ror-muted text-xs md:text-sm mb-4 leading-relaxed">
+            單次儲值超過 3,000 元，結算享 85 折優惠。
+          </p>
+          <div class="mt-auto pt-3 border-t border-white/5 text-xs text-ror-muted flex items-center">
+            <span class="text-ror-accent font-bold mr-1.5">✓</span> 單次儲值超過 3,000 享 85 折
+          </div>
+        </div>
+
+        <!-- 單次超過 10000 (75折) -->
+        <div class="bg-ror-card border-2 border-ror-accent rounded-xl p-4 md:p-6 flex flex-col relative shadow-lg shadow-ror-accent/10 hover:border-ror-accent transition-colors">
+          <div class="absolute -top-3 right-4 bg-ror-accent text-black px-3 py-0.5 rounded-full text-[10px] md:text-xs font-bold shadow-md">
+            最高優惠
+          </div>
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="text-base md:text-xl font-bold text-white">尊榮儲值特惠</h3>
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-ror-accent text-black">75 折</span>
+          </div>
+          <div class="text-ror-accent text-2xl md:text-3xl font-bold mb-2">
+            75 折
+            <span class="text-xs text-ror-muted font-normal ml-1">尊榮折扣</span>
+          </div>
+          <p class="text-ror-muted text-xs md:text-sm mb-4 leading-relaxed">
+            單次儲值超過 10,000 元，結算享 75 折最高優惠。
+          </p>
+          <div class="mt-auto pt-3 border-t border-white/5 text-xs text-ror-muted flex items-center">
+            <span class="text-ror-accent font-bold mr-1.5">✓</span> 單次儲值超過 10,000 享 75 折
+          </div>
         </div>
       </div>
+    </section>
 
-      <!-- 月卡 -->
-      <div class="bg-ror-surface border-2 border-ror-accent rounded-xl p-4 md:p-8 flex flex-row md:flex-col items-center md:items-stretch relative transform hover:-translate-y-1 transition-transform shadow-lg shadow-ror-accent/10 mt-2 md:mt-0">
-        <!-- 推薦標籤 -->
-        <div class="absolute -top-3 md:-top-4 left-1/2 -translate-x-1/2 bg-ror-accent text-black px-3 md:px-4 py-0.5 md:py-1 rounded-full text-[10px] md:text-sm font-bold whitespace-nowrap">
-          最超值推薦
-        </div>
-        <div class="flex-1 w-full text-left md:text-center md:flex md:flex-col md:h-full">
-          <h3 class="text-lg md:text-2xl font-bold text-white mb-0.5 md:mb-2">月卡方案</h3>
-          <div class="text-ror-accent text-2xl md:text-4xl font-bold mb-1 md:mb-4">300 <span class="text-xs md:text-lg text-ror-muted font-normal">PXP / 30天</span></div>
-          <ul class="text-ror-muted space-y-0.5 md:space-y-3 mb-0 md:mb-8 flex-1 text-xs md:text-base text-left">
-            <li class="flex items-center"><span class="mr-1 md:mr-2 text-ror-accent">✓</span> 平均每日僅 10 PXP</li>
-            <li class="flex items-center"><span class="mr-1 md:mr-2 text-ror-accent">✓</span> 享有最優惠比例加機折扣</li>
-          </ul>
-        </div>
-        <div class="ml-2 md:ml-0 md:mt-auto shrink-0 flex items-center justify-center">
-          <button v-if="hasLicense('monthly')" disabled class="w-12 h-12 md:w-full md:h-auto py-1 md:py-3 text-[10px] md:text-base leading-tight md:leading-normal rounded-lg bg-green-500/10 border border-green-500/30 text-green-400 cursor-not-allowed flex flex-col md:block items-center justify-center">
-            <span class="md:hidden">已經</span>
-            <span class="md:hidden">開通</span>
-            <span class="hidden md:inline">已開通</span>
-          </button>
-          <button v-else @click="handleBuy('monthly', 300, 'PXM-', 30)" class="w-12 h-12 md:w-full md:h-auto py-1 md:py-3 text-[10px] md:text-base leading-tight md:leading-normal rounded-lg bg-yellow-500 hover:bg-yellow-400 border border-yellow-400 text-black font-bold flex flex-col md:block items-center justify-center transition-colors shadow-[0_0_15px_rgba(234,179,8,0.3)]">
-            <span class="md:hidden">立即</span>
-            <span class="md:hidden">購買</span>
-            <span class="hidden md:inline">購買</span>
-          </button>
-        </div>
+    <!-- 分隔線 Divider (僅桌面版顯示) -->
+    <div class="hidden md:block w-full max-w-5xl h-px bg-gradient-to-r from-transparent via-ror-border to-transparent mb-10 md:mb-14"></div>
+
+    <!-- ================= 區塊：授權碼方案 ================= -->
+    <section 
+      class="w-full max-w-5xl flex flex-col items-center"
+      :class="activeMobileTab === 'license' ? 'block' : 'hidden md:flex'"
+    >
+      <!-- Header -->
+      <div class="text-center mb-6 md:mb-10">
+        <h2 class="text-2xl md:text-4xl font-bold text-ror-accent mb-2">
+          授權碼方案
+        </h2>
+        <p class="text-ror-muted text-sm md:text-base max-w-2xl mx-auto">
+          基於 PX 點數 (PXP) 的彈性方案。
+        </p>
       </div>
 
-    </div>
+      <!-- 方案卡片 Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-8 w-full mb-4 md:mb-10">
+        
+        <!-- 日卡 -->
+        <div class="bg-ror-card/50 border border-ror-border rounded-xl p-4 md:p-8 flex flex-row md:flex-col items-center md:items-stretch hover:border-ror-accent/50 transition-colors">
+          <div class="flex-1 w-full text-left md:text-center md:flex md:flex-col md:h-full">
+            <h3 class="text-lg md:text-2xl font-bold text-white mb-0.5 md:mb-2">日卡方案</h3>
+            <div class="text-ror-accent text-2xl md:text-4xl font-bold mb-1 md:mb-4">20 <span class="text-xs md:text-lg text-ror-muted font-normal">PXP / 天</span></div>
+            <ul class="text-ror-muted space-y-0.5 md:space-y-3 mb-0 md:mb-8 flex-1 text-xs md:text-base text-left">
+              <li class="flex items-center"><span class="mr-1 md:mr-2 text-ror-accent">✓</span> 適合短期測試與臨時掛機</li>
+              <li class="flex items-center"><span class="mr-1 md:mr-2 text-ror-accent">✓</span> 24 小時精確計時</li>
+            </ul>
+          </div>
+          <div class="ml-2 md:ml-0 md:mt-auto shrink-0 flex items-center justify-center">
+            <button v-if="hasLicense('daily')" disabled class="w-12 h-12 md:w-full md:h-auto py-1 md:py-3 text-[10px] md:text-base leading-tight md:leading-normal rounded-lg bg-green-500/10 border border-green-500/30 text-green-400 cursor-not-allowed flex flex-col md:block items-center justify-center">
+              <span class="md:hidden">已經</span>
+              <span class="md:hidden">開通</span>
+              <span class="hidden md:inline">已開通</span>
+            </button>
+            <button v-else @click="handleBuy('daily', 20, 'PXD-', 1)" class="w-12 h-12 md:w-full md:h-auto py-1 md:py-3 text-[10px] md:text-base leading-tight md:leading-normal rounded-lg bg-yellow-500 hover:bg-yellow-400 border border-yellow-400 text-black font-bold flex flex-col md:block items-center justify-center transition-colors shadow-[0_0_15px_rgba(234,179,8,0.3)]">
+              <span class="md:hidden">立即</span>
+              <span class="md:hidden">購買</span>
+              <span class="hidden md:inline">購買</span>
+            </button>
+          </div>
+        </div>
 
-    <!-- 底部聲明按鈕 -->
-    <button @click="showInfoModal = true" class="group flex items-center justify-center text-ror-muted hover:text-white transition-colors py-2 px-4 rounded-lg hover:bg-ror-surface/50 text-sm md:text-base mt-2 md:mt-0">
-      <svg class="w-4 h-4 md:w-5 md:h-5 mr-1.5 md:mr-2 text-ror-accent group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-      <span class="underline underline-offset-4 decoration-ror-border group-hover:decoration-ror-accent transition-colors">查看授權機制細節聲明</span>
-    </button>
+        <!-- 周卡 -->
+        <div class="bg-ror-card/50 border border-ror-border rounded-xl p-4 md:p-8 flex flex-row md:flex-col items-center md:items-stretch hover:border-ror-accent/50 transition-colors relative">
+          <div class="flex-1 w-full text-left md:text-center md:flex md:flex-col md:h-full">
+            <h3 class="text-lg md:text-2xl font-bold text-white mb-0.5 md:mb-2">周卡方案</h3>
+            <div class="text-ror-accent text-2xl md:text-4xl font-bold mb-1 md:mb-4">100 <span class="text-xs md:text-lg text-ror-muted font-normal">PXP / 7天</span></div>
+            <ul class="text-ror-muted space-y-0.5 md:space-y-3 mb-0 md:mb-8 flex-1 text-xs md:text-base text-left">
+              <li class="flex items-center"><span class="mr-1 md:mr-2 text-ror-accent">✓</span> 平均每日約 14.28 PXP</li>
+              <li class="flex items-center"><span class="mr-1 md:mr-2 text-ror-accent">✓</span> 享有按比例加機折扣</li>
+            </ul>
+          </div>
+          <div class="ml-2 md:ml-0 md:mt-auto shrink-0 flex items-center justify-center">
+            <button v-if="hasLicense('weekly')" disabled class="w-12 h-12 md:w-full md:h-auto py-1 md:py-3 text-[10px] md:text-base leading-tight md:leading-normal rounded-lg bg-green-500/10 border border-green-500/30 text-green-400 cursor-not-allowed flex flex-col md:block items-center justify-center">
+              <span class="md:hidden">已經</span>
+              <span class="md:hidden">開通</span>
+              <span class="hidden md:inline">已開通</span>
+            </button>
+            <button v-else @click="handleBuy('weekly', 100, 'PXW-', 7)" class="w-12 h-12 md:w-full md:h-auto py-1 md:py-3 text-[10px] md:text-base leading-tight md:leading-normal rounded-lg bg-yellow-500 hover:bg-yellow-400 border border-yellow-400 text-black font-bold flex flex-col md:block items-center justify-center transition-colors shadow-[0_0_15px_rgba(234,179,8,0.3)]">
+              <span class="md:hidden">立即</span>
+              <span class="md:hidden">購買</span>
+              <span class="hidden md:inline">購買</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 月卡 -->
+        <div class="bg-ror-card border-2 border-ror-accent rounded-xl p-4 md:p-8 flex flex-row md:flex-col items-center md:items-stretch relative transform hover:-translate-y-1 transition-transform shadow-lg shadow-ror-accent/10 mt-2 md:mt-0">
+          <!-- 推薦標籤 -->
+          <div class="absolute -top-3 md:-top-4 left-1/2 -translate-x-1/2 bg-ror-accent text-black px-3 md:px-4 py-0.5 md:py-1 rounded-full text-[10px] md:text-sm font-bold whitespace-nowrap">
+            最超值推薦
+          </div>
+          <div class="flex-1 w-full text-left md:text-center md:flex md:flex-col md:h-full">
+            <h3 class="text-lg md:text-2xl font-bold text-white mb-0.5 md:mb-2">月卡方案</h3>
+            <div class="text-ror-accent text-2xl md:text-4xl font-bold mb-1 md:mb-4">300 <span class="text-xs md:text-lg text-ror-muted font-normal">PXP / 30天</span></div>
+            <ul class="text-ror-muted space-y-0.5 md:space-y-3 mb-0 md:mb-8 flex-1 text-xs md:text-base text-left">
+              <li class="flex items-center"><span class="mr-1 md:mr-2 text-ror-accent">✓</span> 平均每日僅 10 PXP</li>
+              <li class="flex items-center"><span class="mr-1 md:mr-2 text-ror-accent">✓</span> 享有最優惠比例加機折扣</li>
+            </ul>
+          </div>
+          <div class="ml-2 md:ml-0 md:mt-auto shrink-0 flex items-center justify-center">
+            <button v-if="hasLicense('monthly')" disabled class="w-12 h-12 md:w-full md:h-auto py-1 md:py-3 text-[10px] md:text-base leading-tight md:leading-normal rounded-lg bg-green-500/10 border border-green-500/30 text-green-400 cursor-not-allowed flex flex-col md:block items-center justify-center">
+              <span class="md:hidden">已經</span>
+              <span class="md:hidden">開通</span>
+              <span class="hidden md:inline">已開通</span>
+            </button>
+            <button v-else @click="handleBuy('monthly', 300, 'PXM-', 30)" class="w-12 h-12 md:w-full md:h-auto py-1 md:py-3 text-[10px] md:text-base leading-tight md:leading-normal rounded-lg bg-yellow-500 hover:bg-yellow-400 border border-yellow-400 text-black font-bold flex flex-col md:block items-center justify-center transition-colors shadow-[0_0_15px_rgba(234,179,8,0.3)]">
+              <span class="md:hidden">立即</span>
+              <span class="md:hidden">購買</span>
+              <span class="hidden md:inline">購買</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 底部聲明按鈕 -->
+      <button @click="showInfoModal = true" class="group flex items-center justify-center text-ror-muted hover:text-white transition-colors py-2 px-4 rounded-lg hover:bg-ror-card/50 text-sm md:text-base mt-2 md:mt-0">
+        <svg class="w-4 h-4 md:w-5 md:h-5 mr-1.5 md:mr-2 text-ror-accent group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        <span class="underline underline-offset-4 decoration-ror-border group-hover:decoration-ror-accent transition-colors">查看授權機制細節聲明</span>
+      </button>
+    </section>
 
     <!-- 細節聲明 Modal 懸浮框 -->
     <div v-if="showInfoModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" @click.self="showInfoModal = false">
-      <div class="bg-ror-surface border border-ror-border rounded-xl p-6 md:p-8 max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative text-left">
+      <div class="bg-ror-card border border-ror-border rounded-xl p-6 md:p-8 max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative text-left">
         <button @click="showInfoModal = false" class="absolute top-4 right-4 text-ror-muted hover:text-white transition-colors focus:outline-none">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
         </button>
@@ -137,7 +239,7 @@
 
     <!-- 購買確認 Modal -->
     <div v-if="buyModal.show" class="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-      <div class="bg-ror-surface border border-ror-border rounded-xl p-6 md:p-8 max-w-sm w-full shadow-2xl relative text-left">
+      <div class="bg-ror-card border border-ror-border rounded-xl p-6 md:p-8 max-w-sm w-full shadow-2xl relative text-left">
         <h3 class="text-xl font-bold text-white mb-4">確認購買</h3>
         
         <div v-if="userPxp < buyModal.cost" class="text-red-400 mb-6">
@@ -181,6 +283,7 @@ import { supabase } from '../utils/supabase'
 
 const router = useRouter()
 const showInfoModal = ref(false)
+const activeMobileTab = ref('license')
 
 const user = ref(null)
 const userEmail = ref('')
