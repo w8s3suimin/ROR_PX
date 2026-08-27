@@ -7,15 +7,56 @@
         </h1>
         <p class="text-sm text-ror-muted">集中監控所有帳號角色的狀態、物資與資產</p>
       </div>
-      <div class="flex justify-between items-center w-full">
-        <div class="bg-[#1a1a1a] border border-ror-border rounded px-4 py-2 flex items-center shrink-0">
-          <div class="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
-          <span class="text-sm font-medium">角色數量: {{ filteredAndSortedCharacters.length }}</span>
+      <div class="flex flex-wrap justify-between items-center w-full gap-3">
+        <div class="flex items-center gap-3 flex-wrap">
+          <div class="bg-[#1a1a1a] border border-ror-border rounded px-4 py-2 flex items-center shrink-0">
+            <div class="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
+            <span class="text-sm font-medium">角色數量: {{ filteredAndSortedCharacters.length }}</span>
+            <span v-if="filteredAndSortedCharacters.length > 0" class="text-xs text-ror-muted ml-2">
+              (第 {{ pageStartIndex }} - {{ pageEndIndex }} 筆)
+            </span>
+          </div>
+
+          <!-- Page Size Selector -->
+          <div class="flex items-center gap-2 bg-[#1a1a1a] border border-ror-border rounded px-3 py-1.5 text-sm text-white">
+            <span class="text-xs text-ror-muted">每頁顯示:</span>
+            <select v-model.number="pageSize" class="bg-transparent text-ror-accent font-bold focus:outline-none cursor-pointer">
+              <option :value="50" class="bg-[#1a1a1a] text-white">50 筆</option>
+              <option :value="100" class="bg-[#1a1a1a] text-white">100 筆</option>
+              <option :value="200" class="bg-[#1a1a1a] text-white">200 筆</option>
+            </select>
+          </div>
         </div>
-        <select v-if="viewAsAdmin" v-model="filters.platform_id" class="bg-[#1a1a1a] border border-ror-border rounded px-3 py-1.5 text-sm text-white focus:outline-none focus:border-ror-accent">
-          <option :value="null">全部平台</option>
-          <option v-for="email in uniquePlatforms" :key="email" :value="email">{{ email }}</option>
-        </select>
+
+        <div class="flex items-center gap-3 flex-wrap">
+          <!-- Top Mini Pagination -->
+          <div v-if="totalPages > 1" class="flex items-center gap-1.5 bg-[#1a1a1a] border border-ror-border rounded px-2 py-1 text-xs text-white">
+            <button 
+              @click="prevPage" 
+              :disabled="currentPage === 1" 
+              class="px-2 py-0.5 rounded hover:bg-white/10 text-ror-accent disabled:opacity-30 disabled:hover:bg-transparent transition-colors font-bold"
+              title="上一頁"
+            >
+              ‹
+            </button>
+            <span class="font-mono px-1">
+              <span class="text-ror-accent font-bold">{{ currentPage }}</span> / {{ totalPages }}
+            </span>
+            <button 
+              @click="nextPage" 
+              :disabled="currentPage === totalPages" 
+              class="px-2 py-0.5 rounded hover:bg-white/10 text-ror-accent disabled:opacity-30 disabled:hover:bg-transparent transition-colors font-bold"
+              title="下一頁"
+            >
+              ›
+            </button>
+          </div>
+
+          <select v-if="viewAsAdmin" v-model="filters.platform_id" class="bg-[#1a1a1a] border border-ror-border rounded px-3 py-1.5 text-sm text-white focus:outline-none focus:border-ror-accent">
+            <option :value="null">全部平台</option>
+            <option v-for="email in uniquePlatforms" :key="email" :value="email">{{ email }}</option>
+          </select>
+        </div>
       </div>
     </div>
 
@@ -105,7 +146,7 @@
 
       <!-- List Items -->
       <div 
-        v-for="char in filteredAndSortedCharacters" 
+        v-for="char in paginatedCharacters" 
         :key="char.id"
         v-memo="[char, expandedRow === char.id, viewAsAdmin]"
         class="bg-ror-card border border-ror-border rounded-xl transition-all duration-300 hover:border-ror-accent relative"
@@ -267,6 +308,73 @@
         <button v-if="hasActiveFilters" @click="clearAllFilters" class="mt-4 px-4 py-2 bg-ror-accent text-black font-bold rounded-lg hover:bg-ror-accent-hover transition-colors">
           清除所有過濾條件
         </button>
+      </div>
+
+      <!-- Bottom Pagination Controls -->
+      <div v-if="filteredAndSortedCharacters.length > 0" class="mt-6 p-4 bg-[#1a1a1a]/90 border border-ror-border rounded-xl flex flex-col md:flex-row items-center justify-between gap-4 select-none shadow-lg">
+        <!-- Info & Per Page -->
+        <div class="flex items-center gap-4 text-xs md:text-sm text-ror-muted flex-wrap justify-center md:justify-start">
+          <div>
+            顯示第 <span class="font-mono text-white font-bold">{{ pageStartIndex }}</span> 至 <span class="font-mono text-white font-bold">{{ pageEndIndex }}</span> 筆，共 <span class="font-mono text-ror-accent font-bold">{{ filteredAndSortedCharacters.length }}</span> 筆
+          </div>
+          <div class="flex items-center gap-1.5 bg-black/40 border border-ror-border/60 rounded px-2.5 py-1 text-xs text-white">
+            <span>每頁顯示</span>
+            <select v-model.number="pageSize" class="bg-transparent text-ror-accent font-bold focus:outline-none cursor-pointer">
+              <option :value="50" class="bg-[#1a1a1a] text-white">50 筆</option>
+              <option :value="100" class="bg-[#1a1a1a] text-white">100 筆</option>
+              <option :value="200" class="bg-[#1a1a1a] text-white">200 筆</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Page Buttons -->
+        <div class="flex items-center gap-1 flex-wrap justify-center">
+          <button 
+            @click="goToPage(1)" 
+            :disabled="currentPage === 1" 
+            class="px-2.5 py-1.5 rounded-lg border border-ror-border text-xs md:text-sm font-medium transition-colors disabled:opacity-30 disabled:cursor-not-allowed hover:enabled:bg-white/10 hover:enabled:text-ror-accent text-gray-300"
+            title="第一頁"
+          >
+            «
+          </button>
+          <button 
+            @click="prevPage" 
+            :disabled="currentPage === 1" 
+            class="px-3 py-1.5 rounded-lg border border-ror-border text-xs md:text-sm font-medium transition-colors disabled:opacity-30 disabled:cursor-not-allowed hover:enabled:bg-white/10 hover:enabled:text-ror-accent text-gray-300 flex items-center gap-1"
+          >
+            <span>‹</span> 上一頁
+          </button>
+
+          <div class="flex items-center gap-1">
+            <template v-for="(p, idx) in visiblePageNumbers" :key="idx">
+              <span v-if="p === '...'" class="px-2 py-1 text-ror-muted text-xs font-mono select-none">...</span>
+              <button 
+                v-else 
+                @click="goToPage(p)" 
+                class="min-w-[32px] h-8 rounded-lg text-xs md:text-sm font-mono font-bold transition-all"
+                :class="currentPage === p ? 'bg-ror-accent text-black shadow-[0_0_10px_rgba(255,204,0,0.4)]' : 'border border-ror-border text-gray-300 hover:bg-white/10 hover:text-white'"
+              >
+                {{ p }}
+              </button>
+            </template>
+          </div>
+
+          <button 
+            @click="nextPage" 
+            :disabled="currentPage === totalPages" 
+            class="px-3 py-1.5 rounded-lg border border-ror-border text-xs md:text-sm font-medium transition-colors disabled:opacity-30 disabled:cursor-not-allowed hover:enabled:bg-white/10 hover:enabled:text-ror-accent text-gray-300 flex items-center gap-1"
+          >
+            下一頁 <span>›</span>
+          </button>
+          <button 
+            @click="goToPage(totalPages)" 
+            :disabled="currentPage === totalPages" 
+            class="px-2.5 py-1.5 rounded-lg border border-ror-border text-xs md:text-sm font-medium transition-colors disabled:opacity-30 disabled:cursor-not-allowed hover:enabled:bg-white/10 hover:enabled:text-ror-accent text-gray-300"
+            title="最末頁"
+          >
+            »
+          </button>
+        </div>
       </div>
 
       <!-- Mobile Modal -->
@@ -725,6 +833,95 @@ const filteredAndSortedCharacters = computed(() => {
   })
   
   return res
+})
+
+// Pagination State
+const currentPage = ref(1)
+const pageSize = ref(50)
+
+const totalPages = computed(() => {
+  return Math.max(1, Math.ceil(filteredAndSortedCharacters.value.length / pageSize.value))
+})
+
+const pageStartIndex = computed(() => {
+  if (filteredAndSortedCharacters.value.length === 0) return 0
+  return (currentPage.value - 1) * pageSize.value + 1
+})
+
+const pageEndIndex = computed(() => {
+  return Math.min(currentPage.value * pageSize.value, filteredAndSortedCharacters.value.length)
+})
+
+const paginatedCharacters = computed(() => {
+  const start = (currentPage.value - 1) * pageSize.value
+  return filteredAndSortedCharacters.value.slice(start, start + pageSize.value)
+})
+
+const visiblePageNumbers = computed(() => {
+  const total = totalPages.value
+  const current = currentPage.value
+  if (total <= 7) {
+    return Array.from({ length: total }, (_, i) => i + 1)
+  }
+  
+  const pages = []
+  pages.push(1)
+  
+  let start = Math.max(2, current - 1)
+  let end = Math.min(total - 1, current + 1)
+  
+  if (current <= 3) {
+    end = 4
+  } else if (current >= total - 2) {
+    start = total - 3
+  }
+  
+  if (start > 2) {
+    pages.push('...')
+  }
+  
+  for (let i = start; i <= end; i++) {
+    pages.push(i)
+  }
+  
+  if (end < total - 1) {
+    pages.push('...')
+  }
+  
+  pages.push(total)
+  return pages
+})
+
+const goToPage = (page) => {
+  if (page === '...') return
+  const target = Math.max(1, Math.min(totalPages.value, Number(page)))
+  if (target !== currentPage.value) {
+    currentPage.value = target
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+}
+
+const prevPage = () => {
+  if (currentPage.value > 1) {
+    goToPage(currentPage.value - 1)
+  }
+}
+
+const nextPage = () => {
+  if (currentPage.value < totalPages.value) {
+    goToPage(currentPage.value + 1)
+  }
+}
+
+// Reset page on filters, sorting, or pageSize change
+watch([filters, sortConfig, pageSize], () => {
+  currentPage.value = 1
+}, { deep: true })
+
+watch(totalPages, (newTotal) => {
+  if (currentPage.value > newTotal) {
+    currentPage.value = Math.max(1, newTotal)
+  }
 })
 </script>
 
