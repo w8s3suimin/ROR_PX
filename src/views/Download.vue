@@ -16,10 +16,10 @@
           <div class="space-y-3 flex-1 text-center md:text-left">
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-sm font-medium border border-blue-500/20">
               <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
-              最新版本 v0.5.016
+              最新版本 v0.5.017
             </div>
             <h2 class="text-2xl font-bold">ROR_JS 掛機框架</h2>
-            <p class="text-ror-muted">發布日期：2026-08-25</p>
+            <p class="text-ror-muted">發布日期：2026-08-29</p>
           </div>
           <div class="flex flex-col gap-3 w-full md:w-auto">
             <a href="https://github.com/w8s3suimin/ROR_JS/releases/latest" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center gap-2 bg-ror-accent text-black px-8 py-4 rounded-xl font-bold hover:bg-ror-accent-hover transition-all shadow-[0_0_20px_rgba(255,204,0,0.3)] hover:shadow-[0_0_30px_rgba(255,204,0,0.5)] transform hover:-translate-y-1">
@@ -140,9 +140,19 @@ const setItemRef = (el, idx) => {
 
 const patches = ref([
   {
+    version: 'v0.5.017',
+    date: '2026-08-29',
+    isLatest: true,
+    features: [
+      { icon: '⚡', color: 'text-yellow-400', desc: '<strong>網格比色與記憶體優化：</strong>重構道具搜尋與比色演算法，大幅降低記憶體開銷並顯著提升比對速度。' },
+      { icon: '⚙️', color: 'text-blue-400', desc: '<strong>背包下滑置頂自定義：</strong>自動交易新增開啟背包時自動下滑置頂自定義次數選項（預設 3 次，長壓可設 0 次）。' },
+      { icon: '🛠️', color: 'text-red-400', desc: '<strong>交易尋找目標閃退修復：</strong>修復自動交易翻頁與重試時殘留 Native 圖片導致 OOM 崩潰的問題。' },
+      { icon: '🔍', color: 'text-gray-400', desc: '<strong>主畫面按鈕檢測修復：</strong>修復交易所按鈕補點檢測名稱異常問題，確保介面加載順暢。' }
+    ]
+  },
+  {
     version: 'v0.5.016',
     date: '2026-08-25',
-    isLatest: true,
     features: [
       { icon: '🛠️', color: 'text-red-400', desc: '<strong>價格調整修復：</strong>修復自動交易在上架商品時未正確調整設定價格檔位的問題。' }
     ]
