@@ -126,7 +126,8 @@
                       <span>➔</span> 解析度比例請設定為：<strong class="text-white bg-black/40 px-2 py-0.5 rounded border border-white/10">9:16 (直式)</strong>
                     </p>
                     <p class="text-xs text-ror-muted leading-relaxed">
-                      推薦解析度如：<code class="text-gray-200 bg-white/5 px-1.5 py-0.5 rounded">720 × 1280</code> 或 <code class="text-gray-200 bg-white/5 px-1.5 py-0.5 rounded">1080 × 1920</code>（建議 DPI 320）。腳本所有圖像特徵與點擊座標皆以直式比例開發，若為橫式將無法正常判讀。
+                      💡 <strong>推薦解析度：</strong><code class="text-ror-accent font-bold bg-white/5 px-1.5 py-0.5 rounded">900 × 1600</code>（設計基準解析度，辨識最精準穩定）。<br>
+                      💡 <strong>多開優化：</strong>多開用戶可視電腦效能選擇更小的 9:16 解析度（如 <code class="text-gray-300 bg-white/5 px-1 py-0.5 rounded">720×1280</code> 或 <code class="text-gray-300 bg-white/5 px-1 py-0.5 rounded">540×960</code>）來優化資源效率，但極端小解析度可能會略微影響找圖判讀結果。
                     </p>
                   </div>
                 </div>
@@ -247,7 +248,7 @@ const activeTab = ref('setup')
 const faqList = reactive([
   {
     question: '為什麼啟動後日誌一直停在「尋找主畫面」或卡住？',
-    answer: '請依序檢查以下三項：<br>1. <strong>模擬器解析度</strong>：是否為 9:16 直式（如 720x1280）。<br>2. <strong>遊戲右手模式</strong>：請確認遊戲內是否已切換為「右手模式」。<br>3. <strong>系統權限</strong>：請至「環境」分頁確認「螢幕截圖」與「無障礙服務」權限是否均已正常開啟。',
+    answer: '請依序檢查以下三項：<br>1. <strong>模擬器解析度</strong>：是否為 9:16 直式（<strong>推薦 900×1600</strong> 為標準設計解析度；多開小解析度請留意比例）。<br>2. <strong>遊戲右手模式</strong>：請確認遊戲內是否已切換為「右手模式」。<br>3. <strong>系統權限</strong>：請至「環境」分頁確認「螢幕截圖」與「無障礙服務」權限是否均已正常開啟。',
     open: true
   },
   {
