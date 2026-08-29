@@ -89,6 +89,39 @@
           </div>
         </div>
       </div>
+
+      <!-- 官方 LINE 社群 & 人工儲值說明卡片 -->
+      <div class="mt-6 md:mt-8 bg-gradient-to-r from-[#06C755]/15 via-ror-card to-[#06C755]/10 border border-[#06C755]/40 rounded-2xl p-5 md:p-7 flex flex-col md:flex-row items-center justify-between gap-5 shadow-[0_10px_30px_rgba(6,199,85,0.1)] relative overflow-hidden text-left">
+        <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-[#06C755]/10 rounded-full blur-3xl pointer-events-none"></div>
+        
+        <div class="flex items-start md:items-center gap-4">
+          <div class="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-[#06C755] flex items-center justify-center shrink-0 shadow-lg shadow-[#06C755]/30">
+            <!-- LINE SVG Icon -->
+            <svg class="w-7 h-7 md:w-8 md:h-8 text-white fill-current" viewBox="0 0 24 24">
+              <path d="M24 10.304c0-5.369-5.383-9.738-12-9.738-6.616 0-12 4.369-12 9.738 0 4.814 4.269 8.846 10.036 9.608.391.084.922.258 1.057.592.121.303.079.777.039 1.085l-.171 1.027c-.053.303-.242 1.186 1.039.645 1.281-.54 6.911-4.069 9.428-6.967 1.739-1.907 2.572-3.844 2.572-5.99"/>
+            </svg>
+          </div>
+          <div>
+            <div class="flex flex-wrap items-center gap-2 mb-1">
+              <h3 class="text-base md:text-xl font-bold text-white">官方 LINE 交流社群</h3>
+              <span class="text-xs bg-[#06C755]/20 text-[#06C755] border border-[#06C755]/40 px-2 py-0.5 rounded-full font-bold">點數儲值 / 客服協助</span>
+            </div>
+            <p class="text-xs md:text-sm text-gray-300 leading-relaxed">
+              ⚠️ <strong>儲值提醒：</strong>點數儲值請點擊下方按鈕加入官方社群，並<span class="text-yellow-400 font-bold">聯繫社群管理員進行人工儲值</span>與點數核銷開通。
+            </p>
+          </div>
+        </div>
+
+        <a 
+          href="https://line.me/ti/g2/_3CSZfD3dQBwBt2-y8fiP4QXKFcOVJ-qW80IOg?utm_source=invitation&utm_medium=link_copy&utm_campaign=default" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          class="w-full md:w-auto shrink-0 inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold text-white bg-[#06C755] hover:bg-[#05b34c] shadow-[0_0_20px_rgba(6,199,85,0.4)] hover:shadow-[0_0_30px_rgba(6,199,85,0.6)] transform hover:-translate-y-0.5 transition-all duration-300 whitespace-nowrap cursor-pointer"
+        >
+          <span>加入 LINE 社群儲值</span>
+          <span class="text-lg font-bold">➔</span>
+        </a>
+      </div>
     </section>
 
     <!-- 分隔線 Divider (僅桌面版顯示) -->
