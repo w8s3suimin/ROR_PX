@@ -7,23 +7,55 @@
     </div>
 
     <!-- Welcome Text -->
-    <h1 class="text-4xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-200 to-ror-accent tracking-tight mb-4 animate-fade-in-up">
+    <h1 class="text-4xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-200 to-ror-accent tracking-tight mb-8 animate-fade-in-up">
       歡迎來到 ROR-PX 官網
     </h1>
-    <p class="text-ror-muted text-lg md:text-xl max-w-2xl mb-8 animate-fade-in-up animation-delay-200">
-      您專屬的 ROR 無人雞管理中心。在這裡，您可以輕鬆監控、同步部屬與掌握所有角色資源資訊。
-    </p>
 
     <!-- Beginner Guide CTA Button -->
-    <div class="mb-12 flex flex-wrap justify-center gap-4 animate-fade-in-up animation-delay-200">
+    <div class="mb-8 flex flex-wrap justify-center gap-4 animate-fade-in-up animation-delay-200">
       <button 
         @click="isModalOpen = true"
         class="group relative inline-flex items-center gap-2.5 px-7 py-3.5 rounded-xl font-bold text-black bg-gradient-to-r from-amber-300 via-ror-accent to-yellow-400 hover:from-yellow-300 hover:to-amber-400 shadow-[0_0_25px_rgba(255,204,0,0.35)] hover:shadow-[0_0_35px_rgba(255,204,0,0.6)] transform hover:-translate-y-0.5 transition-all duration-300 cursor-pointer"
       >
         <span class="text-xl animate-bounce">🔰</span>
-        <span class="text-base tracking-wide">新手快速設定引導 (必看)</span>
+        <span class="text-base tracking-wide">新手快速設定引導</span>
         <span class="inline-block transition-transform duration-300 group-hover:translate-x-1 font-extrabold">→</span>
       </button>
+    </div>
+
+    <!-- 官方 LINE 社群卡片 (管理中心上方) -->
+    <div class="w-full max-w-5xl animate-fade-in-up animation-delay-300 mb-8">
+      <div class="bg-gradient-to-r from-[#06C755]/15 via-ror-card/70 to-[#06C755]/10 border border-[#06C755]/40 rounded-2xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-[0_10px_30px_rgba(6,199,85,0.1)] relative overflow-hidden backdrop-blur-md">
+        <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-[#06C755]/10 rounded-full blur-3xl pointer-events-none"></div>
+        
+        <div class="flex items-start md:items-center gap-4 text-left">
+          <div class="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-[#06C755] flex items-center justify-center shrink-0 shadow-lg shadow-[#06C755]/30">
+            <!-- LINE SVG Icon -->
+            <svg class="w-7 h-7 md:w-8 md:h-8 text-white fill-current" viewBox="0 0 24 24">
+              <path d="M24 10.304c0-5.369-5.383-9.738-12-9.738-6.616 0-12 4.369-12 9.738 0 4.814 4.269 8.846 10.036 9.608.391.084.922.258 1.057.592.121.303.079.777.039 1.085l-.171 1.027c-.053.303-.242 1.186 1.039.645 1.281-.54 6.911-4.069 9.428-6.967 1.739-1.907 2.572-3.844 2.572-5.99"/>
+            </svg>
+          </div>
+          <div>
+            <div class="flex flex-wrap items-center gap-2 mb-1">
+              <h3 class="text-lg md:text-2xl font-bold text-white">加入 ROR-PX 官方 LINE 社群</h3>
+              <span class="text-xs bg-[#06C755]/20 text-[#06C755] border border-[#06C755]/40 px-2.5 py-0.5 rounded-full font-bold">官方交流 / 點數儲值</span>
+            </div>
+            <p class="text-xs md:text-sm text-ror-muted leading-relaxed">
+              即時獲取最新腳本更新通知、版本發布資訊、疑難排解交流，並由社群管理員為您提供安全迅速的人工儲值服務！
+            </p>
+          </div>
+        </div>
+
+        <a 
+          href="https://line.me/ti/g2/_3CSZfD3dQBwBt2-y8fiP4QXKFcOVJ-qW80IOg?utm_source=invitation&utm_medium=link_copy&utm_campaign=default" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          class="w-full md:w-auto shrink-0 inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl font-bold text-white bg-[#06C755] hover:bg-[#05b34c] shadow-[0_0_20px_rgba(6,199,85,0.4)] hover:shadow-[0_0_30px_rgba(6,199,85,0.6)] transform hover:-translate-y-0.5 transition-all duration-300 whitespace-nowrap cursor-pointer"
+        >
+          <span>立即加入 LINE 社群</span>
+          <span class="text-lg font-bold">➔</span>
+        </a>
+      </div>
     </div>
 
     <!-- Quick Action Cards -->
@@ -58,41 +90,6 @@
 
     </div>
 
-    <!-- 官方 LINE 社群卡片 (首頁下方) -->
-    <div class="w-full max-w-5xl animate-fade-in-up animation-delay-400 pb-16">
-      <div class="bg-gradient-to-r from-[#06C755]/15 via-ror-card/70 to-[#06C755]/10 border border-[#06C755]/40 rounded-2xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-[0_10px_30px_rgba(6,199,85,0.1)] relative overflow-hidden backdrop-blur-md">
-        <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-[#06C755]/10 rounded-full blur-3xl pointer-events-none"></div>
-        
-        <div class="flex items-start md:items-center gap-4 text-left">
-          <div class="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-[#06C755] flex items-center justify-center shrink-0 shadow-lg shadow-[#06C755]/30">
-            <!-- LINE SVG Icon -->
-            <svg class="w-7 h-7 md:w-8 md:h-8 text-white fill-current" viewBox="0 0 24 24">
-              <path d="M24 10.304c0-5.369-5.383-9.738-12-9.738-6.616 0-12 4.369-12 9.738 0 4.814 4.269 8.846 10.036 9.608.391.084.922.258 1.057.592.121.303.079.777.039 1.085l-.171 1.027c-.053.303-.242 1.186 1.039.645 1.281-.54 6.911-4.069 9.428-6.967 1.739-1.907 2.572-3.844 2.572-5.99"/>
-            </svg>
-          </div>
-          <div>
-            <div class="flex flex-wrap items-center gap-2 mb-1">
-              <h3 class="text-lg md:text-2xl font-bold text-white">加入 ROR-PX 官方 LINE 社群</h3>
-              <span class="text-xs bg-[#06C755]/20 text-[#06C755] border border-[#06C755]/40 px-2.5 py-0.5 rounded-full font-bold">官方交流 / 點數儲值</span>
-            </div>
-            <p class="text-xs md:text-sm text-ror-muted leading-relaxed">
-              即時獲取最新腳本更新通知、版本發布資訊、疑難排解交流，並由社群管理員為您提供安全迅速的人工儲值服務！
-            </p>
-          </div>
-        </div>
-
-        <a 
-          href="https://line.me/ti/g2/_3CSZfD3dQBwBt2-y8fiP4QXKFcOVJ-qW80IOg?utm_source=invitation&utm_medium=link_copy&utm_campaign=default" 
-          target="_blank" 
-          rel="noopener noreferrer"
-          class="w-full md:w-auto shrink-0 inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl font-bold text-white bg-[#06C755] hover:bg-[#05b34c] shadow-[0_0_20px_rgba(6,199,85,0.4)] hover:shadow-[0_0_30px_rgba(6,199,85,0.6)] transform hover:-translate-y-0.5 transition-all duration-300 whitespace-nowrap cursor-pointer"
-        >
-          <span>立即加入 LINE 社群</span>
-          <span class="text-lg font-bold">➔</span>
-        </a>
-      </div>
-    </div>
-
     <!-- 新手引導彈窗 (Beginner Guide Modal) -->
     <div 
       v-if="isModalOpen" 
@@ -108,7 +105,7 @@
             <div>
               <h2 class="text-xl font-bold text-white flex items-center gap-2">
                 新手快速初始化設置指南
-                <span class="text-xs bg-ror-accent/20 text-ror-accent border border-ror-accent/30 px-2 py-0.5 rounded-full">必看</span>
+                <span class="text-xs bg-ror-accent/20 text-ror-accent border border-ror-accent/30 px-2 py-0.5 rounded-full">Guide</span>
               </h2>
               <p class="text-xs text-ror-muted mt-0.5">只需 3 分鐘完成基本配置，避免掛機卡住與異常！</p>
             </div>
