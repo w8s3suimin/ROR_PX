@@ -491,6 +491,44 @@
                                         </div>
                                     </div>
 
+                                    <!-- 自動交易 (Exchange) -->
+                                    <div class="accordion interactive-target" data-doc="exchange">
+                                        <div class="accordion-header" onclick="toggleAcc(this)">
+                                            <div class="accordion-title-wrap"><span class="custom-checkbox checked" onclick="toggleChk(this, event)">☑</span><span>自動交易</span></div>
+                                            <span style="color:var(--color-accent); font-size:12px;">▼</span>
+                                        </div>
+                                        <div class="accordion-content">
+                                            <div class="setting-row">
+                                                <span style="width:65px;">出售物品：</span>
+                                                <div class="setting-box" style="flex:1; margin-right:4px;"><span style="font-size:10px; color:var(--color-accent);">消耗品</span><span style="font-size:8px; color:var(--color-accent);">▼</span></div>
+                                                <span style="color:#888; margin:0 2px;">-</span>
+                                                <div class="setting-box" style="flex:1;"><span style="font-size:10px; color:var(--color-accent);">藥水</span><span style="font-size:8px; color:var(--color-accent);">▼</span></div>
+                                            </div>
+                                            <div class="setting-row">
+                                                <span style="width:65px;">物品名稱：</span>
+                                                <div class="setting-box"><span style="font-size:10px; color:var(--color-accent);">白色藥水</span><span style="font-size:8px; color:var(--color-accent);">▼</span></div>
+                                            </div>
+                                            <div class="setting-row">
+                                                <span style="width:65px;">出售價：</span>
+                                                <div class="stepper"><span class="btn">-</span><span class="val">0</span><span class="btn">+</span></div>
+                                                <span style="margin: 0 8px 0 4px; color:#ddd;">檔</span>
+                                                <div style="display:flex; align-items:center; margin-left:auto;">
+                                                    <span class="custom-checkbox checked" onclick="toggleChk(this, event)" style="margin-right: 4px;">☑</span>
+                                                    <span style="color:#ddd; font-size:11px;">跟隨最低價</span>
+                                                </div>
+                                            </div>
+                                            <div class="setting-row" style="margin-top:4px;">
+                                                <span class="custom-checkbox" onclick="toggleChk(this, event)" style="margin-right: 6px;">☐</span>
+                                                <span style="color:var(--color-accent); font-size:10px;">找圖功能強化 (精準找圖，增加耗能)</span>
+                                            </div>
+                                            <div class="setting-row" style="margin-top:4px;">
+                                                <span style="color:#ddd;">開啟時自動下滑</span>
+                                                <div class="stepper" style="margin: 0 4px;"><span class="btn">-</span><span class="val">3</span><span class="btn">+</span></div>
+                                                <span style="color:#ddd;">次，嘗試回到頂端</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <div class="accordion interactive-target" data-doc="rewards">
                                         <div class="accordion-header" onclick="toggleAcc(this)">
                                             <div class="accordion-title-wrap"><span class="custom-checkbox checked" onclick="toggleChk(this, event)">☑</span><span>獎勵領取</span></div>
@@ -516,6 +554,10 @@
 
                                     <div id="layout_main_quest" class="interactive-target" data-doc="main_quest" style="margin-top:10px;">
                                         <div class="setting-row">
+                                            <span style="width:90px; color:#ddd;">任務類型：</span>
+                                            <div class="setting-box"><span style="font-size:10px; color:var(--color-accent);">不指定</span><span style="font-size:8px; color:var(--color-accent);">▼</span></div>
+                                        </div>
+                                        <div class="setting-row">
                                             <span style="width:90px; color:#ddd;">執行時間：</span>
                                             <div class="stepper"><span class="btn">-</span><span class="val">30</span><span class="btn">+</span></div>
                                             <span style="color:#aaa; margin-left:6px;">分鐘 (0不限)</span>
@@ -526,7 +568,7 @@
                                     <div id="layout_treasure_hunt" class="interactive-target" data-doc="treasure_hunt" style="display: none; margin-top:10px;">
                                         <div class="setting-row">
                                             <span style="width:90px; color:#ddd;">任務關卡：</span>
-                                            <div class="setting-box"><span style="font-size:10px; color:var(--color-accent);">Level 9</span><span style="font-size:8px; color:var(--color-accent);">▼</span></div>
+                                            <div class="setting-box"><span style="font-size:10px; color:var(--color-accent);">Level 8</span><span style="font-size:8px; color:var(--color-accent);">▼</span></div>
                                         </div>
                                         <div class="setting-row">
                                             <span style="width:90px; color:#ddd;">執行上限次數：</span>
@@ -536,7 +578,7 @@
                                         <div class="setting-row">
                                             <span style="width:90px; color:#ddd;">重啟設定：</span>
                                             <div class="stepper"><span class="btn">-</span><span class="val">5</span><span class="btn">+</span></div>
-                                            <span style="color:#aaa; margin-left:6px;">次重啟</span>
+                                            <span style="color:#aaa; margin-left:6px;">次重啟 (0不重啟)</span>
                                         </div>
                                         <div class="setting-row">
                                             <span class="custom-checkbox" onclick="toggleChk(this, event)" style="margin-right: 8px;">☐</span><span>結束時返回主城</span>
@@ -554,15 +596,30 @@
 
                             <!-- =================== 【系統】分頁 =================== -->
                             <div id="tab-system" class="tab-pane">
-                                <div class="section-title">系統核心設定</div>
+                                <div class="section-title">系統全域設定</div>
+                                
+                                <div class="interactive-target guide-pulse" data-doc="system_back_kafra" style="margin-bottom: 12px;">
+                                    <div class="setting-row" style="align-items: center;">
+                                        <span style="color: #ffcc00; margin-right: 4px;">■</span>
+                                        <span style="color: #ddd;">返回主城使用：</span>
+                                        <div class="setting-box" style="width: 110px; margin-left: 6px; flex: initial;">
+                                            <span style="color: var(--color-accent); font-size: 11px;">職業轉換</span>
+                                            <span style="color: var(--color-accent); font-size: 8px;">▼</span>
+                                        </div>
+                                        <span style="color: #ddd; margin-left: 6px;">按鈕</span>
+                                    </div>
+                                </div>
+
                                 <div class="interactive-target guide-pulse" data-doc="system_restart">
-                                    <div class="setting-row" style="justify-content: space-between;">
-                                        <span style="color: #ddd;">強制重啟遊戲</span>
-                                        <div class="stepper">
+                                    <div class="setting-row" style="align-items: center;">
+                                        <span style="color: #ffcc00; margin-right: 4px;">■</span>
+                                        <span style="color: #ddd;">每執行</span>
+                                        <div class="stepper" style="margin: 0 6px;">
                                             <span class="btn">-</span><span class="val">0</span><span class="btn">+</span>
                                         </div>
+                                        <span style="color: #ddd;">隻角色後重啟</span>
                                     </div>
-                                    <div style="color:#888; font-size:10px; margin-bottom:15px;">每執行 N 個角色後重啟遊戲一次 (0 表示永不執行)</div>
+                                    <div style="color:#888; font-size:10px; margin-bottom:15px; margin-left: 14px;">(0 表示永不執行強制重啟)</div>
                                 </div>
                                 
                                 <div style="height: 1px; background: #333; margin-bottom: 15px;"></div>
@@ -571,7 +628,7 @@
                                 <div class="interactive-target" data-doc="system_resume">
                                     <div class="setting-row">
                                         <span class="custom-checkbox checked" onclick="toggleChk(this, event)" style="margin-right: 8px;">☑</span>
-                                        <span style="font-size: 11px;">復原時若在主畫面，跳過切換直接執行任務</span>
+                                        <span style="font-size: 11px;">跳過「角色」切換，直接執行任務</span>
                                     </div>
                                     <div style="color:#888; font-size:10px;">勾選：當執行復原時若偵測到已在主畫面，將不再執行換帳號或自動換角，直接從上次未完成的任務繼續。</div>
                                 </div>
@@ -595,7 +652,17 @@
                                     <span style="color:#aaa;">目前版本: 2.1.000</span>
                                     <button style="background:#1e88e5; color:white; border:none; padding:8px 12px; border-radius:6px; font-size:10px; cursor:pointer;">檢查更新</button>
                                 </div>
+
+                                <div style="height: 1px; background: #333; margin: 15px 0;"></div>
+
+                                <div class="section-title">授權設定</div>
+                                <div class="setting-row interactive-target" data-doc="env_auth" style="justify-content: space-between;">
+                                    <span style="color:#aaa;">授權碼: 已授權 (永久)</span>
+                                    <button style="background:#1e88e5; color:white; border:none; padding:8px 12px; border-radius:6px; font-size:10px; cursor:pointer;">變更</button>
+                                </div>
                             </div>
+
+                            <!-- =================== 【日誌】分頁 =================== -->
 
                             <!-- =================== 【日誌】分頁 =================== -->
                             <div id="tab-log" class="tab-pane interactive-target guide-pulse" data-doc="log_status" style="padding: 10px; background: #111;">
@@ -703,6 +770,10 @@
                 title: '獸王爭霸 (Warcraft)',
                 desc: '自動參與獸王爭霸活動，打王賺積分。<br>您可以設定預期要參與的次數。'
             },
+            'exchange': {
+                title: '自動交易 (Exchange)',
+                desc: '自動前往交易所上架或補貨指定道具。<br><br><b>出售物品與名稱：</b><br>選擇道具的主分類、子分類及欲出售的物品。<br><br><b>出售價檔位與跟隨最低價：</b><br>可手動增減檔位定價；勾選「跟隨最低價」時，腳本會自動以當前市場最低價掛單。<br><br><b>找圖功能強化：</b><br>以更細緻的特徵比對道具圖標（耗能稍高但更精準）。<br><br><b>開啟時自動下滑：</b><br>進入背包或貨架時，自動滑動 N 次嘗試回到頂端以確保物品定位正確。'
+            },
             'rewards': {
                 title: '獎勵領取整合 (Rewards)',
                 desc: '包含所有登入或達成條件後的「紅點消除」與領獎動作。<br><br>支援：信箱一鍵領取、每日福利簽到、雙人同行獎勵、活躍度寶箱、通行證解鎖。'
@@ -714,11 +785,11 @@
             },
             'main_quest': {
                 title: '主線任務 (Main Quest)',
-                desc: '系統將會依序自動尋路並執行主線任務章節、過場動畫與戰鬥。<br><br><b>執行時間：</b>限制該次主線推進的總時長。若設定 30 分鐘，腳本會在 30 分鐘後暫停主線任務。設為 0 表示永不停止直到卡等。'
+                desc: '系統將會依序自動尋路並執行主線任務章節、過場動畫與戰鬥。<br><br><b>任務類型：</b> 可選擇不指定或特定任務類別。<br><br><b>執行時間：</b> 限制該次主線推進的總時長。若設定 30 分鐘，腳本會在 30 分鐘後暫停主線任務。設為 0 表示永不停止直到卡等。'
             },
             'treasure_hunt': {
                 title: '尋寶任務 / 秘境 (Treasure Hunt)',
-                desc: '自動使用羅盤與六分儀探索大世界，進入秘境尋找寶藏。<br><br><b>任務關卡：</b> 指定探索的區域（如：普隆德拉、古城等）。<br><b>執行上限次數：</b> 限制一次挖寶的最大張數。<br><b>重啟設定：</b> 每挖滿一定次數後重啟遊戲防閃退。'
+                desc: '自動使用羅盤與六分儀探索大世界，進入秘境尋找寶藏。<br><br><b>任務關卡：</b> 指定探索的區域（如：Level 8、Level 9 等）。<br><b>執行上限次數：</b> 限制一次挖寶的最大張數。<br><b>重啟設定：</b> 每挖滿一定次數後重啟遊戲防閃退。<br><b>結束時返回主城：</b> 任務完成後自動傳回安全區。'
             },
             'follow_mode': {
                 title: '跟隨模式 (Follow Mode)',
@@ -737,6 +808,10 @@
                 title: '角色執行設定',
                 desc: '設定每個伺服器底下要執行的角色。<br><br><b>功能特點：</b><br>1. 直接點選左側「伺服器名稱」，可快速全選/取消該伺服器的 3 個角色。<br>2. 右側的 ☑角1, ☑角2, ☑角3 代表該帳號在該伺服器的第 1, 2, 3 個角色欄位。<br>3. 切換帳號時，程式會依照這裡的設定遍歷並登入角色。'
             },
+            'system_back_kafra': {
+                title: '返回主城方式',
+                desc: '設定各任務結束後「返回主城」時所使用的捷徑按鈕。<br><br>可選擇「<b>職業轉換</b>」或「<b>王都訓練場</b>」，腳本將點擊該按鈕以最快途徑瞬移回主城安全區。'
+            },
             'system_restart': {
                 title: '強制重啟遊戲',
                 desc: '為了避免長時間掛機導致記憶體溢出或閃退，您可以設定每執行 N 個角色後，腳本自動關閉並重新啟動遊戲 APP。',
@@ -753,6 +828,10 @@
             'env_update': {
                 title: '線上更新 (OTA Update)',
                 desc: '腳本內建的 OTA 更新系統。點擊後會連線至 GitHub 檢查是否有最新版本的釋出，若有則會自動下載覆蓋，免去手動覆蓋腳本的麻煩。'
+            },
+            'env_auth': {
+                title: '授權設定 (License)',
+                desc: '顯示目前裝置的授權狀態與有效期限。<br><br>點擊「變更」按鈕可手動輸入新的授權碼進行啟用或續約。'
             },
             'log_status': {
                 title: '執行狀態監控 (Log Status)',
