@@ -16,7 +16,7 @@
           <div class="space-y-3 flex-1 text-center md:text-left">
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-sm font-medium border border-blue-500/20">
               <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
-              最新版本 v0.5.018
+              最新版本 v0.5.019
             </div>
             <h2 class="text-2xl font-bold">ROR_JS 掛機框架</h2>
             <p class="text-ror-muted">發布日期：2026-08-31</p>
@@ -140,9 +140,16 @@ const setItemRef = (el, idx) => {
 
 const patches = ref([
   {
-    version: 'v0.5.018',
+    version: 'v0.5.019',
     date: '2026-08-31',
     isLatest: true,
+    features: [
+      { icon: '🏷️', color: 'text-yellow-400', desc: '<strong>道具分類歸屬調整：</strong>調整自動交易中「瓦爾基裡的羽毛」的分類歸屬至活動代幣，方便選取設定。' }
+    ]
+  },
+  {
+    version: 'v0.5.018',
+    date: '2026-08-31',
     features: [
       { icon: '✨', color: 'text-yellow-400', desc: '<strong>支援瓦爾基裡的羽毛：</strong>自動交易新增支援「瓦爾基裡的羽毛」自動上架販售。' },
       { icon: '🎯', color: 'text-blue-400', desc: '<strong>全背包智慧定位網格：</strong>重構網格辨識與反推演算法，自動適應活動標籤（如 TAX-FREE）遮擋場景。' },
