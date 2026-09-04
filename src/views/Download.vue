@@ -16,10 +16,10 @@
           <div class="space-y-3 flex-1 text-center md:text-left">
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-sm font-medium border border-blue-500/20">
               <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
-              最新版本 v0.5.021
+              最新版本 v0.5.022
             </div>
             <h2 class="text-2xl font-bold">ROR_JS 掛機框架</h2>
-            <p class="text-ror-muted">發布日期：2026-09-03</p>
+            <p class="text-ror-muted">發布日期：2026-09-04</p>
           </div>
           <div class="flex flex-col gap-3 w-full md:w-auto">
             <a href="https://github.com/w8s3suimin/ROR_JS/releases/latest" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center gap-2 bg-ror-accent text-black px-8 py-4 rounded-xl font-bold hover:bg-ror-accent-hover transition-all shadow-[0_0_20px_rgba(255,204,0,0.3)] hover:shadow-[0_0_30px_rgba(255,204,0,0.5)] transform hover:-translate-y-1">
@@ -140,9 +140,17 @@ const setItemRef = (el, idx) => {
 
 const patches = ref([
   {
+    version: 'v0.5.022',
+    date: '2026-09-04',
+    isLatest: true,
+    features: [
+      { icon: '🛒', color: 'text-yellow-400', desc: '<strong>過期商品自動下架：</strong>自動交易新增過期商品自動下架功能，支援於出售清單自動檢測並下架過期物品。' },
+      { icon: '⚔️', color: 'text-blue-400', desc: '<strong>地下城掃蕩次數確認：</strong>地下城任務新增掃蕩完成檢測機制，若因網路延遲漏掃將自動於原關卡原地補足次數。' }
+    ]
+  },
+  {
     version: 'v0.5.021',
     date: '2026-09-03',
-    isLatest: true,
     features: [
       { icon: '✨', color: 'text-yellow-400', desc: '<strong>活動道具辨識支援：</strong>新增活動道具「熔火鐵幣」與「糖漬草莓」資料，支援活動物品自動辨識。' }
     ]
