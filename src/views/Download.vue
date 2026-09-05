@@ -16,7 +16,7 @@
           <div class="space-y-3 flex-1 text-center md:text-left">
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-sm font-medium border border-blue-500/20">
               <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
-              最新版本 v0.5.024
+              最新版本 v0.5.025
             </div>
             <h2 class="text-2xl font-bold">ROR_JS 掛機框架</h2>
             <p class="text-ror-muted">發布日期：2026-09-06</p>
@@ -140,12 +140,19 @@ const setItemRef = (el, idx) => {
 
 const patches = ref([
   {
-    version: 'v0.5.024',
+    version: 'v0.5.025',
     date: '2026-09-06',
     isLatest: true,
     features: [
+      { icon: '🛡️', color: 'text-green-400', desc: '<strong>底板確認檢測與智慧歸零：</strong>新增選擇底板確認按鈕狀態檢測，若材料不足未成功切換，自動智慧歸零消耗次數並重試。' }
+    ]
+  },
+  {
+    version: 'v0.5.024',
+    date: '2026-09-06',
+    features: [
       { icon: '⚙️', color: 'text-yellow-400', desc: '<strong>強制將消耗次數歸零：</strong>「積木大作戰」支援底板強制歸零消耗次數選項，可在不消耗材料的情況下完成解題。' },
-      { icon: '🛠️', color: 'text-blue-400', desc: '<strong>智慧歸零與座標校正：</strong>修正消耗按鈕點擊座標，並新增底板確認按鈕檢測，若材料不足未成功切換將自動歸零重試。' }
+      { icon: '🛠️', color: 'text-blue-400', desc: '<strong>消耗歸零按鈕座標修正：</strong>修復各難度底板消耗次數調降按鈕位置錯誤的問題，校正為精確座標確保正常歸零。' }
     ]
   },
   {
