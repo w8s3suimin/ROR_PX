@@ -16,7 +16,7 @@
           <div class="space-y-3 flex-1 text-center md:text-left">
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-sm font-medium border border-blue-500/20">
               <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
-              最新版本 v0.5.023
+              最新版本 v0.5.024
             </div>
             <h2 class="text-2xl font-bold">ROR_JS 掛機框架</h2>
             <p class="text-ror-muted">發布日期：2026-09-06</p>
@@ -140,13 +140,21 @@ const setItemRef = (el, idx) => {
 
 const patches = ref([
   {
-    version: 'v0.5.023',
+    version: 'v0.5.024',
     date: '2026-09-06',
     isLatest: true,
     features: [
+      { icon: '⚙️', color: 'text-yellow-400', desc: '<strong>強制將消耗次數歸零：</strong>「積木大作戰」支援底板強制歸零消耗次數選項，可在不消耗材料的情況下完成解題。' },
+      { icon: '🛠️', color: 'text-blue-400', desc: '<strong>消耗歸零按鈕座標修正：</strong>修復各難度底板消耗次數調降按鈕位置錯誤的問題，校正為精確座標確保正常歸零。' }
+    ]
+  },
+  {
+    version: 'v0.5.023',
+    date: '2026-09-06',
+    features: [
       { icon: '🧩', color: 'text-yellow-400', desc: '<strong>積木大作戰自動求解：</strong>全新支援限時活動「積木大作戰」，涵蓋 LV.1 (5*4)、LV.2 (5*6) 與 LV.3 (5*8) 全難度底板全自動拼圖與提交。' },
       { icon: '⚙️', color: 'text-blue-400', desc: '<strong>彈性輪數與斷點接續：</strong>支援自訂各等級執行組數與起始解序號（長按按鈕可直達上限），並支援斷點接續模式自動延續上次解題進度。' },
-      { icon: '🛡️', color: 'text-green-400', desc: '<strong>狀態校正與強制歸零：</strong>啟動時自動驗證底板選項，支援強制將消耗次數歸零免耗材料，並自動偵測重複方案提示以確保流程順暢。' },
+      { icon: '🛡️', color: 'text-green-400', desc: '<strong>狀態校正與防卡死：</strong>啟動時自動驗證並配置底板選項，提交時自動偵測重複方案提示並確認，確保連續提交順暢完成。' },
       { icon: '📱', color: 'text-gray-400', desc: '<strong>介面優化與橫屏適配：</strong>側邊欄支援上下滾動瀏覽，並動態自適應橫向解析度。<br><span class="text-xs text-amber-400/90 font-medium">※ 註：此為半自動模式腳本，請先將『積木大作戰』任務面板開啟，並選擇任意底板，保持底板空白再執行。</span>' }
     ]
   },
