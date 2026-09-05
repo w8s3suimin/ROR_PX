@@ -145,7 +145,7 @@ const patches = ref([
     isLatest: true,
     features: [
       { icon: '⚙️', color: 'text-yellow-400', desc: '<strong>強制將消耗次數歸零：</strong>「積木大作戰」支援底板強制歸零消耗次數選項，可在不消耗材料的情況下完成解題。' },
-      { icon: '🛠️', color: 'text-blue-400', desc: '<strong>消耗歸零按鈕座標修正：</strong>修復各難度底板消耗次數調降按鈕位置錯誤的問題，校正為精確座標確保正常歸零。' }
+      { icon: '🛠️', color: 'text-blue-400', desc: '<strong>智慧歸零與座標校正：</strong>修正消耗按鈕點擊座標，並新增底板確認按鈕檢測，若材料不足未成功切換將自動歸零重試。' }
     ]
   },
   {
