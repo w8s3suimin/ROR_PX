@@ -16,10 +16,10 @@
           <div class="space-y-3 flex-1 text-center md:text-left">
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-sm font-medium border border-blue-500/20">
               <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
-              最新版本 v0.5.022
+              最新版本 v0.5.023
             </div>
             <h2 class="text-2xl font-bold">ROR_JS 掛機框架</h2>
-            <p class="text-ror-muted">發布日期：2026-09-04</p>
+            <p class="text-ror-muted">發布日期：2026-09-06</p>
           </div>
           <div class="flex flex-col gap-3 w-full md:w-auto">
             <a href="https://github.com/w8s3suimin/ROR_JS/releases/latest" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center gap-2 bg-ror-accent text-black px-8 py-4 rounded-xl font-bold hover:bg-ror-accent-hover transition-all shadow-[0_0_20px_rgba(255,204,0,0.3)] hover:shadow-[0_0_30px_rgba(255,204,0,0.5)] transform hover:-translate-y-1">
@@ -140,9 +140,19 @@ const setItemRef = (el, idx) => {
 
 const patches = ref([
   {
+    version: 'v0.5.023',
+    date: '2026-09-06',
+    isLatest: true,
+    features: [
+      { icon: '🧩', color: 'text-yellow-400', desc: '<strong>積木大作戰自動求解：</strong>全新支援限時活動「積木大作戰」，涵蓋 LV.1 (5*4)、LV.2 (5*6) 與 LV.3 (5*8) 全難度底板全自動拼圖與提交。' },
+      { icon: '⚙️', color: 'text-blue-400', desc: '<strong>彈性輪數與斷點接續：</strong>支援自訂各等級執行組數與起始解序號（長按按鈕可直達上限），並支援斷點接續模式自動延續上次解題進度。' },
+      { icon: '🛡️', color: 'text-green-400', desc: '<strong>狀態校正與防卡死：</strong>啟動時自動驗證並配置底板選項，提交時自動偵測重複方案提示並確認，確保連續提交順暢完成。' },
+      { icon: '📱', color: 'text-gray-400', desc: '<strong>介面優化與橫屏適配：</strong>側邊欄支援上下滾動瀏覽，並動態自適應橫向解析度。<br><span class="text-xs text-amber-400/90 font-medium">※ 註：此為半自動模式腳本，請先將『積木大作戰』任務面板開啟，並選擇任意底板，保持底板空白再執行。</span>' }
+    ]
+  },
+  {
     version: 'v0.5.022',
     date: '2026-09-04',
-    isLatest: true,
     features: [
       { icon: '🛒', color: 'text-yellow-400', desc: '<strong>過期商品自動下架：</strong>自動交易新增過期商品自動下架功能，支援於出售清單自動檢測並下架過期物品。' },
       { icon: '⚔️', color: 'text-blue-400', desc: '<strong>地下城掃蕩次數確認：</strong>地下城任務新增掃蕩完成檢測機制，若因網路延遲漏掃將自動於原關卡原地補足次數。' }
