@@ -16,10 +16,10 @@
           <div class="space-y-3 flex-1 text-center md:text-left">
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-sm font-medium border border-blue-500/20">
               <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
-              最新版本 v0.5.025
+              最新版本 v0.5.026
             </div>
             <h2 class="text-2xl font-bold">ROR_JS 掛機框架</h2>
-            <p class="text-ror-muted">發布日期：2026-09-06</p>
+            <p class="text-ror-muted">發布日期：2026-09-19</p>
           </div>
           <div class="flex flex-col gap-3 w-full md:w-auto">
             <a href="https://github.com/w8s3suimin/ROR_JS/releases/latest" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center gap-2 bg-ror-accent text-black px-8 py-4 rounded-xl font-bold hover:bg-ror-accent-hover transition-all shadow-[0_0_20px_rgba(255,204,0,0.3)] hover:shadow-[0_0_30px_rgba(255,204,0,0.5)] transform hover:-translate-y-1">
@@ -140,9 +140,16 @@ const setItemRef = (el, idx) => {
 
 const patches = ref([
   {
+    version: 'v0.5.026',
+    date: '2026-09-19',
+    isLatest: true,
+    features: [
+      { icon: '🛠️', color: 'text-red-400', desc: '<strong>紅月關卡列表捲動修復：</strong>修復紅月入侵活動在特定情況下關卡清單無法正常捲動翻頁的問題，將拖曳觸發點校正於關卡卡片上並加入隨機座標偏移。' }
+    ]
+  },
+  {
     version: 'v0.5.025',
     date: '2026-09-06',
-    isLatest: true,
     features: [
       { icon: '🛡️', color: 'text-green-400', desc: '<strong>底板確認檢測與智慧歸零：</strong>新增選擇底板確認按鈕狀態檢測，若材料不足未成功切換，自動智慧歸零消耗次數並重試。' }
     ]
