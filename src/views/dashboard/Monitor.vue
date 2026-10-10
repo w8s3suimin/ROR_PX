@@ -26,14 +26,23 @@
             <option value="" v-if="!isEditing">全部平台</option>
             <option v-for="email in uniquePlatforms" :key="email" :value="email">{{ email }}</option>
           </select>
-          <button v-if="isEditing" @click="cancelEditMode" class="bg-gray-700/80 border border-gray-600 hover:bg-gray-600 text-white rounded px-3 py-1.5 flex items-center justify-center transition-colors">
+          <button v-if="isEditing" @click="cancelEditMode" :disabled="isSaving" class="bg-gray-700/80 border border-gray-600 hover:bg-gray-600 text-white rounded px-3 py-1.5 flex items-center justify-center transition-colors disabled:opacity-50">
             <span class="text-sm font-medium px-1">取消</span>
           </button>
-          <button @click="toggleEditMode" class="bg-[#1a1a1a] border border-ror-border hover:bg-ror-border/50 text-white rounded px-3 py-1.5 flex items-center justify-center transition-colors">
+          <button @click="toggleEditMode" :disabled="isSaving" class="bg-[#1a1a1a] border border-ror-border hover:bg-ror-border/50 text-white rounded px-3 py-1.5 flex items-center justify-center transition-colors disabled:opacity-50">
             <svg v-if="!isEditing" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
             </svg>
-            <span v-else class="text-sm font-medium px-1 text-ror-accent">儲存</span>
+            <span v-else class="text-sm font-medium px-1 text-ror-accent">
+              <span v-if="isSaving" class="flex items-center gap-1">
+                <svg class="animate-spin -ml-1 mr-1 h-3.5 w-3.5 text-ror-accent" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                儲存中...
+              </span>
+              <span v-else>儲存</span>
+            </span>
           </button>
         </div>
       </div>
@@ -130,6 +139,7 @@ const selectedPlatform = ref('')
 
 // Editing Mode States
 const isEditing = ref(false)
+const isSaving = ref(false)
 const editableDevices = ref([])
 const deletedDeviceIds = ref([])
 const draggedItemIndex = ref(null)
@@ -242,15 +252,10 @@ const displayDevices = computed(() => {
 })
 
 const toggleEditMode = async () => {
+  if (isSaving.value) return
   if (isEditing.value) {
     // Save changes
     await saveChanges()
-    isEditing.value = false
-    // Resume polling
-    if (!isPolling) {
-      isPolling = true
-      pollDevices()
-    }
   } else {
     // Enter edit mode
     if (viewAsAdmin.value && !selectedPlatform.value) {
@@ -269,6 +274,7 @@ const toggleEditMode = async () => {
 }
 
 const cancelEditMode = () => {
+  if (isSaving.value) return
   isEditing.value = false
   editableDevices.value = []
   deletedDeviceIds.value = []
@@ -325,29 +331,66 @@ const onDragEnd = () => {
 }
 
 const saveChanges = async () => {
-  // 1. Delete removed devices
-  if (deletedDeviceIds.value.length > 0) {
-    const { error: deleteError } = await supabase
-      .from('devices_status')
-      .delete()
-      .in('id', deletedDeviceIds.value)
-    if (deleteError) console.error('Error deleting devices:', deleteError)
+  isSaving.value = true
+  try {
+    // 1. Delete removed devices
+    if (deletedDeviceIds.value.length > 0) {
+      const { error: deleteError } = await supabase
+        .from('devices_status')
+        .delete()
+        .in('id', deletedDeviceIds.value)
+      if (deleteError) {
+        throw new Error(`刪除設備失敗: ${deleteError.message}`)
+      }
+    }
+
+    // Before saving updates, reindex based on final order
+    reindexDevices()
+
+    // 2. To avoid UNIQUE (user_id, device_index) constraint collision when reordering:
+    //    Phase 1: Temporarily assign negative indices -(idx + 1)
+    if (editableDevices.value.length > 0) {
+      const tempUpdates = editableDevices.value.map((dev, idx) => {
+        return supabase
+          .from('devices_status')
+          .update({ device_index: -(idx + 1) })
+          .eq('id', dev.id)
+      })
+      const tempResults = await Promise.all(tempUpdates)
+      const tempErr = tempResults.find(r => r.error)?.error
+      if (tempErr) {
+        throw new Error(`更新設備暫存序號失敗: ${tempErr.message}`)
+      }
+
+      // Phase 2: Set final positive indices (1, 2, 3...)
+      const finalUpdates = editableDevices.value.map(dev => {
+        return supabase
+          .from('devices_status')
+          .update({ device_index: dev.device_index })
+          .eq('id', dev.id)
+      })
+      const finalResults = await Promise.all(finalUpdates)
+      const finalErr = finalResults.find(r => r.error)?.error
+      if (finalErr) {
+        throw new Error(`更新設備序號失敗: ${finalErr.message}`)
+      }
+    }
+
+    // Save successful, exit edit mode
+    isEditing.value = false
+    deletedDeviceIds.value = []
+  } catch (err) {
+    console.error('儲存設備順序失敗:', err)
+    alert(err.message || '儲存失敗，請重試')
+  } finally {
+    isSaving.value = false
+    // Refresh list
+    await fetchDevices()
+    if (!isEditing.value && !isPolling) {
+      isPolling = true
+      pollDevices()
+    }
   }
-
-  // Before saving updates, reindex based on final order
-  reindexDevices()
-
-  // 2. Update device index
-  const updates = editableDevices.value.map(dev => {
-    return supabase
-      .from('devices_status')
-      .update({ device_index: dev.device_index })
-      .eq('id', dev.id)
-  })
-  await Promise.all(updates)
-
-  // Refresh list
-  await fetchDevices()
 }
 
 const fetchDevices = async () => {
